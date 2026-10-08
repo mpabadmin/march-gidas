@@ -1,0 +1,23 @@
+{
+  "name": "March gidas – 1040 medkuopa",
+  "short_name": "March gidas",
+  "description": "TCCC 2026 MARCH PAWS atminties priemonė MEDEVAC šauliams gelbėtojams (CLS / CMC): CUF, TFC, TACEVAC, 9-Line, MIST",
+  "lang": "lt",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#161912",
+  "theme_color": "#161912",
+  "categories": ["medical", "education"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "9-Line MEDEVAC", "short_name": "9-Line", "url": "./#/9line", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "MIST perdavimas", "short_name": "MIST", "url": "./#/mist", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}
