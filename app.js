@@ -5,7 +5,7 @@ const IMG_CACHE = 'march-img-1';
 let depth = 0;
 const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
 const newPt = () => '<button class="btn newpt" data-act="new-pt">Naujas sužeistasis – išvalyti žymėjimus ir laikus</button>';
-const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist'];
+const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'gks', 'tst'];
 const fbLink = () => '<button class="btn fbrow" data-act="fb">Pastebėjote klaidą ar turite pasiūlymą? Praneškite</button>';
 
 // Visos vietinės iliustracijos (įgūdžiai + mokymosi puslapiai) – išsaugoti naudojimui be interneto
@@ -14,6 +14,18 @@ function allImgs() {
   (E.igudziai || []).forEach(s => (s.vaizdai || []).forEach(v => v.src && set.add(v.src)));
   Object.keys(E.puslapiai || {}).forEach(k => { const m = String(E.puslapiai[k].html || '').match(/img\/tccc\/[^"'\s)]+\.webp/g); (m || []).forEach(x => set.add(x)); });
   return Array.from(set);
+}
+
+// Tikrai talpykloje esančių vaizdų skaičius (po versijos atnaujinimo ar išvalymo – mg-img atnaujinamas)
+async function imgStatus() {
+  if (!('caches' in window)) return;
+  try {
+    const c = await caches.open(IMG_CACHE), list = allImgs();
+    let n = 0;
+    for (const u of list) if (await c.match(new Request(u))) n++;
+    const have = n >= list.length ? list.length : 0;
+    if (have !== LS.get('mg-img', 0)) { LS.set('mg-img', have); if (route().p[0] === 'nustatymai') render(); }
+  } catch (e) { /* tyliai */ }
 }
 
 function route() {
@@ -30,7 +42,9 @@ function view(p, q) {
     case 's': return V.list(p[1]) + newPt();
     case 'sarasai': return V.lists();
     case '9line': return NL.view();
-    case 'mist': return MI.view();
+    case 'mist': return MC.view();
+    case 'gks': return GK.view();
+    case 'tst': return TS.view();
     case 'vaistai': return V.drugs();
     case 'vaistas': return V.drug(p[1]);
     case 'igudziai': return V.skills(q);
@@ -53,9 +67,9 @@ function render() {
   document.getElementById('mF').setAttribute('aria-pressed', mode === 'field');
   document.getElementById('mL').setAttribute('aria-pressed', mode === 'learn');
   backBtn.style.visibility = p.length ? 'visible' : 'hidden';
-  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
+  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', gks: 'home', tst: 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-  try { app.innerHTML = view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : ''); }
+  try { app.innerHTML = view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : ''); if (p[0] === 'nustatymai') imgStatus(); }
   catch (err) { console.error(err); app.innerHTML = '<h1>Klaida</h1><p class="muted">Nepavyko atidaryti puslapio. Grįžkite į pradžią arba praneškite apie klaidą.</p>' + fbLink(); }
   app.querySelectorAll('.tabs, .ptabs').forEach(sc => { const b = sc.querySelector('button.on'), add = sc.querySelector('.add'); if (b && sc.scrollWidth > sc.clientWidth) { const av = sc.clientWidth - (add ? add.offsetWidth + 12 : 0); sc.scrollLeft = Math.max(0, b.offsetLeft - (av - b.offsetWidth) / 2); } });
   const h1 = app.querySelector('h1');
@@ -104,6 +118,9 @@ async function saveImgs(el) {
       } catch (e) { bad++; }
       n++; if (sm) sm.textContent = 'Išsaugota ' + n + ' / ' + list.length;
     }
+    // pašalinti nebenaudojamus (senesnių versijų) vaizdus
+    const want = new Set(list.map(u => new URL(u, location.href).href));
+    for (const k of await c.keys()) if (!want.has(k.url)) await c.delete(k);
   } catch (e) { bad = list.length; }
   LS.set('mg-img', bad ? 0 : list.length);
   toast(bad ? 'Nepavyko išsaugoti ' + bad + ' vaizdų – bandykite dar kartą' : 'Iliustracijos išsaugotos');
@@ -120,8 +137,11 @@ app.addEventListener('click', e => {
     if (e.target.closest('.lk')) return; // tarpas tarp nuorodų mygtukų – nežymėti
     try { if (String(getSelection()).trim()) return; } catch (x) {} // žymimas tekstas
   }
+  // Įrankiai (tools.js): 9-Line, MIST kortelė, GKS, TST
   if (/^nl-/.test(d.act)) { NL.act(el); return; }
-  if (/^mi-/.test(d.act)) { MI.act(el); return; }
+  if (/^mc-/.test(d.act)) { MC.act(el, e); return; }
+  if (/^gk-/.test(d.act)) { GK.act(el); return; }
+  if (/^ts-/.test(d.act)) { TS.act(el); return; }
   switch (d.act) {
     case 'ck': {
       ckToggle(d.l, +d.i); el.classList.toggle('on'); el.setAttribute('aria-checked', el.classList.contains('on'));
@@ -185,7 +205,7 @@ app.addEventListener('click', e => {
       if (R[d.id] === v) delete R[d.id]; else R[d.id] = v;
       LS.set('mg-ivert', R); render(); break;
     }
-    case 'new-pt': if (confirm('Naujas sužeistasis: išvalyti sąrašų žymėjimus ir laikus? (9-Line ir MIST lieka)')) { LS.set('mg-ck', {}); LS.set('mg-laikai', {}); render(); toast('Išvalyta'); } break;
+    case 'new-pt': if (confirm('Naujas sužeistasis: išvalyti sąrašų žymėjimus ir laikus? (9-Line, MIST ir TST skaičiavimas lieka)')) { LS.set('mg-ck', {}); LS.set('mg-laikai', {}); render(); toast('Išvalyta'); } break;
     case 'tikcls': { LS.set('mg-tikcls', !tikCLS()); IDX = null; render(); const f = app.querySelector('[data-act=tikcls]'); if (f) f.focus(); toast(tikCLS() ? 'Rodomi tik CLS veiksmai' : 'Rodomi visi veiksmai'); break; }
     case 'reset-ivert': if (confirm('Ištrinti visus įsivertinimus?')) { LS.set('mg-ivert', {}); render(); } break;
     case 'fb': FB.open(); break;
@@ -208,12 +228,21 @@ app.addEventListener('click', e => {
 app.addEventListener('keydown', e => {
   const t = e.target, a = t.dataset && t.dataset.act;
   if ((e.key === 'Enter' || e.key === ' ') && (a === 'ck' || a === 'tikcls' || a === 'yt' || a === 'mp4')) { e.preventDefault(); t.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && a === 'mc-mdel' && !(t instanceof HTMLButtonElement)) { e.preventDefault(); MC.act(t, e); } // SVG žymė
 });
+
+// Įrankių laukai: įvedimas be perpiešimo (time laukams – ir 'change', nes kai kurios naršyklės 'input' nesiunčia)
+function toolInput(t) {
+  const d = t.dataset || {};
+  if (d.nl) { NL.onInput(t); return true; }
+  if (d.mc || d.mcf || d.mcm != null) { MC.onInput(t); return true; }
+  return false;
+}
+app.addEventListener('change', e => { if (e.target.type === 'time') toolInput(e.target); });
 
 app.addEventListener('input', e => {
   const t = e.target;
-  if (t.dataset.nl) { NL.onInput(t); return; }
-  if (t.dataset.mi || t.dataset.mif) { MI.onInput(t); return; }
+  if (toolInput(t)) return;
   if (t.id !== 'q' && t.id !== 'qs') return;
   let res = document.getElementById('res');
   if (!res) { res = document.createElement('div'); res.id = 'res'; t.after(res); }

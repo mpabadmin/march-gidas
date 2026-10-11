@@ -7,7 +7,9 @@ LŠS Vilniaus 1040 medicinos šaulių kuopa · https://march.1040medkuopa.lt
 
 - **Fazės:** CUF (pagalba apšaudymo metu), TFC (taktinė lauko pagalba, MARCH PAWS), TACEVAC (taktinė evakuacijos pagalba). Kiekviena fazė turi kontrolinius sąrašus.
 - **9-Line MEDEVAC prašymas:** karo ir taikos meto versijos, GPS → MGRS, skaitymas per radiją, kopijavimas.
-- **MIST perdavimas:** keli sužeistieji, rodiklių istorija, laikai iš laikmačių.
+- **MIST kortelė:** kaip ETC gide – kūno schema su žymėmis (žaizda, kraujavimas, lūžis, nudegimas, amputacija, turniketas su laiku), požymių lentelė, gydymas (su „Rodyti tik CLS“ – be CMC veiksmų), skaitymo režimas; keli sužeistieji (skirtukai 1, 2, … ir „+“, „Kopijuoti visus“). Laikmačių laikai – pirmajam sužeistajam. Seni MIST formos duomenys perkeliami automatiškai (originalas – `mg-mist-v1`).
+- **GKS skaičiuoklė:** Glasgow komos skalė, GKS-P, perkėlimas į dabartinio sužeistojo MIST kortelę.
+- **TST rūšiavimas:** NHS Ten Second Triage, skaičiavimas.
 - **Laikmačiai:** sužeidimo laikas (TXA ≤ 3 val.) ir turniketo laikas (konversija ≤ 2 val.).
 - **Įgūdžiai (36):** JTS CLS / CMC kortelės, iliustracijos ir vaizdo įrašai iš tccc.org.ua (Deployed Medicine).
 - **Vaistai:** pagal TCCC 2026 gaires. Žyma CMC reiškia, kad vaistą skiria kovos medikas.
@@ -29,7 +31,7 @@ LŠS Vilniaus 1040 medicinos šaulių kuopa · https://march.1040medkuopa.lt
 | `vaistai.js` | Vaistai |
 | `igudziai.js` | Įgūdžiai (generuojama) |
 | `core.js`, `views.js` | Bendros funkcijos ir puslapių vaizdai |
-| `tools.js` | 9-Line, MIST, MGRS |
+| `tools.js` | 9-Line, MIST kortelė, GKS, TST, MGRS (9-Line, MIST ir GKS kodas toks pat kaip ETC gide – skiriasi tik `TCFG`) |
 | `fb.js` | Pranešimai apie klaidas |
 | `app.js` | Maršrutai ir veiksmai |
 | `sw.js` | Darbas be interneto |

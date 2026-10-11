@@ -77,7 +77,7 @@ E.vaistai = [
     id: 'esketaminas', name: 'Esketaminas', klase: 'Nuskausminamasis (į nosį)', grupe: 'skausmas', lygis: 'CMC',
     ind: 'Alternatyva ketaminui, kai sužeistasis negali tęsti užduoties (TCCC 2026).',
     kontra: 'PCS (Spravato): padidėjęs jautrumas; aneurizminė kraujagyslių liga ar arterioveninė malformacija; intracerebrinis kraujavimas anamnezėje.',
-    dozes: [{ k: 'Į nosį (TCCC 2026)', d: '14 arba 28 mg vieną kartą', p: '28 mg prietaisas: po 1 purškimą į kiekvieną šnervę (1 purškimas = 14 mg).' }],
+    dozes: [{ k: 'Į nosį (TCCC 2026)', d: '14 arba 28 mg vieną kartą', p: '28 mg prietaisas, 1 purškimas = 14 mg: 28 mg – po 1 purškimą į kiekvieną šnervę; 14 mg – 1 purškimas į vieną šnervę.' }],
     ispejimai: ['Kaip ir ketaminui: nuginkluoti, AVPU įrašyti į kortelę, stebėti kvėpavimą; benzodiazepinų neskirti.'],
     pakuote: 'Nosies purškalas 28 mg (2 purškimai)',
     susije: ['ketaminas'],
@@ -155,11 +155,11 @@ E.vaistai = [
   {
     id: 'nacl-hipert', name: 'Hipertoninis NaCl', klase: '3 % arba 5 % (arba 23,4 %)', grupe: 'galva', lygis: 'CMC',
     ind: 'Tik esant galvos smegenų išvaržos požymiams: asimetriški arba fiksuoti ir išsiplėtę vyzdžiai, patologinė laikysena (TCCC 2026). Profilaktiškai neskirti.',
-    kontra: 'Profilaktiškai ir kaip gaivinimo (tūrio) skysčio neskirti.',
+    kontra: 'Neskirti profilaktiškai ir kaip tūrį atkuriančio skysčio (TCCC 2026).',
     dozes: [{ k: 'IV / IO (TCCC 2026)', d: '250 ml 3 % arba 5 % NaCl (arba 30 ml 23,4 %) per ≥ 10 min, po to praplauti', p: 'Nėra atsako – kartoti po 20 min (maks. 2 dozės).' }],
     ispejimai: ['Ekstravazacijos atveju – nutraukti (TCCC 2026).'],
     pakuote: 'Pagal vieneto rinkinį',
-    pastabos: ['Galvos smegenų trauma (TCCC 2026): SpO₂ ≥ 92 %, sAKS > 100 mm Hg (arba normalus radialinis pulsas), ventiliuojant EtCO₂ 35–45 mm Hg (be EtCO₂ – 10 įkvėpimų/min), galva ir liemuo > 30° (jei nėra šoko), neurologinė patikra kas 5–10 min.'],
+    pastabos: ['Galvos smegenų trauma (TCCC 2026): SpO₂ ≥ 92 %, sAKS > 100 mm Hg (arba normalus radialinis pulsas), ventiliuojant EtCO₂ 35–45 mm Hg (be EtCO₂ – 10 įpūtimų/min), galva ir liemuo > 30° (jei nėra šoko), neurologinė patikra kas 5–10 min.'],
     saltinis: 'TCCC gairės 2026-05-01 (TFC 8)',
     nuorodos: [TCCC]
   }
