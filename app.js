@@ -5,7 +5,7 @@ const IMG_CACHE = 'march-img-1';
 let depth = 0;
 const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
 const newPt = () => '<button class="btn newpt" data-act="new-pt">Naujas sužeistasis – išvalyti žymėjimus ir laikus</button>';
-const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'gks', 'tst'];
+const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep'];
 const fbLink = () => '<button class="btn fbrow" data-act="fb">Pastebėjote klaidą ar turite pasiūlymą? Praneškite</button>';
 
 // Visos vietinės iliustracijos (įgūdžiai + mokymosi puslapiai) – išsaugoti naudojimui be interneto
@@ -43,7 +43,7 @@ function view(p, q) {
     case 'sarasai': return V.lists();
     case '9line': return NL.view();
     case 'mist': return MC.view();
-    case 'gks': return GK.view();
+    case 'sitrep': return SR.view();
     case 'tst': return TS.view();
     case 'vaistai': return V.drugs();
     case 'vaistas': return V.drug(p[1]);
@@ -67,7 +67,7 @@ function render() {
   document.getElementById('mF').setAttribute('aria-pressed', mode === 'field');
   document.getElementById('mL').setAttribute('aria-pressed', mode === 'learn');
   backBtn.style.visibility = p.length ? 'visible' : 'hidden';
-  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', gks: 'home', tst: 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
+  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   try { app.innerHTML = view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : ''); if (p[0] === 'nustatymai') imgStatus(); }
   catch (err) { console.error(err); app.innerHTML = '<h1>Klaida</h1><p class="muted">Nepavyko atidaryti puslapio. Grįžkite į pradžią arba praneškite apie klaidą.</p>' + fbLink(); }
@@ -137,10 +137,10 @@ app.addEventListener('click', e => {
     if (e.target.closest('.lk')) return; // tarpas tarp nuorodų mygtukų – nežymėti
     try { if (String(getSelection()).trim()) return; } catch (x) {} // žymimas tekstas
   }
-  // Įrankiai (tools.js): 9-Line, MIST kortelė, GKS, TST
+  // Įrankiai (tools.js): 9-Line, MIST kortelė, TST, SITREP
   if (/^nl-/.test(d.act)) { NL.act(el); return; }
   if (/^mc-/.test(d.act)) { MC.act(el, e); return; }
-  if (/^gk-/.test(d.act)) { GK.act(el); return; }
+  if (/^sr-/.test(d.act)) { SR.act(el); return; }
   if (/^ts-/.test(d.act)) { TS.act(el); return; }
   switch (d.act) {
     case 'ck': {
@@ -236,6 +236,7 @@ function toolInput(t) {
   const d = t.dataset || {};
   if (d.nl) { NL.onInput(t); return true; }
   if (d.mc || d.mcf || d.mcm != null) { MC.onInput(t); return true; }
+  if (d.sr) { SR.onInput(t); return true; }
   return false;
 }
 app.addEventListener('change', e => { if (e.target.type === 'time') toolInput(e.target); });

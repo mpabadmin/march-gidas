@@ -43,13 +43,12 @@ const figHtml = f => `<figure class="fig"><a href="${esc(f.src)}" target="_blank
 const skRefs = t => esc(t).replace(/#(\d{1,2})(?![\d])/g, (m, n) => { const k = skillById(+n); return k && ok(k.lygis) ? `<a href="#/igudis/${n}">#${n}</a>` : m; });
 // Susiję įrankiai įgūdžio puslapyje
 const SKILL_TOOLS = {
-  17: [['#/gks', 'GKS skaičiuoklė', 'Glasgow komos skalė – sąmonė tiksliau nei AVPU']], 22: [['#/gks', 'GKS skaičiuoklė', 'Glasgow komos skalė, GKS-P']],
   31: [['#/mist', 'MIST kortelė', 'Kūno schema, požymiai, gydymas – užpildykite ir perskaitykite']], 32: [['#/9line', '9-Line MEDEVAC forma', 'Užpildykite ir perskaitykite per radiją'], ['#/mist', 'MIST kortelė', 'Kūno schema, požymiai, gydymas']],
   34: [['#/mist', 'MIST kortelė', 'Perduokite perskaitydami kortelę']], 36: [['#/tst', 'TST rūšiavimas', 'Ten Second Triage – masinei nelaimei']]
 };
 // Įrankiai (tools.js): būsena rodoma po pavadinimu
 const toolRows = () => typeof MC === 'undefined' ? '' :
-  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/gks', 'GKS skaičiuoklė', GK.status()) + row('#/tst', 'TST rūšiavimas', TS.status());
+  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', 'TST rūšiavimas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status());
 const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="tag grn">CLS</span>';
 
 const V = {
@@ -62,12 +61,12 @@ const V = {
 
   toolTiles() {
     const st = m => { try { return m().status(); } catch (e) { return ''; } }; // tools.js gali būti neįkeltas
-    const nl = st(() => NL), mc = st(() => MC), gk = st(() => GK).replace(/^Paskutinė: /, ''), ts = st(() => TS);
+    const nl = st(() => NL), mc = st(() => MC), ts = st(() => TS), sr = st(() => SR);
     return '<div class="tools">' +
       `<a class="tool" href="#/9line" aria-label="9-Line MEDEVAC prašymas: ${esc(nl)}"><span class="ti">9</span><b>9-Line</b><small>${esc(nl)}</small></a>` +
       `<a class="tool" href="#/mist" aria-label="MIST kortelė: ${esc(mc)}"><span class="ti">M</span><b>MIST</b><small>${esc(mc)}</small></a>` +
-      `<a class="tool" href="#/gks" aria-label="GKS skaičiuoklė: ${esc(gk)}"><span class="ti">G</span><b>GKS</b><small>${esc(gk)}</small></a>` +
-      `<a class="tool" href="#/tst" aria-label="TST rūšiavimas: ${esc(ts)}"><span class="ti">T</span><b>TST</b><small>${esc(ts)}</small></a></div>`;
+      `<a class="tool" href="#/tst" aria-label="TST rūšiavimas: ${esc(ts)}"><span class="ti">T</span><b>TST</b><small>${esc(ts)}</small></a>` +
+      `<a class="tool" href="#/sitrep" aria-label="SITREP padėties pranešimas: ${esc(sr)}"><span class="ti">S</span><b>SITREP</b><small>${esc(sr)}</small></a></div>`;
   },
 
   homeField() {
