@@ -330,6 +330,13 @@ section.nl .lgr+.inp{margin-top:10px}
 .gres .gt{font-size:25px;font-weight:800;line-height:1.2}.gres .gt small{font-size:16px;font-weight:600;opacity:.8}
 .gres .gsv{font-size:14px;margin-top:2px}
 .gres.sev1{background:#18794E;color:#fff}.gres.sev2{background:#9A4A00;color:#fff}.gres.sev3{background:#B42318;color:#fff}
+/* ── atnaujinimo mygtukas (antraštėje, pradžios ekrane) ── */
+#upd{position:relative}#upd svg{width:21px;height:21px}
+#upd.new{background:var(--accbg);color:var(--acc)}
+#upd.new::after{content:'';position:absolute;top:6px;right:6px;width:10px;height:10px;border-radius:50%;background:#E24B4A;box-shadow:0 0 0 2px var(--card)}
+#upd.spin svg{animation:updspin .9s linear infinite}
+@keyframes updspin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#upd.spin svg{animation:none;opacity:.5}}
 /* ── skaitymo režimas, pranešimai ── */
 #rd{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;overscroll-behavior:contain}
 #rd[hidden]{display:none}
@@ -372,6 +379,7 @@ html.fbopen,html.fbopen body{overflow:hidden}
 <header>
   <button class="ib" id="back" aria-label="Atgal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
   <div class="seg" role="group" aria-label="Režimas"><button id="mF">Taikymas</button><button id="mL">Mokymasis</button></div>
+  <button class="ib" id="upd" aria-label="Tikrinti, ar yra nauja versija" title="Tikrinti, ar yra nauja versija"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 21v-5h-5"/></svg></button>
   <button class="ib" id="fbb" aria-label="Pranešti apie klaidą ar pasiūlyti" title="Pranešti apie klaidą"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.3 7.6L3.5 20.5l1.4-4.6a8.5 8.5 0 1 1 15.6-4.4z"/><path d="M12 7.5v4.5M12 15.6v.01"/></svg></button>
   <button class="ib" id="srch" aria-label="Paieška"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
 </header>

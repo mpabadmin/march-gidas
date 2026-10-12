@@ -66,7 +66,8 @@ function render() {
   document.getElementById('mL').classList.toggle('on', mode === 'learn');
   document.getElementById('mF').setAttribute('aria-pressed', mode === 'field');
   document.getElementById('mL').setAttribute('aria-pressed', mode === 'learn');
-  backBtn.style.visibility = p.length ? 'visible' : 'hidden';
+  backBtn.style.display = p.length ? '' : 'none'; // pradžios ekrane vietoje „Atgal“ – atnaujinimo mygtukas dešinėje
+  const ub = document.getElementById('upd'); if (ub) ub.style.display = p.length ? 'none' : '';
   const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   try { app.innerHTML = view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : ''); if (p[0] === 'nustatymai') imgStatus(); }
@@ -261,3 +262,49 @@ addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEv = e
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 
 onNav(true);
+
+// ───────── Atnaujinimas: mygtukas antraštėje (pradžios ekrane, šalia paieškos) ─────────
+// Bakstelėjus – tikrinama, ar serveryje yra nauja versija (service worker update); radus – įdiegiama ir puslapis perkraunamas.
+// Programėlė tikrina ir pati (atidarius ir grįžus po ≥ 30 min); radus naują versiją mygtukas pažymimas tašku.
+const UPD = (() => {
+  const btn = document.getElementById('upd');
+  let busy = false, avail = false, last = 0, had = !!(navigator.serviceWorker && navigator.serviceWorker.controller), reloading = false;
+  const ver = () => String((E && E.versija) || '').split(' (')[0];
+  function mark(on) {
+    avail = on; if (!btn) return;
+    btn.classList.toggle('new', on);
+    const t = on ? 'Yra nauja versija – bakstelėkite, kad atnaujintumėte' : 'Tikrinti, ar yra nauja versija';
+    btn.setAttribute('aria-label', t); btn.title = t;
+  }
+  const getReg = () => 'serviceWorker' in navigator ? navigator.serviceWorker.getRegistration().catch(() => null) : Promise.resolve(null);
+  function settle(r) { // laukiama, kol nauja versija įsidiegs ir pradės veikti (iki 15 s)
+    return new Promise(res => {
+      const w = r && (r.installing || r.waiting); if (!w) return res();
+      const tm = setTimeout(res, 15000);
+      w.addEventListener('statechange', () => { if (w.state === 'activated' || w.state === 'redundant') { clearTimeout(tm); res(); } });
+    });
+  }
+  function reload() { reloading = true; toast('Atnaujinama…'); setTimeout(() => location.reload(), 350); }
+  async function check(manual) {
+    if (busy) return; busy = true;
+    if (manual && btn) btn.classList.add('spin');
+    try {
+      const r = await getReg();
+      if (!r) { if (manual) reload(); return; }
+      if (manual && avail) { await settle(r); return reload(); }
+      if (manual && navigator.onLine === false) { toast('Nėra interneto ryšio – patikrinti nepavyko'); return; }
+      await r.update(); last = Date.now();
+      if (r.installing || r.waiting) { mark(true); if (manual) { await settle(r); return reload(); } }
+      else if (manual) toast('Naujausia versija · ' + ver());
+    } catch (e) { if (manual) toast('Nepavyko patikrinti – nėra ryšio?'); }
+    finally { busy = false; if (btn && !reloading) btn.classList.remove('spin'); }
+  }
+  if (btn) btn.onclick = () => check(true);
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (had && !reloading) mark(true); had = true; });
+    getReg().then(r => { if (r) r.addEventListener('updatefound', () => { if (had) mark(true); }); });
+    addEventListener('load', () => setTimeout(() => check(false), 4000));
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - last > 30 * 60000) check(false); });
+  }
+  return { check, mark, available: () => avail };
+})();
