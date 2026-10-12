@@ -1,4 +1,4 @@
-const VERSION = 'march-gidas-v3';
+const VERSION = 'march-gidas-v4';
 const IMG = 'march-img-1';
 const EXT = 'march-ext-1';
 const FILES = ['./', './index.html', './core.js', './views.js', './tools.js', './fb.js', './vendor/html2canvas.min.js', './app.js', './sarasai.js', './vaistai.js', './igudziai.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png', './favicon-64.png', './apple-touch-icon.png', './img/badge-balt.png', './img/badge-juod.png', './img/qr.svg'];

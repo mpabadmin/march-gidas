@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-10-11 v3 (SITREP padėties pranešimo forma vietoje GKS skaičiuoklės; įgūdžiai perrašyti glaustai, tik tikslios iliustracijos ir praktiniai video; MIST kortelė ir 9-Line kaip ETC gide; TST rūšiavimas)';
+E.versija = '2026-10-12 v4 (SITREP padėties pranešimo forma vietoje GKS skaičiuoklės; įrankių plytelių lygiavimas; įgūdžiai perrašyti glaustai, tik tikslios iliustracijos ir praktiniai video; MIST kortelė ir 9-Line kaip ETC gide; TST rūšiavimas)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
