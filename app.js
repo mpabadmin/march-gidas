@@ -3,9 +3,10 @@ const app = document.getElementById('app');
 const backBtn = document.getElementById('back');
 const IMG_CACHE = 'march-img-1';
 let depth = 0;
+let night = !!LS.get('mg-naktis', false); // naktinis raudonas režimas
 const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
 const newPt = () => '<button class="btn newpt" data-act="new-pt">Naujas sužeistasis – išvalyti žymėjimus ir laikus</button>';
-const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep'];
+const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'scenarijai'];
 const fbLink = () => '<button class="btn fbrow" data-act="fb">Pastebėjote klaidą ar turite pasiūlymą? Praneškite</button>';
 
 // Visos vietinės iliustracijos (įgūdžiai + mokymosi puslapiai) – išsaugoti naudojimui be interneto
@@ -45,6 +46,7 @@ function view(p, q) {
     case 'mist': return MC.view();
     case 'sitrep': return SR.view();
     case 'tst': return TS.view();
+    case 'scenarijai': return SC.view(p[1], q);
     case 'vaistai': return V.drugs();
     case 'vaistas': return V.drug(p[1]);
     case 'igudziai': return V.skills(q);
@@ -61,14 +63,14 @@ function view(p, q) {
 
 function render() {
   const { p, q } = route();
-  document.body.className = mode;
+  document.body.className = night ? 'field night' : mode; // naktinis režimas – visada tamsi paletė + raudonas filtras
   document.getElementById('mF').classList.toggle('on', mode === 'field');
   document.getElementById('mL').classList.toggle('on', mode === 'learn');
   document.getElementById('mF').setAttribute('aria-pressed', mode === 'field');
   document.getElementById('mL').setAttribute('aria-pressed', mode === 'learn');
   backBtn.style.display = p.length ? '' : 'none'; // pradžios ekrane vietoje „Atgal“ – atnaujinimo mygtukas dešinėje
   const ub = document.getElementById('upd'); if (ub) ub.style.display = p.length ? 'none' : '';
-  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
+  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', scenarijai: 'igudziai', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   try { app.innerHTML = view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : ''); if (p[0] === 'nustatymai') imgStatus(); }
   catch (err) { console.error(err); app.innerHTML = '<h1>Klaida</h1><p class="muted">Nepavyko atidaryti puslapio. Grįžkite į pradžią arba praneškite apie klaidą.</p>' + fbLink(); }
@@ -142,6 +144,7 @@ app.addEventListener('click', e => {
   if (/^nl-/.test(d.act)) { NL.act(el); return; }
   if (/^mc-/.test(d.act)) { MC.act(el, e); return; }
   if (/^sr-/.test(d.act)) { SR.act(el); return; }
+  if (/^sc-/.test(d.act)) { SC.act(el); return; }
   if (/^ts-/.test(d.act)) { TS.act(el); return; }
   switch (d.act) {
     case 'ck': {
@@ -308,3 +311,12 @@ const UPD = (() => {
   }
   return { check, mark, available: () => avail };
 })();
+
+// ───────── Naktinis raudonas režimas (mėnulio mygtukas antraštėje; prisimenamas) ─────────
+function applyNight() {
+  const b = document.getElementById('night');
+  if (b) { b.setAttribute('aria-pressed', night); b.title = night ? 'Išjungti naktinį režimą' : 'Naktinis raudonas režimas'; }
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = night ? '#000000' : '#161912';
+}
+document.getElementById('night').onclick = () => { night = !night; LS.set('mg-naktis', night); applyNight(); render(); };
+applyNight();

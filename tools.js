@@ -981,3 +981,95 @@ const SR = (() => {
   }
   return { view, act, onInput, status, lines, text, dtg };
 })();
+
+// ───────── Treniruočių scenarijai (SC) – kodas vienodas ETC ir March giduose; duomenys – scenarijai.js ─────────
+const SC = (() => {
+  const KEY = TCFG.pre + 'scen';
+  let cur = null; // { id, qi, pick: [], done }
+  const all = () => (E.scenarijai || []).filter(s => s && Array.isArray(s.q) && s.q.length && (!s.lygis || typeof ok !== 'function' || ok(s.lygis)));
+  const best = () => { const b = LS.get(KEY, {}); return b && typeof b === 'object' && !Array.isArray(b) ? b : {}; };
+  const byId = id => all().find(s => s.id === id);
+  const LET = ['A', 'B', 'C', 'D'];
+  const TOOLS = { '#/tst': 'TST rūšiavimas', '#/9line': '9-Line MEDEVAC', '#/mist': 'MIST kortelė', '#/sitrep': 'SITREP', '#/gks': 'GKS skaičiuoklė', '#/zymejimas': 'Vaistų žymėjimas', '#/nudegimai': 'Nudegimų plotas' };
+  function refLabel(r) {
+    let m;
+    if ((m = r.match(/^#\/igudis\/(\d+)$/))) { const s = (E.igudziai || []).find(x => String(x.id) === m[1]); return s ? ['Įgūdis #' + m[1], s.pav] : null; }
+    if ((m = r.match(/^#\/vaistas\/([\w-]+)$/))) { const v = (E.vaistai || []).find(x => x.id === m[1]); return v ? ['Vaistas', v.name] : null; }
+    if ((m = r.match(/^#\/s\/([\w-]+)$/))) { const L = (E.sarasai || {})[m[1]]; return L ? ['Kontrolinis sąrašas', L.title] : null; }
+    if ((m = r.match(/^#\/p\/([\w-]+)$/))) { const P = (E.puslapiai || {})[m[1]]; return P ? ['Mokymosi medžiaga', P.title] : null; }
+    if ((m = r.match(/^#\/f\/(\w+)/))) {
+      const t = (r.match(/[?&]t=(\d+)/) || [])[1], F = (E.fazes || []).find(x => x.id === m[1]);
+      const lid = F && Array.isArray(F.lists) ? F.lists[t != null ? +t : 0] : null, L = lid ? (E.sarasai || {})[lid] : null;
+      return [m[1] + ' – kontrolinis sąrašas', L ? L.title : (F ? F.pav : m[1])];
+    }
+    if (TOOLS[r]) return ['Įrankis', TOOLS[r]];
+    return null;
+  }
+  function status() {
+    const S = all(), B = best(), n = S.filter(s => B[s.id] != null).length;
+    return n ? `Išspręsta ${n} iš ${S.length}` : plural(S.length, ['scenarijus', 'scenarijai', 'scenarijų']) + ' – pasitikrinkite žinias';
+  }
+  function list(q) {
+    const S = all(), B = best(), temos = [...new Set(S.map(s => s.tema).filter(Boolean))], f = q.t || '';
+    let h = '<h1>Treniruočių scenarijai</h1><p class="muted">Klinikinis atvejis keliais žingsniais: pasirinkite veiksmą – pamatysite paaiškinimą ir nuorodas į gidą. Rezultatai lieka tik šiame telefone.</p>';
+    h += '<button class="btn pri" data-act="sc-rand">Atsitiktinis scenarijus</button>';
+    if (temos.length > 1) h += '<div class="tabs">' + tabBtn('Visi', '#/scenarijai', !f, 1) + temos.map(t => tabBtn(t, '#/scenarijai?t=' + encodeURIComponent(t), f === t, 1)).join('') + '</div>';
+    h += S.filter(s => !f || s.tema === f).map(s => {
+      const b = B[s.id], n = s.q.length;
+      return row('#/scenarijai/' + s.id, s.pav, [s.tema, s.lygis, plural(n, ['klausimas', 'klausimai', 'klausimų'])].filter(Boolean).join(' · '),
+        b != null ? `<span class="tag ${b === n ? 'grn' : 'amb'}">${b} / ${n}</span>` : '');
+    }).join('');
+    return h;
+  }
+  function play(id) {
+    const s = byId(id); if (!s) return notFound();
+    if (!cur || cur.id !== id) cur = { id, qi: 0, pick: [], done: false };
+    const n = s.q.length;
+    let h = `<div class="scmeta">${esc([s.tema, s.lygis].filter(Boolean).join(' · '))}</div><h1>${esc(s.pav)}</h1>`;
+    if (cur.done) {
+      const good = s.q.filter((q, i) => q.opt[cur.pick[i]] && q.opt[cur.pick[i]].ok).length;
+      h += `<section class="scres ${good === n ? 'ok' : ''}"><div class="scsc">${good} / ${n}</div><div>${good === n ? 'Puiku – visi atsakymai teisingi.' : 'Peržiūrėkite paaiškinimus ir nuorodas į gidą.'}</div></section>`;
+      h += s.q.map((q, i) => { const o = q.opt[cur.pick[i]], okk = o && o.ok; return `<div class="scsum"><span class="scm ${okk ? 'ok' : 'bad'}">${okk ? '✓' : '✗'}</span><div><b>${esc(q.klaus)}</b><small>${esc((q.opt.find(x => x.ok) || {}).t || '')}</small></div></div>`; }).join('');
+      h += '<div class="acts"><button class="btn pri" data-act="sc-rand">Kitas scenarijus</button><button class="btn" data-act="sc-again">Kartoti</button></div>' + row('#/scenarijai', 'Visi scenarijai', status());
+      return h;
+    }
+    const q = s.q[cur.qi], pk = cur.pick[cur.qi], ans = pk != null;
+    h += `<div class="scprog">${s.q.map((x, i) => `<i class="${i < cur.qi ? 'd' : i === cur.qi ? 'c' : ''}"></i>`).join('')}</div>`;
+    h += `<section class="scq"><div class="scn">${cur.qi + 1} klausimas iš ${n}</div><p class="scsit">${esc(q.sit)}</p>`;
+    const gp = Object.entries(q.gp || {});
+    if (gp.length) h += '<div class="scgp">' + gp.map(([k, v]) => `<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('') + '</div>';
+    h += `<b class="sck">${esc(q.klaus)}</b>`;
+    h += q.opt.map((o, i) => `<button class="sco${ans ? (o.ok ? ' ok' : i === pk ? ' bad' : ' dim') : ''}" data-act="sc-pick" data-k="${i}"${ans ? ' disabled' : ''}><span class="scl">${ans && o.ok ? '✓' : ans && i === pk ? '✗' : LET[i]}</span><span>${esc(o.t)}</span></button>`).join('');
+    if (ans) {
+      const okk = q.opt[pk] && q.opt[pk].ok;
+      h += `<div class="scfb ${okk ? 'ok' : 'bad'}" id="scfb"><b>${okk ? 'Teisingai.' : 'Neteisingai.'}</b> ${esc(q.why)}</div>`;
+      h += (q.ref || []).map(r => { const l = refLabel(r); return l ? row(r, l[1], l[0]) : ''; }).join('');
+    }
+    h += '</section>';
+    if (ans) h += cur.qi < n - 1 ? '<button class="btn pri" data-act="sc-next">Kitas klausimas ›</button>' : '<button class="btn pri" data-act="sc-fin">Baigti ir pamatyti rezultatą</button>';
+    return h;
+  }
+  const view = (id, q) => id ? play(id) : list(q || {});
+  function act(el) {
+    const d = el.dataset, s = cur && byId(cur.id);
+    switch (d.act) {
+      case 'sc-pick': { if (!s || cur.pick[cur.qi] != null) return; cur.pick[cur.qi] = +d.k; render(); const f = document.getElementById('scfb'); if (f) f.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); if (navigator.vibrate) navigator.vibrate(s.q[cur.qi].opt[+d.k] && s.q[cur.qi].opt[+d.k].ok ? 15 : [30, 40, 30]); return; }
+      case 'sc-next': if (!s) return; cur.qi = Math.min(cur.qi + 1, s.q.length - 1); render(); scrollTo(0, 0); return;
+      case 'sc-fin': {
+        if (!s) return; cur.done = true;
+        const good = s.q.filter((q, i) => q.opt[cur.pick[i]] && q.opt[cur.pick[i]].ok).length, B = best();
+        B[s.id] = Math.max(good, B[s.id] || 0); LS.set(KEY, B); render(); scrollTo(0, 0); return;
+      }
+      case 'sc-again': if (!s) return; cur = { id: s.id, qi: 0, pick: [], done: false }; render(); scrollTo(0, 0); return;
+      case 'sc-rand': {
+        const S = all(), B = best(); if (!S.length) return;
+        const pool = S.filter(x => B[x.id] == null && (!cur || x.id !== cur.id)), P = pool.length ? pool : S.filter(x => !cur || x.id !== cur.id);
+        const pickS = (P.length ? P : S)[Math.floor(Math.random() * (P.length ? P : S).length)];
+        cur = { id: pickS.id, qi: 0, pick: [], done: false };
+        if (location.hash === '#/scenarijai/' + pickS.id) { render(); scrollTo(0, 0); } else location.hash = '#/scenarijai/' + pickS.id;
+        return;
+      }
+    }
+  }
+  return { view, act, status };
+})();

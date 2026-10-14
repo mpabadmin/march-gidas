@@ -48,7 +48,7 @@ const SKILL_TOOLS = {
 };
 // Įrankiai (tools.js): būsena rodoma po pavadinimu
 const toolRows = () => typeof MC === 'undefined' ? '' :
-  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', 'TST rūšiavimas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status());
+  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', 'TST rūšiavimas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status());
 const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="tag grn">CLS</span>';
 
 const V = {
@@ -211,6 +211,7 @@ const V = {
     const S = all.filter(s => !f || (f === 'N' ? !R[s.id] : f === 'CLS' ? s.lygis === 'CLS' : (s.fazes || []).indexOf(f) >= 0));
     const rated = all.filter(s => R[s.id]).length;
     let h = `<h1>Įgūdžiai</h1><p class="muted">${lt(all.length, ['įgūdis', 'įgūdžiai', 'įgūdžių'])} · įsivertinta ${rated}</p>` + progBar(rated, all.length);
+    h += row('#/scenarijai', 'Treniruočių scenarijai', SC.status());
     h += '<div class="tabs">' + F.map(([k, l]) => tabBtn(l, '#/igudziai' + (k ? '?f=' + k : ''), k === f, true)).join('') + '</div>';
     GRUPES.forEach(([g, gp]) => {
       const a = S.filter(s => s.grupe === g);
