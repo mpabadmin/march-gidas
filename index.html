@@ -355,6 +355,42 @@ section.nl .lgr+.inp{margin-top:10px}
 .scres{border-radius:14px;padding:14px;margin:0 0 10px;background:var(--ambbg);color:var(--amb)}.scres.ok{background:var(--grnbg);color:var(--grn)}.scsc{font-size:34px;font-weight:800;line-height:1.1}
 .scsum{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}.scsum b{display:block;font-size:15px}.scsum small{display:block;font-size:13px;color:var(--tx2);margin-top:2px}
 .scm{flex:none;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:#1D9E75}.scm.bad{background:var(--abn,#B42318)}
+/* ── Paciento failas ── */
+.ptbar{display:flex;gap:6px;overflow-x:auto;margin:0 0 12px;padding:2px 0 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ptbar::-webkit-scrollbar{display:none}
+.ptbar button,.ptbar a{flex:none;display:flex;align-items:center;gap:6px;min-height:44px;padding:6px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--tx);font:inherit;font-size:15px;font-weight:700;text-decoration:none;white-space:nowrap;touch-action:manipulation}
+.ptbar button.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.ptbar .add{background:var(--accbg);color:var(--acc);border-color:var(--accbg);font-size:22px;padding:4px 14px}
+.ptbar .ptf{color:var(--acc);font-weight:600;font-size:14px}
+.ptc{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 4px;border-radius:6px;background:var(--c,#666);color:var(--f,#fff);font-size:11px;font-weight:800}
+.pttiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.ptt{display:block;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--tx);text-decoration:none;min-width:0}
+.ptt small{display:block;font-size:12px;color:var(--tx2)}.ptt b{display:block;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.ptev{border-top:1px solid var(--line)}.ptev div{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px;line-height:1.35}.ptev b{flex:none;width:46px;font-variant-numeric:tabular-nums}
+/* ── Priminimai ── */
+.rem{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:14px;margin:0 0 8px;background:var(--card);border:1px solid var(--line);color:var(--tx)}
+.rem>svg{flex:none}.remt{flex:1;min-width:0}.remt b{display:block;font-size:16px;line-height:1.25}.remt small{display:block;font-size:13px;opacity:.9;line-height:1.3}
+.rem-r{background:var(--redbg);border-color:var(--redbg);color:var(--red)}
+.rem-a{background:var(--ambbg);border-color:var(--ambbg);color:var(--amb)}
+.remb{flex:none;min-height:44px;padding:0 10px;border:1px solid currentColor;border-radius:10px;background:none;color:inherit;font:inherit;font-size:14px;font-weight:700}
+.remx{flex:none;width:44px;height:44px;border:0;border-radius:10px;background:rgba(127,127,127,.18);color:inherit;font-size:20px;font-weight:800}
+@media(max-width:360px){.remb{display:none}}
+/* ── QR perdavimas ── */
+.qrbox{width:min(100%,340px);margin:10px auto 4px;padding:10px;background:#fff;border-radius:16px;box-sizing:border-box}
+.qrbox svg{display:block;width:100%;height:auto}.qrbox .muted{color:#555;text-align:center;margin:40px 0}
+.qrn{text-align:center;font-size:14px;color:var(--tx2);margin:0 0 10px;min-height:20px}
+.qrcam{position:relative;height:min(62vh,360px);border-radius:16px;overflow:hidden;background:#000;border:1px solid var(--line)}
+.qrcam video{width:100%;height:100%;object-fit:cover;display:block}
+.qrfr{position:absolute;left:50%;top:46%;width:62%;aspect-ratio:1;transform:translate(-50%,-50%);border:3px solid #9FE1CB;border-radius:16px;box-shadow:0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
+.qrst{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#9FE1CB;font-weight:700;font-size:15px;padding:0 10px;text-shadow:0 1px 3px #000}
+.qrprog{display:flex;gap:4px;margin:10px 0}.qrprog i{flex:1;height:6px;border-radius:3px;background:var(--line)}.qrprog i.d{background:#1D9E75}
+.qrl{margin-top:8px;font-size:14px;line-height:1.5}
+/* ── Balso diktavimas ── */
+.dictw{display:flex;gap:6px;align-items:stretch}.dictw>textarea,.dictw>input{flex:1;min-width:0}
+.dictb{flex:none;width:44px;margin:6px 0;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--tx);display:flex;align-items:center;justify-content:center;padding:0;touch-action:manipulation}
+.dictb.on{background:#B42318;border-color:#B42318;color:#fff;animation:dictp 1.2s ease-in-out infinite}
+@keyframes dictp{50%{opacity:.6}}
+@media(prefers-reduced-motion:reduce){.dictb.on{animation:none}}
 /* ── skaitymo režimas, pranešimai ── */
 #rd{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;overscroll-behavior:contain}
 #rd[hidden]{display:none}

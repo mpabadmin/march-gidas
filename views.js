@@ -72,10 +72,10 @@ const V = {
   homeField() {
     const w = LS.get('mg-svoris', 80);
     const quick = ['paracetamolis', 'ketaminas', 'txa', 'cefadroksilis', 'ceftriaksonas', 'ondansetronas'].map(drugById).filter(v => v && ok(v.lygis));
-    return brand() + disclaimer() +
+    return brand() + disclaimer() + REM.banners() +
       '<h2>Fazė</h2>' + V.phaseTiles(true) +
       '<h2>MEDEVAC</h2>' + V.toolTiles() +
-      '<h2>Laikai</h2><div id="tm">' + timersHtml() + '</div>' +
+      '<h2>Laikai</h2><div id="tm">' + timersHtml() + '</div>' + PT.homeRow() +
       '<h2>Dažniausi vaistai</h2>' + quick.map(v => row('#/vaistas/' + v.id, v.name, doseShort(v, w), tag(v.lygis))).join('') +
       row('#/vaistai', 'Visi vaistai', lt((E.vaistai || []).filter(v => ok(v.lygis)).length, ['vaistas', 'vaistai', 'vaistų']) + ' pagal TCCC 2026') +
       '<h2>Greitai</h2>' +
@@ -88,7 +88,7 @@ const V = {
 
   homeLearn() {
     const S = (E.igudziai || []).filter(s => ok(s.lygis)), R = ratings(), n = S.length, rated = S.filter(s => R[s.id]).length, good = S.filter(s => R[s.id] >= 3).length;
-    return brand() + disclaimer() +
+    return brand() + disclaimer() + REM.banners() +
       '<input type="search" id="q" placeholder="Paieška: vaistas, įgūdis, veiksmas" autocomplete="off" aria-label="Paieška">' +
       (timersMini() ? '<h2>Laikai</h2><div id="tm">' + timersHtml() + '</div>' : '') +
       `<a class="card prog-card" href="#/igudziai"><b>Mano pažanga</b><div class="muted">Įsivertinta: ${rated} iš ${n} · atlieku savarankiškai (3–4): ${good}</div>${progBar(rated, n)}</a>` +
@@ -280,7 +280,7 @@ const V = {
     const b = (act, t, s) => `<button class="row" data-act="${act}"><div>${t}<small>${s}</small></div></button>`;
     let h = '<h1>Nustatymai</h1>';
     h += `<div class="ck${tikCLS() ? ' on' : ''}" data-act="tikcls" role="checkbox" aria-checked="${tikCLS()}" tabindex="0"><span class="bx">✓</span><div class="t">Rodyti tik CLS veiksmus<div class="muted">Paslepia kovos mediko (CMC) ir paramediko (CPP) veiksmus, vaistus ir įgūdžius.</div></div></div>`;
-    h += '<h2>Sužeistasis</h2>' + b('new-pt', 'Naujas sužeistasis', 'Išvalo sąrašų žymėjimus ir laikus (9-Line ir MIST lieka)');
+    h += '<h2>Sužeistasis</h2>' + row('#/pacientas', 'Paciento failas', 'Sužeistųjų sąrašas, įvykių eiga, perdavimas QR') + b('new-pt', 'Naujas sužeistasis', 'Ankstesnis lieka sąraše; laikai ir žymėjimai – naujam') + REM.settings();
     h += '<h2>Atsiliepimai</h2>' + b('fb', 'Pranešti apie klaidą ar pasiūlyti', 'Komentaras ir ekrano vaizdas – keliauja gido rengėjams');
     const nOut = FB.pending();
     if (nOut) h += b('fb-flush', 'Neišsiųsti pranešimai: ' + nOut, 'Siųsti dabar (reikia interneto)');

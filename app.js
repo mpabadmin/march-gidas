@@ -6,7 +6,8 @@ let depth = 0;
 let night = !!LS.get('mg-naktis', false); // naktinis raudonas režimas
 const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
 const newPt = () => '<button class="btn newpt" data-act="new-pt">Naujas sužeistasis – išvalyti žymėjimus ir laikus</button>';
-const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'scenarijai'];
+const PT_BAR = []; // įrankiai, virš kurių rodoma pacientų juosta
+const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'scenarijai', 'pacientas', 'qr', 'qr-priimti'];
 const fbLink = () => '<button class="btn fbrow" data-act="fb">Pastebėjote klaidą ar turite pasiūlymą? Praneškite</button>';
 
 // Visos vietinės iliustracijos (įgūdžiai + mokymosi puslapiai) – išsaugoti naudojimui be interneto
@@ -47,6 +48,8 @@ function view(p, q) {
     case 'sitrep': return SR.view();
     case 'tst': return TS.view();
     case 'scenarijai': return SC.view(p[1], q);
+    case 'pacientas': return PT.view();
+    case 'qr': case 'qr-priimti': return QR.view(p[0]);
     case 'vaistai': return V.drugs();
     case 'vaistas': return V.drug(p[1]);
     case 'igudziai': return V.skills(q);
@@ -70,13 +73,16 @@ function render() {
   document.getElementById('mL').setAttribute('aria-pressed', mode === 'learn');
   backBtn.style.display = p.length ? '' : 'none'; // pradžios ekrane vietoje „Atgal“ – atnaujinimo mygtukas dešinėje
   const ub = document.getElementById('upd'); if (ub) ub.style.display = p.length ? 'none' : '';
-  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', scenarijai: 'igudziai', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
+  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', scenarijai: 'igudziai', pacientas: 'home', qr: 'home', 'qr-priimti': 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
-  try { app.innerHTML = view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : ''); if (p[0] === 'nustatymai') imgStatus(); }
+  try { PT.sync(); } catch (e) { console.error(e); }
+  if (typeof DICT !== 'undefined') DICT.stop();
+  try { app.innerHTML = (PT_BAR.indexOf(p[0]) >= 0 ? PT.bar() : '') + view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : ''); if (p[0] === 'nustatymai') imgStatus(); }
   catch (err) { console.error(err); app.innerHTML = '<h1>Klaida</h1><p class="muted">Nepavyko atidaryti puslapio. Grįžkite į pradžią arba praneškite apie klaidą.</p>' + fbLink(); }
   app.querySelectorAll('.tabs, .ptabs').forEach(sc => { const b = sc.querySelector('button.on'), add = sc.querySelector('.add'); if (b && sc.scrollWidth > sc.clientWidth) { const av = sc.clientWidth - (add ? add.offsetWidth + 12 : 0); sc.scrollLeft = Math.max(0, b.offsetLeft - (av - b.offsetWidth) / 2); } });
   const h1 = app.querySelector('h1');
   document.title = h1 && p.length ? (h1.dataset.title || (h1.childNodes[0] || h1).textContent.trim()) + ' · March gidas' : 'March gidas';
+  try { QR.after(p[0]); DICT.enhance(app); } catch (e) { console.error(e); }
   if (p[0] === 'paieska') { const i = document.getElementById('qs'); if (i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) {} } }
 }
 
@@ -145,6 +151,9 @@ app.addEventListener('click', e => {
   if (/^mc-/.test(d.act)) { MC.act(el, e); return; }
   if (/^sr-/.test(d.act)) { SR.act(el); return; }
   if (/^sc-/.test(d.act)) { SC.act(el); return; }
+  if (/^pt-/.test(d.act)) { PT.act(el); return; }
+  if (/^rem-/.test(d.act)) { REM.act(el); return; }
+  if (/^qr-/.test(d.act)) { QR.act(el); return; }
   if (/^ts-/.test(d.act)) { TS.act(el); return; }
   switch (d.act) {
     case 'ck': {
@@ -209,7 +218,7 @@ app.addEventListener('click', e => {
       if (R[d.id] === v) delete R[d.id]; else R[d.id] = v;
       LS.set('mg-ivert', R); render(); break;
     }
-    case 'new-pt': if (confirm('Naujas sužeistasis: išvalyti sąrašų žymėjimus ir laikus? (9-Line, MIST ir TST skaičiavimas lieka)')) { LS.set('mg-ck', {}); LS.set('mg-laikai', {}); render(); toast('Išvalyta'); } break;
+    case 'new-pt': if (confirm('Pradėti naują sužeistąjį? Dabartinis lieka sąraše (Paciento failas); 9-Line ir TST skaičiavimas – bendri.')) { PT.add(); render(); toast('Naujas sužeistasis'); } break;
     case 'tikcls': { LS.set('mg-tikcls', !tikCLS()); IDX = null; render(); const f = app.querySelector('[data-act=tikcls]'); if (f) f.focus(); toast(tikCLS() ? 'Rodomi tik CLS veiksmai' : 'Rodomi visi veiksmai'); break; }
     case 'reset-ivert': if (confirm('Ištrinti visus įsivertinimus?')) { LS.set('mg-ivert', {}); render(); } break;
     case 'fb': FB.open(); break;
@@ -259,7 +268,8 @@ app.addEventListener('input', e => {
   } else history.replaceState(history.state, '', '#/paieska' + (empty ? '' : '?q=' + encodeURIComponent(v)));
 });
 
-setInterval(() => { if (!tmEdit) updTimers(); }, 30000);
+setInterval(() => { if (!tmEdit) updTimers(); REM.tick(); }, 30000);
+setTimeout(() => REM.tick(), 3000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !tmEdit) updTimers(); });
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEv = e; if (['nustatymai', 'idiegimas', undefined].indexOf(route().p[0]) >= 0) render(); });
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

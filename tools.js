@@ -9,8 +9,9 @@ const TCFG = {
   laikai: 'mg-laikai', // pradžios ekrano laikmačiai { trauma, turn }
   // nuorodos puslapių apačioje: [adresas, pavadinimas, paantraštė]
   nl: () => [['#/mist', 'MIST kortelė', MC.status()], ['#/p/devynios', '9-Line kodai ir skubumo kategorijos', 'Mokymosi medžiaga'], ['#/igudis/32', 'Kaip perduoti 9-Line ir MIST', 'Įgūdis #32'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
-  mc: () => [['#/9line', '9-Line MEDEVAC', NL.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'], ['#/igudis/34', 'Perdavimas ir perėmimas', 'Įgūdis #34'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
+  mc: () => [['#/pacientas', 'Paciento failas', 'Įvykių eiga, perdavimas QR'], ['#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą'], ['#/9line', '9-Line MEDEVAC', NL.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'], ['#/igudis/34', 'Perdavimas ir perėmimas', 'Įgūdis #34'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
   gk: () => [['#/mist', 'MIST kortelė', MC.status()], ['#/igudis/17', 'Šoko atpažinimas: pulsas ir sąmonė (AVPU)', 'Įgūdis #17'], ['#/igudis/22', 'Galvos smegenų trauma', 'Įgūdis #22']],
+  pt: ['laikai', 'ck'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele)
   migrate: o => migrateOldMist(o) // senos MIST formos duomenys (žr. žemiau)
 };
 
@@ -325,8 +326,8 @@ const MC = (() => {
   }
   const save = st => LS.set(KEY, st);
   const curOf = st => st.pts[st.cur];
-  // Pradžios ekrano laikmačiai (sužeidimas, turniketas) taikomi tik pirmajam sužeistajam
-  const timers = st => st.cur === 0 ? LS.get(TCFG.laikai, {}) || {} : {};
+  // Pradžios ekrano laikmačiai (sužeidimas, turniketas) – dabartinio paciento (paciento failas juos perjungia kartu su kortele)
+  const timers = st => LS.get(TCFG.laikai, {}) || {};
   let tool = 'Z', undo = [];
   const snap = s => { undo.push(JSON.stringify(s.mk)); if (undo.length > 30) undo.shift(); };
 
@@ -437,7 +438,6 @@ const MC = (() => {
 
   function view() {
     const st = load(), s = curOf(st), n = st.cur + 1, tot = st.pts.length, learn = mode === 'learn', T = timers(st), F = s.f;
-    const Tall = st.cur === 0 ? T : LS.get(TCFG.laikai, {}) || {};
     let h = '<h1>MIST kortelė</h1>';
     if (learn) h += '<p class="muted">MIST – struktūruotas sužeistojo perdavimas: <b>M</b> – mechanizmas ir laikas, <b>I</b> – sužalojimai, <b>S</b> – požymiai ir jų dinamika, <b>T</b> – suteiktas gydymas. Kortelė pildoma eigoje ir perskaitoma perduodant. Keli sužeistieji – kiekvienam atskira kortelė (skirtukai 1, 2, … ir „+“).</p>';
     h += tabs(st);
@@ -448,7 +448,7 @@ const MC = (() => {
       `<div><span class="lbl0">Lytis</span><div class="chips">${SEX.map(([k, t]) => chip('mc-sex', k, s.sex === k, t)).join('')}</div></div></div>` +
       `<div class="tline"><span>Sužeidimo laikas</span><input type="time" class="inp" data-mc="t0" value="${esc(s.t0)}" aria-label="Sužeidimo laikas">` +
       (T.trauma ? `<button class="btn sm" data-act="mc-t0" data-k="tm">⏱ Laikmatis ${hm(T.trauma)}</button>` : '') + '<button class="btn sm" data-act="mc-now" data-k="t0">Dabar</button></div>' +
-      (st.cur > 0 ? (Tall.trauma || Tall.turn ? '<p class="muted mt0">Pradžios ekrano laikmačiai taikomi tik pirmajam sužeistajam.</p>' : '') : T.trauma ? '' : '<p class="muted mt0">Traumos laikmatis nenustatytas (Pradžia → Laikai).</p>') + '</div>';
+      (T.trauma ? '' : '<p class="muted mt0">Traumos laikmatis nenustatytas (Pradžia → Laikai).</p>') + '</div>';
     // M
     h += '<section class="mcs sM">' + secHead('M', 'Mechanizmas', 'galima keli') +
       '<div class="opts">' + MECH.map(m => chip('mc-mech', m, s.mech.indexOf(m) >= 0, esc(m))).join('') + '</div>' +
@@ -635,7 +635,8 @@ const MC = (() => {
   }
   // Dabartinis sužeistasis: { n, tot }
   const current = () => { const st = load(); return { n: st.cur + 1, tot: st.pts.length }; };
-  return { view, act, onInput, status, text, addGcs, current, region };
+  // Paciento failui: visa būsena ir dabartinės kortelės tekstas
+  return { view, act, onInput, status, text, addGcs, current, region, state: load, curText: () => curText(load()) };
 })();
 
 // ───────── GKS (Glasgow) skaičiuoklė – GCS at 40 ─────────
@@ -1072,4 +1073,386 @@ const SC = (() => {
     }
   }
   return { view, act, status };
+})();
+
+// ───────── Paciento failas (PT) – kodas vienodas ETC ir March giduose ─────────
+// Pacientų sąrašas = MIST kortelės (kiekviena turi pid). Kitų įrankių duomenys (TCFG.pt raktai) laikomi įprastuose raktuose
+// dabartiniam pacientui; perjungus pacientą jie išsaugomi į pre+'pt'.data[pid], o naujojo – įkeliami.
+const PT = (() => {
+  const KEY = TCFG.pre + 'pt', MK = TCFG.pre + 'mist';
+  const keys = () => (TCFG.pt || ['laikai']).map(k => TCFG.pre + k);
+  const nid = () => 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const del = k => { try { localStorage.removeItem(k); } catch (e) {} };
+  function store() {
+    const s = LS.get(KEY, null), o = s && typeof s === 'object' && !Array.isArray(s) ? s : {};
+    const obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+    return { cur: typeof o.cur === 'string' ? o.cur : '', data: obj(o.data), dis: obj(o.dis) };
+  }
+  function sync() {
+    let st; try { st = MC.state(); } catch (e) { return; }
+    let ch = false; const seen = {};
+    st.pts.forEach(p => { if (!p.pid || typeof p.pid !== 'string' || seen[p.pid]) { p.pid = nid(); ch = true; } seen[p.pid] = 1; });
+    if (ch) LS.set(MK, st);
+    const s = store(), pid = st.pts[st.cur].pid, alive = st.pts.map(p => p.pid);
+    let sch = false;
+    if (s.cur !== pid) {
+      if (s.cur) {
+        if (alive.indexOf(s.cur) >= 0) { const d = {}; keys().forEach(k => { d[k] = LS.get(k, null); }); s.data[s.cur] = d; }
+        const n = s.data[pid] || {}; keys().forEach(k => { if (n[k] == null) del(k); else LS.set(k, n[k]); });
+      }
+      s.cur = pid; sch = true;
+    }
+    Object.keys(s.data).forEach(k => { if (alive.indexOf(k) < 0 || k === pid) { delete s.data[k]; sch = true; } });
+    Object.keys(s.dis).forEach(k => { if (alive.indexOf(k.split(':')[1]) < 0) { delete s.dis[k]; sch = true; } });
+    if (sch) LS.set(KEY, s);
+  }
+  const get = (pid, k) => { const s = store(); return pid === s.cur ? LS.get(TCFG.pre + k, null) : ((s.data[pid] || {})[TCFG.pre + k] ?? null); };
+  function list() {
+    let st; try { st = MC.state(); } catch (e) { return { cur: 0, pts: [] }; }
+    const raw = typeof MS !== 'undefined' ? LS.get(TCFG.pre + 'mascal', null) : null, ms = raw && Array.isArray(raw.c) ? raw.c : [];
+    return { cur: st.cur, pts: st.pts.map((p, i) => { const m = ms.find(x => x && x.pid && x.pid === p.pid); return { i, pid: p.pid, card: p, label: String(p.id || '').trim() || 'Sužeistasis ' + (i + 1), cat: m ? m.k : '' }; }) };
+  }
+  function select(i) { const st = MC.state(); if (!(i >= 0 && i < st.pts.length)) return false; st.cur = i; LS.set(MK, st); sync(); return true; }
+  function selectPid(pid) { const st = MC.state(), i = st.pts.findIndex(p => p.pid === pid); return i >= 0 && select(i); }
+  function add(card) { sync(); const st = MC.state(), pid = nid(); st.pts.push(Object.assign({}, card || {}, { pid })); st.cur = st.pts.length - 1; LS.set(MK, st); sync(); return pid; }
+  function dismiss(k) { const s = store(); s.dis[k] = 1; LS.set(KEY, s); }
+  const dismissed = () => store().dis;
+  const hmTs = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || '').trim()); if (!m) return 0; const d = new Date(); d.setHours(+m[1], +m[2], 0, 0); if (d.getTime() > Date.now() + 5 * 60000) d.setDate(d.getDate() - 1); return d.getTime(); };
+  const CATC = { T1: 'msT1', T2: 'msT2', T3: 'msT3', T4: 'msT4', X: 'msX' };
+  const chipLbl = p => (p.cat ? `<span class="ptc ${CATC[p.cat] || ''}">${p.cat === 'X' ? '✝' : p.cat}</span>` : '') + '#' + (p.i + 1) + (p.card.id ? ' ' + esc(String(p.card.id).slice(0, 14)) : '');
+  function bar() {
+    sync(); const L = list(); if (!L.pts.length) return '';
+    return '<div class="ptbar" role="tablist" aria-label="Pacientai">' + L.pts.map(p => `<button role="tab" aria-selected="${p.i === L.cur}" class="${p.i === L.cur ? 'on' : ''}" data-act="pt-sel" data-k="${p.i}">${chipLbl(p)}</button>`).join('') +
+      '<button class="add" data-act="pt-new" aria-label="Naujas pacientas">+</button><a class="ptf" href="#/pacientas" aria-label="Paciento failas">Failas ›</a></div>';
+  }
+  // Pradžios ekranui: kuris pacientas dabartinis
+  function homeRow() {
+    const L = list(), p = L.pts[L.cur]; if (!p) return '';
+    const n = events(p.pid).length;
+    return row('#/pacientas', 'Paciento failas: ' + p.label + (L.pts.length > 1 ? ' (#' + (p.i + 1) + ' iš ' + L.pts.length + ')' : ''), n ? plural(n, ['įvykis', 'įvykiai', 'įvykių']) + ' · perduoti, QR' : 'Visi įrankiai – šiam pacientui');
+  }
+  function events(pid) {
+    const L = list(), p = L.pts.find(x => x.pid === pid); if (!p) return [];
+    const c = p.card, ev = [], put = (t, x) => { if (t && x) ev.push([t, x]); };
+    const la = get(pid, 'laikai') || {};
+    put(+la.trauma || hmTs(c.t0), 'Sužeidimas' + ((c.mech || []).length ? ' – ' + c.mech.join(', ').toLowerCase() : ''));
+    put(+la.turn || hmTs(c.tqT), 'Turniketas');
+    const z = get(pid, 'vz'), ze = z && Array.isArray(z.e) ? z.e : [];
+    if (c.txaT && !ze.some(e => e && e.v === 'txa')) put(hmTs(c.txaT), 'TXA');
+    (c.vit || []).forEach(v => put(hmTs(v.ts), [v.av && 'AVPU ' + v.av, v.hr && 'ŠSD ' + v.hr, v.rr && 'KD ' + v.rr, v.bp && 'AKS ' + v.bp, v.spo2 && 'SpO₂ ' + v.spo2 + ' %', v.gcs && 'GKS ' + v.gcs, v.pain && 'skausmas ' + v.pain + '/10'].filter(Boolean).join(' · ')));
+    if (typeof VZ !== 'undefined') ze.forEach(e => { if (e && +e.t && e.v) put(+e.t, VZ.desc(Object.assign({ a: '', u: '', r: '', n: '' }, e))); });
+    const w = get(pid, 'wbb');
+    if (w && typeof w === 'object') { put(+w.t1, 'Šviežias kraujas – paėmimas'); put(+w.t2, 'Šviežias kraujas – perpylimas' + (w.don || w.donG ? ' (donoras ' + [w.don, w.donG].filter(Boolean).join(' ') + ')' : '')); }
+    return ev.sort((a, b) => a[0] - b[0]);
+  }
+  function text() {
+    sync(); const L = list(), p = L.pts[L.cur]; if (!p) return '';
+    const out = [MC.curText()];
+    if (typeof VZ !== 'undefined' && VZ.get().e.length) out.push(VZ.text(VZ.get()));
+    if (typeof NB !== 'undefined' && NB.total()) out.push('NUDEGIMAI: ' + NB.status());
+    const w = LS.get(TCFG.pre + 'wbb', null);
+    if (w && (w.t1 || w.t2 || w.don)) out.push('ŠVIEŽIAS KRAUJAS: ' + [w.don || w.donG ? 'donoras ' + [w.don, w.donG].filter(Boolean).join(' ') : '', w.t1 ? 'paėmimas ' + hm(w.t1) : '', w.t2 ? 'perpylimas nuo ' + hm(w.t2) : ''].filter(Boolean).join(', '));
+    return out.join('\n\n');
+  }
+  function view() {
+    sync(); const L = list(), p = L.pts[L.cur]; if (!p) return notFound();
+    const la = LS.get(TCFG.laikai, {}) || {}, ev = events(p.pid);
+    let h = bar().replace(/<a class="ptf"[^>]*>[^<]*<\/a>/, '') + `<h1>${esc(p.label)}</h1><p class="muted">Pacientas #${p.i + 1}${la.trauma ? ' · sužeistas ' + hm(la.trauma) + ' (prieš ' + Math.max(0, Math.round((Date.now() - la.trauma) / 60000)) + ' min)' : ''}${p.cat ? ' · ' + p.cat : ''}</p>`;
+    h += typeof REM !== 'undefined' ? REM.banners(p.pid) : '';
+    const tile = (r, t, s) => `<a class="ptt" href="${r}"><small>${esc(t)}</small><b>${esc(s)}</b></a>`;
+    h += '<div class="pttiles">' + tile('#/mist', 'MIST', MC.status()) +
+      (typeof VZ !== 'undefined' ? tile('#/zymejimas', 'Vaistai', VZ.status()) : tile('#/9line', '9-Line', NL.status())) +
+      (typeof NB !== 'undefined' ? tile('#/nudegimai', 'Nudegimai', NB.status()) : '') +
+      (typeof KR !== 'undefined' ? tile('#/pilnas-kraujas', 'Šviežias kraujas', KR.status()) : '') + '</div>';
+    h += '<h2>Įvykių eiga</h2>' + (ev.length ? '<div class="ptev">' + ev.map(([t, x]) => `<div><b>${hm(t)}</b><span>${esc(x)}</span></div>`).join('') + '</div>' : '<p class="muted">Įvykių dar nėra: pažymėkite laikus (Pradžia → Laikai), MIST požymius' + (typeof VZ !== 'undefined' ? ', suleistus vaistus' : '') + '.</p>');
+    h += '<div class="acts"><button class="btn pri" data-act="go" data-r="#/qr">Perduoti QR kodu</button><button class="btn" data-act="pt-read">Skaityti perduodant</button><button class="btn" data-act="pt-copy">Kopijuoti viską</button></div>';
+    h += row('#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą') + row('#/mist', 'MIST kortelė', 'Sužeistųjų tvarkymas, šalinimas');
+    if (mode === 'learn') h += '<p class="muted">Viršuje – pacientų juosta: pasirinktas pacientas galioja visiems įrankiams (MIST, laikai, sąrašų žymėjimai' + (typeof VZ !== 'undefined' ? ', vaistai, nudegimai, šviežias kraujas' : '') + '). „+“ – naujas pacientas, ankstesni lieka sąraše.</p>';
+    return h;
+  }
+  function act(el) {
+    const d = el.dataset, y = scrollY;
+    switch (d.act) {
+      case 'pt-sel': if (select(+d.k)) { render(); scrollTo(0, y); } return;
+      case 'pt-new': { add(); const L = list(); toast('Naujas pacientas #' + (L.cur + 1)); render(); scrollTo(0, 0); return; }
+      case 'pt-copy': return copyText(text());
+      case 'pt-read': return readMode('Paciento perdavimas', text().split('\n').filter(x => x.trim()).map(x => esc(x)));
+    }
+  }
+  return { sync, get, list, select, selectPid, add, bar, homeRow, events, text, view, act, dismiss, dismissed, hmTs };
+})();
+
+// ───────── Priminimai (REM): turniketo peržiūra, TXA riba, kartotinės dozės, gyvybės požymiai ─────────
+const REM = (() => {
+  const VK = TCFG.pre + 'remvit', NK = TCFG.pre + 'rem-n';
+  const mm = ms => Math.round(ms / 60000);
+  const dur = m => m >= 60 ? Math.floor(m / 60) + ' val. ' + String(m % 60).padStart(2, '0') + ' min' : m + ' min';
+  const LV = { r: 0, a: 1, i: 2 };
+  function items(only) {
+    const L = PT.list(), now = Date.now(), dis = PT.dismissed(), out = [], vitN = +LS.get(VK, 0) || 0;
+    L.pts.forEach(p => {
+      if (only && p.pid !== only) return;
+      const c = p.card, la = PT.get(p.pid, 'laikai') || {}, who = L.pts.length > 1 && !only ? p.label + ' · ' : '';
+      const push = (key, lvl, title, sub, go) => { if (!dis[key]) out.push({ key, lvl, title, sub: who + sub, go, pid: p.pid }); };
+      const tq = +la.turn || 0;
+      if (tq) { const left = mm(tq + 2 * 3600e3 - now); if (left <= 15) push('tq:' + p.pid + ':' + tq, left <= 0 ? 'r' : 'a', 'Turniketas – peržiūra', 'uždėtas ' + hm(tq) + ' · ' + (left <= 0 ? 'prieš ' + dur(mm(now - tq)) : 'liko ' + left + ' min'), '#/mist'); }
+      const z = PT.get(p.pid, 'vz'), ze = z && Array.isArray(z.e) ? z.e : [];
+      const txa = (c.tx || []).indexOf('txa') >= 0 || !!c.txaT || ze.some(e => e && e.v === 'txa'), tr = +la.trauma || 0;
+      if (tr && !txa) { const left = mm(tr + 3 * 3600e3 - now); if (left <= 60 && left > -60) push('txa:' + p.pid + ':' + tr, left <= 0 ? 'r' : 'a', left <= 0 ? 'TXA – 3 val. riba praėjo' : 'TXA – iki 3 val. ribos', 'sužeistas ' + hm(tr) + (left > 0 ? ' · liko ' + dur(left) : ''), typeof VZ !== 'undefined' ? '#/zymejimas' : '#/vaistas/txa'); }
+      if (typeof VZ !== 'undefined') {
+        const last = {}; ze.forEach(e => { if (e && e.v && +e.t && (!last[e.v] || +e.t > +last[e.v].t)) last[e.v] = e; });
+        Object.keys(last).forEach(id => { const e = last[id], iv = VZ.interval(e.v, e.r); if (!iv || now - e.t > 24 * 3600e3 || now < +e.t + iv * 60000) return;
+          push('rx:' + p.pid + ':' + e.v + ':' + e.t, 'a', VZ.name(e.v).replace(/ \(.*\)$/, '') + ' – galima kartoti', 'paskutinė ' + hm(+e.t) + ' (prieš ' + dur(mm(now - e.t)) + ') · kas ' + (iv >= 60 ? iv / 60 + ' val.' : iv + ' min'), '#/zymejimas'); });
+      }
+      if (vitN) { const vs = (c.vit || []).map(v => PT.hmTs(v.ts)).filter(Boolean), lt = vs.length ? Math.max(...vs) : 0;
+        if (lt && now - lt >= vitN * 60000) push('vit:' + p.pid + ':' + lt, 'i', 'Gyvybės požymiai – pakartoti', 'paskutiniai ' + hm(lt) + ' (prieš ' + dur(mm(now - lt)) + ')', '#/mist'); }
+    });
+    return out.sort((a, b) => LV[a.lvl] - LV[b.lvl]);
+  }
+  const CLOCK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>';
+  function banners(only) {
+    let it; try { it = items(only); } catch (e) { return ''; }
+    return it.map(x => `<div class="rem rem-${x.lvl}" role="status">${CLOCK}<div class="remt"><b>${esc(x.title)}</b><small>${esc(x.sub)}</small></div><button class="remb" data-act="rem-go" data-k="${esc(x.pid)}" data-r="${esc(x.go)}">Atidaryti</button><button class="remx" data-act="rem-x" data-k="${esc(x.key)}" aria-label="Atlikta – paslėpti">✓</button></div>`).join('');
+  }
+  function settings() {
+    const v = +LS.get(VK, 0) || 0;
+    return '<h2>Priminimai</h2><p class="muted">Turniketo peržiūra (2 val.), TXA riba (3 val. nuo sužeidimo)' + (typeof VZ !== 'undefined' ? ' ir kartotinės dozės pagal gidą' : '') + ' primenamos visada. Gyvybės požymių pakartojimas:</p>' +
+      '<div class="seg2">' + [[0, 'Išjungta'], [5, '5 min'], [15, '15 min'], [30, '30 min']].map(([k, t]) => `<button class="${v === k ? 'on' : ''}" data-act="rem-vit" data-k="${k}" aria-pressed="${v === k}">${t}</button>`).join('') + '</div>' +
+      '<p class="muted">Priminimas – juosta pradžios ekrane ir paciento faile, vibracija. Veikia, kol programėlė atidaryta' + (/iPhone|iPad/.test(navigator.userAgent) ? ' (iPhone – tik atidarius)' : ' ar veikia fone') + '.</p>';
+  }
+  function act(el) {
+    const d = el.dataset;
+    switch (d.act) {
+      case 'rem-x': PT.dismiss(d.k); { const y = scrollY; render(); scrollTo(0, y); } return;
+      case 'rem-go': PT.selectPid(d.k); if (location.hash === d.r) render(); else location.hash = d.r; return;
+      case 'rem-vit': LS.set(VK, +d.k || 0); { const y = scrollY; render(); scrollTo(0, y); } return;
+    }
+  }
+  function tick() {
+    let due; try { due = items(); } catch (e) { return; }
+    const seen = LS.get(NK, []) || [], nk = x => x.key + ':' + x.lvl; // pasikeitus lygiui (liko 15 min → laikas) – primenama dar kartą
+    const fresh = due.filter(x => seen.indexOf(nk(x)) < 0);
+    try { if (navigator.setAppBadge) { if (due.length) navigator.setAppBadge(due.length); else navigator.clearAppBadge(); } } catch (e) {}
+    if (!fresh.length) return;
+    LS.set(NK, seen.concat(fresh.map(nk)).slice(-200));
+    if (navigator.vibrate) navigator.vibrate([250, 120, 250]);
+    toast('⏰ ' + fresh[0].title);
+    const r = route().p[0], ae = document.activeElement;
+    if ((r === undefined || r === 'pacientas') && !(ae && /INPUT|TEXTAREA/.test(ae.tagName)) && !tmEdit) { const y = scrollY; render(); scrollTo(0, y); }
+  }
+  return { items, banners, settings, act, tick };
+})();
+
+// ───────── Perdavimas QR kodu (QR): siųsti ir priimti be interneto ─────────
+const QR = (() => {
+  const APP = TCFG.pre === 'etc-' ? 'etc' : 'march', CH = 260, PRE = 'EG1';
+  let sel = null, frames = [], fi = 0, tmr = 0, wl = null, stream = null, loop = 0, rx = null, got = null, err = '', busy = false;
+  const PARTS = () => [['m', 'MIST ir laikai']].concat(typeof VZ !== 'undefined' ? [['z', 'Vaistai']] : [], typeof NB !== 'undefined' ? [['n', 'Nudegimai']] : [], typeof KR !== 'undefined' ? [['w', 'Šviežias kraujas']] : [], [['9', '9-Line']]);
+  const has = k => {
+    if (k === 'm') return true;
+    if (k === 'z') return typeof VZ !== 'undefined' && VZ.get().e.length > 0;
+    if (k === 'n') return typeof NB !== 'undefined' && NB.total() > 0;
+    if (k === 'w') { const w = LS.get(TCFG.pre + 'wbb', null); return !!(w && (w.t1 || w.t2 || w.don || (w.ck && Object.keys(w.ck).length))); }
+    return false;
+  };
+  function payload() {
+    PT.sync(); const st = MC.state(), c = Object.assign({}, st.pts[st.cur]); delete c.pid;
+    const L = PT.list(), me = L.pts[L.cur], o = { v: 1, a: APP, t: Date.now() };
+    if (sel.m) { o.m = c; const la = LS.get(TCFG.laikai, null); if (la && (la.trauma || la.turn)) o.lk = { trauma: +la.trauma || 0, turn: +la.turn || 0 }; if (me && me.cat) o.c = me.cat; }
+    if (sel.z && typeof VZ !== 'undefined') o.z = VZ.get().e.map(e => ({ id: e.id, t: e.t, v: e.v, a: e.a, u: e.u, r: e.r, n: e.n }));
+    if (sel.n) o.n = LS.get(TCFG.pre + 'nb', null);
+    if (sel.w) o.w = LS.get(TCFG.pre + 'wbb', null);
+    if (sel['9']) o['9'] = LS.get(TCFG.pre + '9line', null);
+    return o;
+  }
+  const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+  const unb64 = s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; };
+  async function pipe(u8, T) { const r = new Response(new Blob([u8]).stream().pipeThrough(new T('deflate-raw'))); return new Uint8Array(await r.arrayBuffer()); }
+  async function encode(o) {
+    const raw = new TextEncoder().encode(JSON.stringify(o));
+    let flag = 'j', data = raw;
+    if (typeof CompressionStream !== 'undefined') { try { data = await pipe(raw, CompressionStream); flag = 'z'; } catch (e) { data = raw; flag = 'j'; } }
+    const s = b64(data), n = Math.max(1, Math.ceil(s.length / CH)), id = flag + Math.random().toString(36).slice(2, 5);
+    return Array.from({ length: n }, (x, i) => `${PRE}:${id}:${i + 1}/${n}:${s.slice(i * CH, (i + 1) * CH)}`);
+  }
+  async function decode(id, s) {
+    let u8 = unb64(s);
+    if (id[0] === 'z') { if (typeof DecompressionStream === 'undefined') throw new Error('Šis telefonas negali išskleisti duomenų – atnaujinkite naršyklę'); u8 = await pipe(u8, DecompressionStream); }
+    if (u8.length > 200000) throw new Error('Per daug duomenų');
+    const o = JSON.parse(new TextDecoder().decode(u8));
+    if (!o || o.v !== 1 || typeof o !== 'object') throw new Error('Netinkamas kodas');
+    return o;
+  }
+  function svg(str) {
+    if (typeof qrcode === 'undefined') return '<p class="muted">QR biblioteka neįkelta.</p>';
+    const q = qrcode(0, 'M'); q.addData(str, 'Byte'); q.make();
+    return q.createSvgTag({ cellSize: 4, margin: 3, scalable: true });
+  }
+  function loadLib(src, test) { return new Promise((res, rej) => { if (test()) return res(); const s = document.createElement('script'); s.src = src; s.onload = () => res(); s.onerror = () => rej(new Error('Nepavyko įkelti ' + src)); document.head.appendChild(s); }); }
+  function stopAll() {
+    clearInterval(tmr); tmr = 0; clearInterval(loop); loop = 0;
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    if (wl) { try { wl.release(); } catch (e) {} wl = null; }
+  }
+  // ── siųsti ──
+  function sendView() {
+    PT.sync(); const L = PT.list(), p = L.pts[L.cur];
+    if (!sel) { sel = {}; PARTS().forEach(([k]) => { sel[k] = has(k); }); }
+    let h = PT.bar().replace(/<a class="ptf"[^>]*>[^<]*<\/a>/, '') + '<h1>Perduoti QR kodu</h1>';
+    h += `<p class="muted">${esc(p ? p.label : '')}${p && p.cat ? ' · ' + p.cat : ''} · be interneto</p>`;
+    h += '<div class="opts">' + PARTS().map(([k, t]) => chip('qr-p', k, !!sel[k], (sel[k] ? '✓ ' : '') + esc(t)) + '').join('') + '</div>';
+    h += '<div class="qrbox" id="qrbox" aria-label="QR kodas"><p class="muted">Ruošiama…</p></div><div class="qrn" id="qrn"></div>';
+    h += '<section class="krc"><b>Kaip priimti</b><p class="muted" style="margin:4px 0 0">Kitame telefone atidarykite ETC ar March gidą → Paciento failas → <b>Priimti pacientą QR kodu</b> ir nukreipkite kamerą. Jei kodų keli – jie keičiasi patys, laikykite kamerą, kol bus nuskaityti visi. Padidinkite šio ekrano ryškumą.</p></section>';
+    h += '<div class="acts"><button class="btn" data-act="pt-read">Skaityti vietoje</button><button class="btn" data-act="pt-copy">Kopijuoti tekstą</button></div>';
+    h += '<p class="muted">Kode – tik tai, kas pažymėta. Vardo, pavardės ar asmens kodo nėra – tik šaukinys / ID, jei įrašytas.</p>';
+    return h;
+  }
+  async function startSend() {
+    const box = document.getElementById('qrbox'); if (!box) return;
+    try {
+      await loadLib('vendor/qrcode.min.js', () => typeof qrcode !== 'undefined');
+      frames = await encode(payload()); fi = 0;
+      const show = () => { const b = document.getElementById('qrbox'), n = document.getElementById('qrn'); if (!b || route().p[0] !== 'qr') { stopAll(); return; } b.innerHTML = svg(frames[fi]); if (n) n.textContent = frames.length > 1 ? 'Kodas ' + (fi + 1) + ' iš ' + frames.length + ' – keičiasi automatiškai' : '1 kodas'; fi = (fi + 1) % frames.length; };
+      show(); clearInterval(tmr); if (frames.length > 1) tmr = setInterval(show, 900);
+      try { if (navigator.wakeLock) wl = await navigator.wakeLock.request('screen'); } catch (e) {}
+    } catch (e) { box.innerHTML = '<p class="muted">Nepavyko sukurti kodo: ' + esc(e.message || e) + '</p>'; }
+  }
+  // ── priimti ──
+  function recvView() {
+    let h = '<h1>Priimti QR kodą</h1>';
+    if (got) {
+      const o = got, m = o.m || {}, lines = [];
+      if (o.m) lines.push('MIST: ' + [(m.mech || []).join(', '), (m.mk || []).length ? (m.mk.length) + ' žymės' : '', (m.vit || []).length ? m.vit.length + ' matav.' : '', (m.tx || []).length ? m.tx.length + ' gydymo veiksmai' : ''].filter(Boolean).join(' · '));
+      if (o.lk && o.lk.trauma) lines.push('Sužeistas ' + hm(o.lk.trauma) + (o.lk.turn ? ' · turniketas ' + hm(o.lk.turn) : ''));
+      if (Array.isArray(o.z) && o.z.length) lines.push('Vaistai: ' + o.z.slice(0, 4).map(e => { const v = (E.vaistai || []).find(x => x.id === e.v); return (v ? v.name.replace(/ \(.*\)$/, '') : e.v) + ' ' + [e.a, e.u].filter(Boolean).join(' ') + ' ' + hm(+e.t); }).join(' · ') + (o.z.length > 4 ? ' …' : ''));
+      if (o.n && o.n.r) lines.push('Nudegimai: pažymėta');
+      if (o.w && (o.w.t1 || o.w.t2)) lines.push('Šviežias kraujas' + (o.w.t2 ? ' – perpylimas ' + hm(o.w.t2) : ''));
+      if (o['9']) lines.push('9-Line forma');
+      h += `<section class="krc"><b style="font-size:17px">Gauta: ${esc(m.id || 'be ID')}${o.c ? ' · ' + esc(o.c) : ''}</b><p class="muted" style="margin:4px 0 0">Iš ${o.a === 'march' ? 'March' : 'ETC'} gido · ${hm(+o.t || Date.now())}</p><div class="qrl">${lines.map(x => '<div>' + esc(x) + '</div>').join('')}</div></section>`;
+      h += '<button class="btn pri" data-act="qr-new">Įrašyti kaip naują pacientą</button><div class="acts"><button class="btn" data-act="qr-merge">Papildyti dabartinį</button><button class="btn" data-act="qr-cancel">Atmesti</button></div>';
+      return h;
+    }
+    h += '<div class="qrcam"><video id="qrv" playsinline muted></video><div class="qrfr"></div><div class="qrst" id="qrst">' + (err ? esc(err) : 'Įjungiama kamera…') + '</div></div>';
+    h += '<div class="qrprog" id="qrprog"></div>';
+    h += '<p class="muted">Nukreipkite kamerą į kito telefono QR kodą. Kamera naudojama tik nuskaitymui, vaizdas nesaugomas.</p>';
+    return h;
+  }
+  function onText(t) {
+    const m = /^EG1:([a-z0-9]{4}):(\d+)\/(\d+):([A-Za-z0-9_-]*)$/.exec(t || ''); if (!m) return;
+    const [, id, k, n] = m, part = m[4];
+    if (!rx || rx.id !== id) rx = { id, n: +n, p: {} };
+    if (+n !== rx.n || +k < 1 || +k > rx.n) return;
+    rx.p[k] = part;
+    const cnt = Object.keys(rx.p).length, pr = document.getElementById('qrprog'), st = document.getElementById('qrst');
+    if (pr) pr.innerHTML = Array.from({ length: rx.n }, (x, i) => `<i class="${rx.p[i + 1] ? 'd' : ''}"></i>`).join('');
+    if (st) st.textContent = rx.n > 1 ? 'Nuskaityta ' + cnt + ' iš ' + rx.n + ' kodų…' : 'Nuskaityta';
+    if (cnt === rx.n && !busy) {
+      busy = true; const s = Array.from({ length: rx.n }, (x, i) => rx.p[i + 1]).join('');
+      stopAll(); if (navigator.vibrate) navigator.vibrate(60);
+      decode(rx.id, s).then(o => { got = o; rx = null; busy = false; render(); }).catch(e => { err = e.message || 'Klaida'; rx = null; busy = false; render(); });
+    }
+  }
+  async function startRecv() {
+    const v = document.getElementById('qrv'); if (!v || got || stream) return;
+    const st = document.getElementById('qrst');
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('Šioje naršyklėje kamera nepasiekiama');
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+      if (route().p[0] !== 'qr-priimti') { stopAll(); return; }
+      v.srcObject = stream; await v.play(); if (st) st.textContent = err ? err : 'Ieškoma kodo…'; err = '';
+      let det = null;
+      if ('BarcodeDetector' in window) { try { const f = await BarcodeDetector.getSupportedFormats(); if (f.indexOf('qr_code') >= 0) det = new BarcodeDetector({ formats: ['qr_code'] }); } catch (e) {} }
+      if (!det) await loadLib('vendor/jsqr.min.js', () => typeof jsQR !== 'undefined');
+      const cv = document.createElement('canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
+      let run = false;
+      loop = setInterval(async () => {
+        if (run || !stream || v.readyState < 2) return; run = true;
+        try {
+          if (det) { const r = await det.detect(v); r.forEach(x => onText(x.rawValue)); }
+          else { const w = Math.min(720, v.videoWidth), hh = Math.round(v.videoHeight * w / v.videoWidth); cv.width = w; cv.height = hh; cx.drawImage(v, 0, 0, w, hh); const im = cx.getImageData(0, 0, w, hh), r = jsQR(im.data, w, hh, { inversionAttempts: 'dontInvert' }); if (r) onText(r.data); }
+        } catch (e) {}
+        run = false;
+      }, 180);
+    } catch (e) {
+      stopAll();
+      const msg = e && e.name === 'NotAllowedError' ? 'Kamera neleidžiama – leiskite naršyklės nustatymuose' : (e && e.message) || 'Kamera nepasiekiama';
+      if (st) st.textContent = msg;
+    }
+  }
+  function cleanCard(m) { const c = Object.assign({}, m && typeof m === 'object' && !Array.isArray(m) ? m : {}); delete c.pid; return c; }
+  function zText(z) { return (z || []).map(e => { const v = (E.vaistai || []).find(x => x.id === e.v); return [(v ? v.name.replace(/ \(.*\)$/, '') : e.v), e.a, e.u, e.r, hm(+e.t)].filter(Boolean).join(' '); }).join('; '); }
+  function importNew(o) {
+    const c = cleanCard(o.m);
+    if (typeof VZ === 'undefined' && Array.isArray(o.z) && o.z.length) c.txTxt = [String(c.txTxt || '').trim(), 'Vaistai: ' + zText(o.z)].filter(Boolean).join('; ');
+    PT.add(c);
+    if (o.lk && typeof o.lk === 'object') { const la = {}; if (+o.lk.trauma) la.trauma = +o.lk.trauma; if (+o.lk.turn) la.turn = +o.lk.turn; LS.set(TCFG.laikai, la); }
+    if (typeof VZ !== 'undefined' && Array.isArray(o.z)) LS.set(TCFG.pre + 'vz', { e: o.z });
+    if (typeof NB !== 'undefined' && o.n && typeof o.n === 'object') LS.set(TCFG.pre + 'nb', o.n);
+    if (typeof KR !== 'undefined' && o.w && typeof o.w === 'object') LS.set(TCFG.pre + 'wbb', o.w);
+    if (o['9'] && typeof o['9'] === 'object' && confirm('Kode yra ir 9-Line forma. Perrašyti savo 9-Line formą gautais duomenimis?')) LS.set(TCFG.pre + '9line', o['9']);
+    if (o.c && typeof MS !== 'undefined') MS.link(PT.list().pts[PT.list().cur].pid, o.c, c.id);
+  }
+  function merge(o) {
+    PT.sync(); const st = MC.state(), c = st.pts[st.cur], m = cleanCard(o.m);
+    ['id', 'sex', 't0', 'mechTxt', 'injTxt', 'tqT', 'txaT'].forEach(k => { if (!c[k] && m[k]) c[k] = String(m[k]); });
+    let tt = String(m.txTxt || ''); if (typeof VZ === 'undefined' && Array.isArray(o.z) && o.z.length) tt = [tt, 'Vaistai: ' + zText(o.z)].filter(Boolean).join('; ');
+    if (tt && String(c.txTxt || '').indexOf(tt) < 0) c.txTxt = [String(c.txTxt || '').trim(), tt].filter(Boolean).join('; ');
+    const uni = (a, b) => a.concat((Array.isArray(b) ? b : []).filter(x => typeof x === 'string' && a.indexOf(x) < 0));
+    c.mech = uni(c.mech, m.mech); c.tx = uni(c.tx, m.tx);
+    const k1 = x => [x.t, x.s, Math.round(x.x), Math.round(x.y)].join('|'), k2 = x => JSON.stringify(x);
+    c.mk = c.mk.concat((Array.isArray(m.mk) ? m.mk : []).filter(x => x && !c.mk.some(y => k1(y) === k1(x))));
+    c.vit = c.vit.concat((Array.isArray(m.vit) ? m.vit : []).filter(x => x && !c.vit.some(y => k2(y) === k2(x))));
+    LS.set(TCFG.pre + 'mist', st);
+    const la = LS.get(TCFG.laikai, {}) || {}; if (o.lk) { if (!la.trauma && +o.lk.trauma) la.trauma = +o.lk.trauma; if (!la.turn && +o.lk.turn) la.turn = +o.lk.turn; } LS.set(TCFG.laikai, la);
+    if (typeof VZ !== 'undefined' && Array.isArray(o.z)) { const cur = VZ.get().e; LS.set(TCFG.pre + 'vz', { e: cur.concat(o.z.filter(e => e && !cur.some(x => x.id === e.id))) }); }
+    if (typeof NB !== 'undefined' && o.n && !NB.total()) LS.set(TCFG.pre + 'nb', o.n);
+    if (typeof KR !== 'undefined' && o.w) { const w = LS.get(TCFG.pre + 'wbb', null); if (!w || !(w.t1 || w.t2 || w.don)) LS.set(TCFG.pre + 'wbb', o.w); }
+  }
+  function view(r) { return r === 'qr' ? sendView() : recvView(); }
+  function after(r) { if (r === 'qr') startSend(); else if (r === 'qr-priimti') startRecv(); else stopAll(); }
+  function act(el) {
+    const d = el.dataset;
+    switch (d.act) {
+      case 'qr-p': if (d.k === 'm') return toast('MIST siunčiama visada'); sel[d.k] = !sel[d.k]; { const y = scrollY; render(); scrollTo(0, y); } return;
+      case 'qr-new': if (!got) return; importNew(got); got = null; toast('Pacientas įrašytas'); location.hash = '#/pacientas'; return;
+      case 'qr-merge': if (!got) return; if (!confirm('Papildyti dabartinį pacientą gautais duomenimis?')) return; merge(got); got = null; toast('Papildyta'); location.hash = '#/pacientas'; return;
+      case 'qr-cancel': got = null; err = ''; rx = null; render(); return;
+    }
+  }
+  // Testams: be kameros perduoti nuskaitytą tekstą
+  return { view, after, act, stopAll, encode, decode, onText, reset: () => { sel = null; got = null; rx = null; err = ''; } };
+})();
+
+// ───────── Balso diktavimas (DICT): mikrofono mygtukas prie tekstinių laukų ─────────
+const DICT = (() => {
+  const SRc = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SEL = 'textarea.inp, input[data-mc="mechTxt"], input[data-mc="injTxt"], input[data-mc="txTxt"], input[data-vz="n"], input[data-ms="nt"], input[data-sr="comTxt"], input[data-sr="reqTxt"], input[data-sr="enTxt"]';
+  const MIC = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  let rec = null, btn = null;
+  function stop() { if (rec) { try { rec.stop(); } catch (e) {} } }
+  function start(el, b) {
+    if (rec) { stop(); return; }
+    const r = new SRc(); r.lang = 'lt-LT'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
+    const base = el.value.replace(/\s+$/, ''), sep = base ? ' ' : '';
+    r.onresult = ev => {
+      let txt = ''; for (let i = 0; i < ev.results.length; i++) txt += ev.results[i][0].transcript;
+      el.value = base + sep + txt.trim(); el.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    r.onerror = ev => { const m = { 'not-allowed': 'Mikrofonas neleidžiamas – leiskite naršyklės nustatymuose', 'service-not-allowed': 'Diktavimas šiame telefone neleidžiamas', network: 'Diktavimui reikia interneto ryšio', 'no-speech': 'Nieko neišgirsta – bandykite dar kartą', 'language-not-supported': 'Lietuvių kalbos atpažinimas nepasiekiamas' }[ev.error]; if (m) toast(m); };
+    r.onend = () => { rec = null; if (btn) { btn.classList.remove('on'); btn.setAttribute('aria-label', 'Diktuoti'); } btn = null; };
+    rec = r; btn = b; b.classList.add('on'); b.setAttribute('aria-label', 'Sustabdyti diktavimą');
+    try { r.start(); toast('Klausausi… kalbėkite lietuviškai'); } catch (e) { rec = null; b.classList.remove('on'); toast('Diktavimo pradėti nepavyko'); }
+  }
+  function enhance(root) {
+    if (!SRc || !root) return;
+    root.querySelectorAll(SEL).forEach(el => {
+      if (el.closest('.dictw')) return;
+      const w = document.createElement('span'); w.className = 'dictw';
+      el.parentNode.insertBefore(w, el); w.appendChild(el);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'dictb'; b.setAttribute('aria-label', 'Diktuoti'); b.title = 'Diktuoti balsu'; b.innerHTML = MIC;
+      b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); start(el, b); });
+      w.appendChild(b);
+    });
+  }
+  return { enhance, stop, supported: () => !!SRc };
 })();
