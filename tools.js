@@ -11,6 +11,7 @@ const TCFG = {
   nl: () => [['#/mist', 'MIST kortelė', MC.status()], ['#/p/devynios', '9-Line kodai ir skubumo kategorijos', 'Mokymosi medžiaga'], ['#/igudis/32', 'Kaip perduoti 9-Line ir MIST', 'Įgūdis #32'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
   mc: () => [['#/pacientas', 'Paciento failas', 'Įvykių eiga, perdavimas QR'], ['#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą'], ['#/9line', '9-Line MEDEVAC', NL.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'], ['#/igudis/34', 'Perdavimas ir perėmimas', 'Įgūdis #34'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
   gk: () => [['#/mist', 'MIST kortelė', MC.status()], ['#/igudis/17', 'Šoko atpažinimas: pulsas ir sąmonė (AVPU)', 'Įgūdis #17'], ['#/igudis/22', 'Galvos smegenų trauma', 'Įgūdis #22']],
+  occl: 'Krūtinės lipdukas (okliuzinis tvarstis)', // MIST gydymo lusto pavadinimas (TCCC CLS terminas)
   pt: ['laikai', 'ck'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele)
   migrate: o => migrateOldMist(o) // senos MIST formos duomenys (žr. žemiau)
 };
@@ -200,9 +201,9 @@ const NL = (() => {
 
   // Skubumo kategorijų paaiškinimas (iš March gido „9 eilučių MEDEVAC prašymas ir MIST“, JTS CLS)
   const precHelp = () => '<details class="alt"><summary>Skubumo kategorijos (JTS CLS)</summary><div class="tw"><table><tr><th>Kategorija</th><th>Terminas</th><th>Pavyzdžiai</th></tr>' +
-    '<tr><td><b>A – skubi</b> (Urgent)</td><td>&lt; 2 val. – gyvybei, galūnei ar regėjimui išsaugoti</td><td>Turniketai, sustabdytas kraujavimas, galvos smegenų trauma</td></tr>' +
-    '<tr><td><b>B – skubi chirurginė</b> (Urgent surgical)</td><td>&lt; 2 val. iki artimiausio chirurgijos padalinio</td><td>Adatos dekompresija, krikotiroidotomija, didelis vidinis kraujavimas, sunki galvos trauma</td></tr>' +
-    '<tr><td><b>C – prioritetinė</b> (Priority)</td><td>&lt; 4 val. arba būklė gali pablogėti iki skubios</td><td>Kompensuotas šokas, lūžis su išnykusiu distaliniu pulsu</td></tr>' +
+    '<tr><td><b>A – skubi</b> (Urgent)</td><td>&lt; 2 val. – gyvybei, galūnei ar regėjimui išsaugoti</td><td>Turniketai, sustabdytas kraujavimas, adatinė dekompresija, krikotiroidotomija</td></tr>' +
+    '<tr><td><b>B – skubi chirurginė</b> (Urgent surgical)</td><td>&lt; 2 val. iki artimiausio chirurgijos padalinio</td><td>Didelis vidinis kraujavimas, sunki galvos trauma, kompensuotas šokas</td></tr>' +
+    '<tr><td><b>C – prioritetinė</b> (Priority)</td><td>&lt; 4 val. arba būklė gali pablogėti iki skubios</td><td>Lūžis su išnykusiu distaliniu pulsu, II laipsnio nudegimai dideliame pilvo ar galūnių plote</td></tr>' +
     '<tr><td><b>D – įprastinė</b> (Routine)</td><td>&lt; 24 val.</td><td>Nubrozdinimai, smulkūs lūžiai, nušalimai</td></tr>' +
     '<tr><td><b>E – patogumo</b> (Convenience)</td><td>Mediciniškai nebūtina</td><td>Administracinis perkėlimas</td></tr></table></div>' +
     '<p class="muted">Terminai priklauso nuo doktrinos ir SOP: JTS CLS (2020) nurodo &lt; 2 val., kai kurios JAV ir NATO procedūros skubiai kategorijai numato 1 val. ar 90 min. Vadovaukitės savo vieneto SOP.</p></details>';
@@ -280,7 +281,7 @@ const MC = (() => {
     ['N', 'N', 'Nudegimas', '#F2B705', '#1B1B1B'], ['A', 'A', 'Amputacija', '#6B2A8C', '#fff'], ['T', 'T', 'Turniketas', '#111111', '#fff']];
   const mkT = k => MK.find(x => x[0] === k) || MK[0];
   // Gydymas: [raktas, pavadinimas, lygis]. Lygis 'CMC' – March gide slepiama, kai įjungta „Rodyti tik CLS“ (ETC gide ok('CMC') visada tiesa).
-  const TX = [['tq', 'Turniketas'], ['pack', 'Tamponavimas'], ['press', 'Spaudžiamasis tvarstis'], ['occl', 'Okliuzinis tvarstis'], ['dec', 'Dekompresija'],
+  const TX = [['tq', 'Turniketas'], ['pack', 'Tamponavimas'], ['press', 'Spaudžiamasis tvarstis'], ['occl', TCFG.occl || 'Okliuzinis tvarstis'], ['dec', 'Dekompresija'],
     ['aw', 'Kvėpavimo takai'], ['iv', 'IV / IO', 'CMC'], ['txa', 'TXA', 'CMC'], ['blood', 'Kraujas', 'CMC'], ['ca', 'Kalcis', 'CMC'], ['an', 'Analgezija'], ['ab', 'Antibiotikai'],
     ['spl', 'Įtvaras'], ['hypo', 'Hipotermijos prevencija']];
   const txShown = (x, s) => !x[2] || typeof ok !== 'function' || ok(x[2]) || s.tx.indexOf(x[0]) >= 0; // jau pažymėtas – rodomas, kad būtų galima atžymėti

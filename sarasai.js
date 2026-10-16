@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-10-15 v7 (paciento failas: sužeistųjų juosta ir įvykių eiga; priminimai; perdavimas QR kodu; balso diktavimas)';
+E.versija = '2026-10-17 v8 (turinio patikra pagal TCCC 2026: 9-Line skubumo kategorijų pavyzdžiai pagal JTS CLS 19; MIST lustas „Krūtinės lipdukas“; paciento failas, priminimai, QR, diktavimas)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
@@ -294,9 +294,9 @@ E.puslapiai = {
       '<p class="muted">8 eilutės kodai JTS kortelėje apibrėžti JAV kariuomenei (A – JAV kariai, B – JAV civiliai, C – ne JAV kariai, D – ne JAV civiliai, E – karo belaisviai); čia pateikta koalicijos versija. Vadovaukitės savo vieneto ir NATO SOP.</p>' +
       '<h3>Evakuacijos skubumas (3 eilutė)</h3>' +
       '<div class="tw"><table><tr><th>Kategorija</th><th>JTS CLS terminas</th><th>Pavyzdžiai (JTS)</th></tr>' +
-      '<tr><td><b>A – skubi</b> (Urgent)</td><td>&lt; 2 val. – gyvybei, galūnei ar regėjimui išsaugoti</td><td>Turniketai, sustabdytas kraujavimas, galvos smegenų trauma</td></tr>' +
-      '<tr><td><b>B – skubi chirurginė</b> (Urgent surgical)</td><td>&lt; 2 val. iki artimiausio chirurgijos padalinio</td><td>Adatos dekompresija, krikotiroidotomija, didelis vidinis kraujavimas, sunki galvos trauma</td></tr>' +
-      '<tr><td><b>C – prioritetinė</b> (Priority)</td><td>&lt; 4 val. arba būklė gali pablogėti iki skubios</td><td>Kompensuotas šokas, lūžis su išnykusiu distaliniu pulsu</td></tr>' +
+      '<tr><td><b>A – skubi</b> (Urgent)</td><td>&lt; 2 val. – gyvybei, galūnei ar regėjimui išsaugoti</td><td>Turniketai, sustabdytas kraujavimas, adatinė dekompresija, krikotiroidotomija</td></tr>' +
+      '<tr><td><b>B – skubi chirurginė</b> (Urgent surgical)</td><td>&lt; 2 val. iki artimiausio chirurgijos padalinio</td><td>Didelis vidinis kraujavimas, sunki galvos trauma, kompensuotas šokas</td></tr>' +
+      '<tr><td><b>C – prioritetinė</b> (Priority)</td><td>&lt; 4 val. arba būklė gali pablogėti iki skubios</td><td>Lūžis su išnykusiu distaliniu pulsu, II laipsnio nudegimai dideliame pilvo ar galūnių plote</td></tr>' +
       '<tr><td><b>D – įprastinė</b> (Routine)</td><td>&lt; 24 val.</td><td>Nubrozdinimai, smulkūs lūžiai, nušalimai</td></tr>' +
       '<tr><td><b>E – patogumo</b> (Convenience)</td><td>Mediciniškai nebūtina</td><td>Administracinis perkėlimas</td></tr></table></div>' +
       '<p class="muted">Terminai priklauso nuo doktrinos ir SOP: JTS CLS (2020) nurodo &lt; 2 val., kai kurios JAV ir NATO procedūros skubiai kategorijai numato 1 val. ar 90 min. Vadovaukitės savo vieneto SOP.</p>' +
