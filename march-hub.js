@@ -87,6 +87,6 @@ const MPAWS = (() => {
     const c = /[?&]f=c(&|$)/.test(location.hash);
     a0();
     if (!c) return;
-    const el = app.querySelector('.lkc'); if (el) (el.closest('.lkrow') || el).scrollIntoView({ block: 'start' });
+    const el = app.querySelector('#mcT'); if (el) el.scrollIntoView({ block: 'start' });
   };
 })();

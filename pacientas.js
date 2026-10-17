@@ -69,7 +69,7 @@ const HUB = (() => {
   const TK = TCFG.pre + 'hub-tab', WK = TCFG.pre + 'svoris';
   const GO = () => Object.assign({ vit: '#/pacientas?t=kortele&f=s', vz: typeof VZ !== 'undefined' ? '#/pacientas?t=vaistai' : '#/vaistai', tq: '#/pacientas?t=kortele&f=tq', mk: '#/pacientas?t=kortele&f=i',
     apz: '#/pacientas?t=apz', kortele: '#/pacientas?t=kortele', vaistai: '#/pacientas?t=vaistai', eiga: '#/pacientas?t=eiga', perduoti: '#/pacientas?t=perduoti' }, HCFG().go);
-  const FOCUS = { s: '.lkadd', tq: '.lktq2', i: '.lktools' };
+  const FOCUS = { s: '#mcS', tq: '#mcI', i: '#mcI', c: '#mcT' };
   let sheet = false, wOpen = false, focus = null, fDone = false, memTab = 'apz';
   const ss = {
     get() { try { return sessionStorage.getItem(TK) || memTab; } catch (e) { return memTab; } },
@@ -268,6 +268,9 @@ const HUB = (() => {
       case 'hb-w': wOpen = !wOpen; keep(); return;
       case 'hb-wset': { const w = +d.w; if (!(w > 0)) return; LS.set(WK, w); wOpen = false; toast('Svoris ' + w + ' kg – šiam pacientui'); keep(); return; }
       case 'hb-go': {
+        // požymiai, vaistas, turniketas, žymė – iškart MIST kortelės apatinis langas (be perėjimo)
+        const sk = { vit: 'vit', vz: 'rx', rx: 'rx', tq: 'tq', mk: 'mk' }[d.k];
+        if (sk && typeof MC !== 'undefined' && MC.sheet) { const rep = !!(sheet && history.state && history.state.hb); sheet = false; keep(); MC.sheet(sk, { replace: rep }); return; }
         const h = GO()[d.k]; if (!h) return;
         if (d.k === 'tq') { const T = LS.get(TCFG.laikai, {}) || {}, x = cur(); if (x && !x.tqT) { T.turn = Date.now(); LS.set(TCFG.laikai, T); toast('Turniketas ' + hm(T.turn) + ' – pažymėkite galūnę kortelėje'); } }
         if (d.k === 'vit' || d.k === 'tq' || d.k === 'mk') focus = { vit: 's', tq: 'tq', mk: 'i' }[d.k];
