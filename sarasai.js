@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-10-17 v19 (pavadinimai „10s triažas“ ir „Mascal“; fentanilis, morfinas, naloksonas su žyma „Ne TCCC 2026“ – tik pagal vieneto SOP; svoris „Kitas…“; pradžioje vaistai be „80 kg“)';
+E.versija = '2026-10-17 v20 (laiko ir matavimų ritiniai – bakstelėkite arba paslinkite pirštu; pavadinimai „10s triažas“ ir „Mascal“; fentanilis, morfinas, naloksonas su žyma „Ne TCCC 2026“ – tik pagal vieneto SOP; svoris „Kitas…“; pradžioje vaistai be „80 kg“)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
