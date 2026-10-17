@@ -1023,6 +1023,9 @@ const MC = (() => {
     if (!shEl) {
       shEl = document.createElement('div'); shEl.id = 'mcsh';
       shEl.addEventListener('click', e => { const el = e.target.closest('[data-sa]'); if (el && shEl.contains(el)) shAct(el, e); });
+      shEl.addEventListener('pointerdown', e => { const x = e.target.closest && e.target.closest('.mqstrip'); if (x) x.dataset.u = '1'; }, true);
+      shEl.addEventListener('wheel', e => { const x = e.target.closest && e.target.closest('.mqstrip'); if (x) x.dataset.u = '1'; }, { capture: true, passive: true });
+      shEl.addEventListener('scroll', e => { const x = e.target; if (!x || !x.classList || !x.classList.contains('mqstrip') || !x.dataset.u) return; clearTimeout(stripT); stripT = setTimeout(() => { x.dataset.u = ''; stripSettle(x); }, 140); }, true);
       shEl.addEventListener('input', e => {
         const t = e.target, k = SH && t.dataset ? t.dataset.si : ''; if (!k) return;
         if (k === 'note') SH.note = t.value;
@@ -1066,8 +1069,55 @@ const MC = (() => {
     return true;
   }
   // ── piešimas ──
-  const tmRow = (extra) => '<div class="mqrow mqtm">' + (extra || '') + [[0, 'Dabar ' + offTm(0)], [5, '−5 min'], [10, '−10 min']].map(([m, l]) => `<button class="mqc${SH.toff === m ? ' on' : ''}" data-sa="toff" data-v="${m}" aria-pressed="${SH.toff === m}">${l}</button>`).join('') +
-    `<button class="mqc${SH.toff === 'c' ? ' on' : ''}" data-sa="tcust" aria-pressed="${SH.toff === 'c'}">${SH.toff === 'c' && SH.tcust ? esc(SH.tcust) : 'Kitas…'}</button></div>`;
+  // ── horizontalūs ritiniai: laikas ir matavimai – bakstelėkite arba paslinkite pirštu ──
+  const rngS = (a, b, st) => { const r = []; for (let x = a; x <= b; x += st) r.push(String(x)); return r; };
+  const VRNG = { rr: () => rngS(4, 40, 1), spo2: () => rngS(70, 100, 1), hr: () => ['nečiuopiamas'].concat(rngS(30, 200, 1)), gcs: () => rngS(3, 15, 1), sys: () => rngS(60, 240, 5), dia: () => rngS(30, 150, 5) };
+  const VDEF = { rr: '16', spo2: '98', hr: '80', gcs: '15', sys: '120', dia: '80' };
+  const VLB = { rr: 'KD', spo2: 'SpO₂', hr: 'Pulsas', gcs: 'GKS', sys: 'AKS sistolinis', dia: 'AKS diastolinis' };
+  const qMarks = () => { const Q = 900000, base = Math.floor(Date.now() / Q) * Q, r = []; for (let ms = base; Date.now() - ms <= 8 * 3600e3; ms -= Q) r.push(hm(ms)); return r; };
+  function stripH(items, key, label) {
+    return `<div class="mqstrip" role="listbox" aria-label="${esc(label)}" data-key="${esc(key)}">` + items.map(it => `<button class="mqc mqsi${it.on ? ' on' : ''}${it.def ? ' mqdef' : ''}" role="option" aria-selected="${!!it.on}" data-sa="${it.sa}" data-v="${esc(it.v)}">${esc(it.l)}</button>`).join('') + '</div>';
+  }
+  function vStrip(key, cur) {
+    const on = cur === undefined || cur === null ? '' : String(cur);
+    return stripH(VRNG[key]().map(x => ({ v: x, l: x === 'nečiuopiamas' ? 'Nečiuop.' : x, sa: 'qv', on: x === on, def: !on && x === VDEF[key] })), 'vit:' + key, VLB[key]);
+  }
+  const tmRow = (extra) => {
+    const qm = qMarks(), rel = [[0, 'Dabar'], [5, '−5 min'], [10, '−10 min']];
+    const items = rel.map(([m, l]) => ({ v: String(m), l, sa: 'toff', on: SH.toff === m })).concat(qm.map(t => ({ v: t, l: t, sa: 'tcs', on: SH.toff === 'c' && SH.tcust === t })));
+    const custom = SH.toff === 'c' && !qm.includes(SH.tcust);
+    return '<div class="mqrow mqtm">' + (extra || '') + '<div class="mqtmw">' + stripH(items, 'tm:s', 'Laikas') +
+      `<button class="mqc${custom ? ' on' : ''}" data-sa="tcust" aria-pressed="${custom}">${custom && SH.tcust ? esc(SH.tcust) : 'Kitas…'}</button></div></div>`;
+  };
+  function tmTimeStrip(b) {
+    const rel = [[0, 'Dabar'], [5, '−5 min'], [10, '−10 min'], [15, '−15 min'], [30, '−30 min']];
+    const items = rel.map(([m, l]) => ({ v: String(m), l, sa: 'tset', on: b.length === 4 && b === offTm(m).replace(':', '') })).concat(qMarks().map(t => ({ v: t, l: t, sa: 'tsetabs', on: b.length === 4 && b === t.replace(':', '') })));
+    return stripH(items, 'tm:t', 'Laikas');
+  }
+  function centerStrip(s) { const t = s.querySelector('.mqsi.on') || s.querySelector('.mqdef'); s.scrollLeft = t ? t.offsetLeft - (s.clientWidth - t.offsetWidth) / 2 : 0; }
+  // Pirštu paslinkus – pasirenkamas artimiausias į centrą (be perėjimo į kitą lauką)
+  function stripPick(strip, b) {
+    if (!SH || !strip.isConnected) return;
+    const key = strip.dataset.key, v = b.dataset.v, sa = b.dataset.sa;
+    if (key.indexOf('vit:') === 0) {
+      const fk = SH.fk === 'bp' ? (SH.bpd ? 'dia' : 'sys') : SH.fk;
+      if (SH.kind !== 'vit' || key !== 'vit:' + fk) return;
+      const V = SH.v; if (SH.fk === 'bp') { if (SH.bpd) V.bpD = v; else V.bpS = v; } else V[SH.fk] = v;
+    } else {
+      const tb = SH.sub ? SH.sub.kind === 'time' : SH.kind === 'time';
+      if (tb) { const o = SH.sub || SH; o.buf = (sa === 'tsetabs' || v.indexOf(':') > 0 ? v : offTm(+v || 0)).replace(':', ''); }
+      else if (v.indexOf(':') > 0) { SH.toff = 'c'; SH.tcust = v; }
+      else SH.toff = +v || 0;
+    }
+    shRender();
+  }
+  let stripT = 0;
+  function stripSettle(strip) {
+    if (!strip.isConnected) return;
+    const c = strip.getBoundingClientRect(), cx = c.left + c.width / 2; let best = null, bd = 1e9;
+    strip.querySelectorAll('.mqsi').forEach(b => { const r = b.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - cx); if (d < bd) { bd = d; best = b; } });
+    if (best && !best.classList.contains('on')) stripPick(strip, best);
+  }
   const noteIn = () => `<label class="mqf">Pastaba (nebūtina)<input class="inp" data-si="note" data-dict value="${esc(SH.note || '')}" placeholder="Įrašykite arba padiktuokite" autocomplete="off"></label>`;
   const shT = () => SH.toff === 'c' && HM_RE.test(SH.tcust || '') ? SH.tcust : offTm(+SH.toff || 0);
   const KP = (sa, dec) => '<div class="mqkp" role="group" aria-label="Skaičių klaviatūra">' + ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(d => `<button data-sa="${sa}" data-v="${d}">${d}</button>`).join('') +
@@ -1088,14 +1138,14 @@ const MC = (() => {
           (gcsOn() ? '' : '<div class="mqrow"><button class="mqc sm" data-sa="gcson">+ GKS <small>nebūtina</small></button></div>');
         if (f[0] === 'bp') {
           h += `<div class="mqdisp"><button class="mqbp${SH.bpd ? '' : ' cur'}" data-sa="bpd" data-v="0" aria-label="Sistolinis">${esc(V.bpS || '—')}</button><span>/</span><button class="mqbp${SH.bpd ? ' cur' : ''}" data-sa="bpd" data-v="1" aria-label="Diastolinis">${esc(V.bpD || '—')}</button><small>mm Hg · ${SH.bpd ? 'diastolinis' : 'sistolinis'}</small></div>` +
-            '<div class="mqrow mqqv" aria-label="Greitos reikšmės">' + BPQ[SH.bpd].map(q => `<button class="mqc" data-sa="qv" data-v="${q}">${q}</button>`).join('') + (SH.bpd ? '<button class="mqc" data-sa="qv" data-v="-">Tik sistolinis</button>' : '') + '</div>' + KP('kp');
+            vStrip(SH.bpd ? 'dia' : 'sys', SH.bpd ? V.bpD : V.bpS) + '<div class="mqrow">' + (SH.bpd ? '<button class="mqc" data-sa="qv" data-v="-">Tik sistolinis</button>' : '') + '</div>' + KP('kp');
         } else if (f[0] === 'pain') {
           h += `<div class="mqdisp"><b class="cur">${esc(V.pain !== '' ? V.pain : '—')}</b><small>skausmas 0–10</small></div>` +
             '<div class="mqpain" role="radiogroup" aria-label="Skausmo skalė">' + Array.from({ length: 11 }, (_, i) => `<button role="radio" aria-checked="${V.pain === String(i)}" class="${V.pain === String(i) ? 'on' : ''}" data-sa="qv" data-v="${i}">${i}</button>`).join('') + '</div>' +
             '<div class="mqrow"><button class="mqc" data-sa="kp" data-v="next">Toliau ›</button></div>';
         } else {
           h += `<div class="mqdisp"><b class="cur${abn(f[0], V[f[0]]) ? ' ab' : ''}">${esc(V[f[0]] !== '' ? V[f[0]] : '—')}</b><small>${f[2]}${f[0] === 'gcs' ? ' · nebūtina' : ''}</small></div>` +
-            '<div class="mqrow mqqv" aria-label="Greitos reikšmės">' + f[3].map(q => `<button class="mqc${String(V[f[0]]) === String(q) ? ' on' : ''}" data-sa="qv" data-v="${q}">${q === 'nečiuopiamas' ? 'Nečiuopiamas' : q}</button>`).join('') + '</div>' + KP('kp');
+            vStrip(f[0], V[f[0]]) + KP('kp');
         }
         const any = V.av || VFS.some(([k]) => k === 'bp' ? V.bpS : V[k] !== '');
         return { title: 'Požymiai', h, foot: `<button class="btn pri mqsave" data-sa="save"${any ? '' : ' disabled'}>Įrašyti ${shT()} matavimą</button>` };
@@ -1198,7 +1248,7 @@ const MC = (() => {
     const b = o.buf || '', d = (b + '____').slice(0, 4), shown = d.slice(0, 2) + ':' + d.slice(2);
     const val = b.length === 4 ? b.slice(0, 2) + ':' + b.slice(2) : '', ok2 = HM_RE.test(val);
     const h = `<div class="mqdisp"><b class="cur${b.length === 4 && !ok2 ? ' ab' : ''}">${shown.replace(/_/g, '–')}</b><small>valandos : minutės</small></div>` +
-      '<div class="mqrow mqqv">' + [[0, 'Dabar'], [5, '−5 min'], [10, '−10 min'], [15, '−15 min'], [30, '−30 min']].map(([m, l]) => `<button class="mqc" data-sa="tset" data-v="${m}">${l}</button>`).join('') + '</div>' +
+      '<div class="mqrow mqqv">' + tmTimeStrip(b) + '</div>' +
       '<div class="mqkp" role="group" aria-label="Skaičių klaviatūra">' + ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(x => `<button data-sa="tkp" data-v="${x}">${x}</button>`).join('') +
       '<button data-sa="tkp" data-v="clr" aria-label="Išvalyti">C</button><button data-sa="tkp" data-v="0">0</button><button data-sa="tkp" data-v="del" aria-label="Ištrinti">⌫</button></div>';
     return { h, foot: `<button class="btn pri mqsave" data-sa="tok"${ok2 ? '' : ' disabled'}>${ok2 ? 'Gerai · ' + val : 'Įveskite laiką'}</button>` };
@@ -1219,6 +1269,7 @@ const MC = (() => {
     if (!SH || !shEl) return;
     const a = document.activeElement, key = a && shEl.contains(a) && a.dataset ? [a.dataset.sa, a.dataset.v].join('|') : '';
     const sb = shEl.querySelector('.mqshb'), y = sb ? sb.scrollTop : 0;
+    const sl = Array.from(shEl.querySelectorAll('.mqstrip')).map(x => [x.dataset.key, x.scrollLeft]);
     const B = shBody();
     shEl.innerHTML = '<div class="mqbg" data-sa="close" aria-hidden="true"></div>' +
       `<section class="mqsh" role="dialog" aria-modal="true" aria-labelledby="mqsht" tabindex="-1">` +
@@ -1228,6 +1279,7 @@ const MC = (() => {
     inertOn();
     try { if (typeof DICT !== 'undefined') DICT.enhance(shEl); } catch (e) {}
     const nb = shEl.querySelector('.mqshb'); if (nb && !first && !SH.top) nb.scrollTop = y; SH.top = 0;
+    shEl.querySelectorAll('.mqstrip').forEach(x => { const q = sl.find(z => z[0] === x.dataset.key); if (q && !first) x.scrollLeft = q[1]; else centerStrip(x); });
     let f = null;
     if (key) f = Array.from(shEl.querySelectorAll('[data-sa]')).find(x => [x.dataset.sa, x.dataset.v].join('|') === key && !x.disabled);
     if (!f) f = shEl.querySelector('.mqsh');
@@ -1252,6 +1304,8 @@ const MC = (() => {
       case 'tcust': SH.sub = { kind: 'time', buf: (SH.tcust || '').replace(':', '') }; SH.top = 1; return shRender();
       case 'tmr': { const T = timers(); if (T.turn) { SH.toff = 'c'; SH.tcust = hm(T.turn); } return shRender(); }
       // laikas (atskiras langas arba poskyris)
+      case 'tcs': SH.toff = 'c'; SH.tcust = v; return shRender();
+      case 'tsetabs': { const o = SH.sub || SH; o.buf = v.replace(':', ''); return shRender(); }
       case 'tset': { const o = SH.sub || SH; o.buf = offTm(+v || 0).replace(':', ''); return shRender(); }
       case 'tkp': { const o = SH.sub || SH; if (v === 'del') o.buf = (o.buf || '').slice(0, -1); else if (v === 'clr') o.buf = ''; else if ((o.buf || '').length < 4) o.buf = (o.buf || '') + v; return shRender(); }
       case 'tok': {

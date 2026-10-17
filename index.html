@@ -542,6 +542,13 @@ body.field{--sEb:#353533;--sEf:#F1EFE8}
 .mcs .mqc.on{background:var(--c);border-color:var(--c);color:#fff}
 .mqsh .mqc.on{background:var(--acc);border-color:var(--acc);color:var(--bg)}
 .mqc.on.tq,.mcs .mqc.on.tq,.mqsh .mqc.on.tq{background:var(--ambbg);border-color:var(--amb);color:var(--amb)}
+.mqtmw{display:flex;align-items:center;gap:8px;width:100%;min-width:0}
+.mqtmw .mqstrip{margin:0}
+.mqstrip{position:relative;display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;touch-action:pan-x;margin:8px 0 0;width:100%;min-width:0;box-sizing:border-box;flex:1 1 auto}
+.mqstrip::-webkit-scrollbar{display:none}
+.mqstrip::before,.mqstrip::after{content:'';flex:0 0 calc(50% - 34px)}
+.mqsi{flex:0 0 68px;padding:0 6px;justify-content:center;scroll-snap-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mqsi.mqdef{border-style:dashed}
 .mqc.sel{box-shadow:0 0 0 3px var(--acc)}
 .mqc.warn{border-color:var(--abn)}.mqc.warn small{color:var(--abn);opacity:1;font-weight:700}
 .mqc.big{flex-direction:column;align-items:flex-start;justify-content:center;min-height:56px;padding:4px 14px;gap:0}.mqc.big b{font-size:16px}
