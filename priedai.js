@@ -213,7 +213,7 @@ const FC = (() => {
 
 // ───────── Duomenų apsauga (OP): visų sužeistųjų duomenų ištrynimas, automatinis išvalymas po nenaudojimo ─────────
 const OP = (() => {
-  const KEYS = ['mist', 'mist-v1', 'pt', 'laikai', 'ck', 'ck-sig', 'vz', 'nb', 'wbb', '9line', 'gks', 'tst', 'mascal', 'sitrep', 'rem-n'].map(k => TCFG.pre + k);
+  const KEYS = ['mist', 'mist-v1', 'pt', 'laikai', 'ck', 'ck-sig', 'vz', 'nb', 'wbb', '9line', 'gks', 'tst', 'mascal', 'sitrep', 'rem-n', 'svoris'].map(k => TCFG.pre + k);
   const CFG = TCFG.pre + 'opsec', AKT = TCFG.pre + 'akt', FLAG = TCFG.pre + 'wiped';
   const hours = () => +((LS.get(CFG, {}) || {}).h) || 0;
   const has = () => KEYS.some(k => { try { return localStorage.getItem(k) != null; } catch (e) { return false; } });

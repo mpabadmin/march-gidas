@@ -560,11 +560,13 @@ const MC = (() => {
     }).join('') + '<button class="add" data-act="mc-add" aria-label="Pridėti sužeistąjį" title="Pridėti sužeistąjį">+</button></div>';
   }
   const DRUGS = () => (E.vaistai || []).map(v => v.name.replace(/ \(.*\)$/, ''));
-  function view() {
+  // o.embed – be antraštės, skirtukų ir perdavimo dalies (paciento ekrano skiltis „Kortelė“)
+  function view(o) {
+    const emb = !!(o && o.embed);
     const st = load(), s = curOf(st), n = st.cur + 1, tot = st.pts.length, learn = mode === 'learn', T = timers(), F = s.f;
-    let h = '<h1>MIST kortelė</h1>';
-    if (learn) h += '<p class="muted">Nukentėjusiojo kortelė kaip LK patvirtintoje formoje (DD 1380 lietuviškas variantas): A – asmens duomenys, T – traumos laikas ir pobūdis, M – mechanizmas, I – sužalojimai ir turniketai, S – būklė, T – teikta pagalba, evakuacija. Pildoma eigoje; perduodant perskaitomas MIST tekstas. Keli sužeistieji – skirtukai 1, 2, … ir „+“.</p>';
-    h += tabs(st);
+    let h = emb ? '' : '<h1>MIST kortelė</h1>';
+    if (learn && !emb) h += '<p class="muted">Nukentėjusiojo kortelė kaip LK patvirtintoje formoje (DD 1380 lietuviškas variantas): A – asmens duomenys, T – traumos laikas ir pobūdis, M – mechanizmas, I – sužalojimai ir turniketai, S – būklė, T – teikta pagalba, evakuacija. Pildoma eigoje; perduodant perskaitomas MIST tekstas. Keli sužeistieji – skirtukai 1, 2, … ir „+“.</p>';
+    if (!emb) h += tabs(st);
     h += `<article class="lk" aria-label="Nukentėjusiojo kortelė – sužeistasis ${n}">`;
     h += `<div class="lkh"><b>NUKENTĖJUSIOJO KORTELĖ</b><span>FIELD MEDICAL CARD${tot > 1 ? ' · ' + n + ' / ' + tot : ''}</span></div>`;
     // A
@@ -625,15 +627,23 @@ const MC = (() => {
       `<div class="lkrow lkpos">${lbl('TRANSPORTAVIMO PADĖTIS:', 'Transportation position')}<div class="lkposb">${POS.map(([k, lt]) => `<button class="${s.pos === k ? 'on' : ''}" data-act="mc-pos" data-k="${k}" aria-pressed="${s.pos === k}" aria-label="${lt}" title="${lt}"><svg viewBox="0 0 34 24" aria-hidden="true">${POS_SVG[k]}</svg></button>`).join('')}</div></div>` +
       `<div class="lkresp">${lbl('PAGALBOS TEIKĖJO PAVARDĖ, VARDAS, ID', 'Responder last name, first name, ID')}${[0, 1].map(i => `<label class="lkrn"><b>${i + 1}</b><input class="lkv" data-mcp="${i}" value="${esc(s.resp[i])}" autocomplete="off" aria-label="Pagalbos teikėjas ${i + 1}"></label>`).join('')}</div>`);
     h += '</article>';
-    h += `<section class="outp"><div class="nlh"><b>Perduoti (MIST)</b>${tot > 1 ? `<small class="muted">sužeistasis ${n} iš ${tot}</small>` : ''}</div>${langSeg('mc-lang')}<pre id="mc-out">${esc(text(s, n, tot, outEn()))}</pre>` +
+    if (emb) return h + mgmtInner(st) + tcfgRows(TCFG.mc());
+    return h + '<section class="outp">' + outInner(st) + mgmtInner(st) + '</section>' + tcfgRows(TCFG.mc());
+  }
+  // Perdavimo dalis (MIST tekstas, skaityti, kopijuoti, kortelės paveikslėlis) ir sužeistųjų tvarkymas – atskirai, kad paciento ekranas galėtų rodyti skirtingose skiltyse
+  function outInner(st) {
+    const s = curOf(st), n = st.cur + 1, tot = st.pts.length;
+    return `<div class="nlh"><b>Perduoti (MIST)</b>${tot > 1 ? `<small class="muted">sužeistasis ${n} iš ${tot}</small>` : ''}</div>${langSeg('mc-lang')}<pre id="mc-out">${esc(text(s, n, tot, outEn()))}</pre>` +
       '<div class="acts"><button class="btn pri" data-act="mc-read">Skaityti</button><button class="btn" data-act="mc-copy">Kopijuoti</button><button class="btn" data-act="mc-share">Bendrinti</button></div>' +
       '<div class="acts"><button class="btn" data-act="mc-card">Kortelė (paveikslėlis, spausdinti)</button></div>' +
-      (tot > 1 ? `<div class="acts"><button class="btn" data-act="mc-copyall">Kopijuoti visus (${tot})</button><button class="btn" data-act="mc-shareall">Bendrinti visus</button></div>` : '') +
-      `<div class="acts"><button class="btn" data-act="mc-add">+ Kitas sužeistasis</button><button class="btn dng" data-act="mc-new">${tot > 1 ? 'Išvalyti šią kortelę' : 'Naujas sužeistasis – išvalyti kortelę'}</button></div>` +
-      (tot > 1 ? `<div class="acts"><button class="btn dng" data-act="mc-pdel">Ištrinti sužeistąjį ${n}</button><button class="btn dng" data-act="mc-allclr">Išvalyti visus</button></div>` : '') + '</section>';
-    h += tcfgRows(TCFG.mc());
-    return h;
+      (tot > 1 ? `<div class="acts"><button class="btn" data-act="mc-copyall">Kopijuoti visus (${tot})</button><button class="btn" data-act="mc-shareall">Bendrinti visus</button></div>` : '');
   }
+  function mgmtInner(st) {
+    const n = st.cur + 1, tot = st.pts.length;
+    return `<div class="acts"><button class="btn" data-act="mc-add">+ Kitas sužeistasis</button><button class="btn dng" data-act="mc-new">${tot > 1 ? 'Išvalyti šią kortelę' : 'Naujas sužeistasis – išvalyti kortelę'}</button></div>` +
+      (tot > 1 ? `<div class="acts"><button class="btn dng" data-act="mc-pdel">Ištrinti sužeistąjį ${n}</button><button class="btn dng" data-act="mc-allclr">Išvalyti visus</button></div>` : '');
+  }
+  const outView = () => '<section class="outp">' + outInner(load()) + '</section>';
 
   // Bakstelėjimas ant schemos → viewBox koordinatės; tik ant silueto (arba šalia – pritraukiama)
   function bodyPoint(svg, e) {
@@ -926,7 +936,7 @@ const MC = (() => {
     readMode('Nukentėjusiojo kortelė', ['<img class="cardimg" alt="Nukentėjusiojo kortelė" src="' + url + '">'], [['Bendrinti', share], ['Išsaugoti', save], ['Spausdinti', print]]);
   }
   // Paciento failui: visa būsena ir dabartinės kortelės tekstas
-  return { view, act, onInput, status, text, addGcs, addRows, current, region, state: load, curText: () => curText(load()), cardCanvas, loadLogo, vitLine, tqName, MECH, TX, TQ, MK, ROWG, EVAC, POS };
+  return { view, act, onInput, status, text, addGcs, addRows, current, region, state: load, curText: () => curText(load()), cardCanvas, loadLogo, vitLine, tqName, outView, parts: (s, n, tot, en) => parts(s, n || 1, tot || 1, en), injText, abn, MECH, TX, TQ, MK, ROWG, EVAC, POS };
 })();
 
 // ───────── GKS (Glasgow) skaičiuoklė – GCS at 40 ─────────
