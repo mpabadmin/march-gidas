@@ -48,7 +48,8 @@ const SKILL_TOOLS = {
 };
 // Įrankiai (tools.js): būsena rodoma po pavadinimu
 const toolRows = () => typeof MC === 'undefined' ? '' :
-  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', 'TST rūšiavimas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status());
+  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', 'TST rūšiavimas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status()) +
+  row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
 const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="tag grn">CLS</span>';
 
 const V = {
@@ -132,7 +133,7 @@ const V = {
   },
 
   lists() {
-    let h = '<h1>Kontroliniai sąrašai</h1><p class="muted">Pagal TCCC fazes. Žymėjimai išlieka, kol paspausite „Naujas sužeistasis“.</p>';
+    let h = '<h1>Kontroliniai sąrašai</h1><p class="muted">Pagal TCCC fazes. Žymėjimai išlieka, kol paspausite „Naujas sužeistasis“.</p>' + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
     (E.fazes || []).forEach(f => {
       h += `<h2>${esc(f.id)} – ${esc(f.pav)}</h2>` + (f.lists || []).map(listRow).join('');
     });
@@ -153,6 +154,7 @@ const V = {
     }).join('') + '</div>';
     if (S[lid] && S[lid].intro) h += '<p class="muted">' + br(S[lid].intro) + '</p>';
     h += renderList(lid);
+    if (mode === 'learn') h += EX.entry(lid);
     if (t < f.lists.length - 1) h += `<button class="row nxt" data-act="go" data-rep="1" data-r="#/f/${id}?t=${t + 1}">Toliau: ${esc(((S[f.lists[t + 1]] || {}).title || '').replace(/^(CUF|TFC|TACEVAC): /, ''))}<span class="ar">›</span></button>`;
     else {
       const i = (E.fazes || []).indexOf(f), nf = (E.fazes || [])[i + 1];
@@ -167,12 +169,13 @@ const V = {
     if (!L) return notFound();
     let h = `<h1>${esc(L.title)}</h1>`;
     if (L.intro) h += '<p class="muted">' + br(L.intro) + '</p>';
-    return h + renderList(id);
+    return h + renderList(id) + (mode === 'learn' ? EX.entry(id) : '');
   },
 
   drugs() {
     const D = (E.vaistai || []).filter(v => ok(v.lygis)), w = LS.get('mg-svoris', 80), field = mode === 'field';
     let h = '<h1>Vaistai</h1><p class="muted">Pagal TCCC 2026 gaires. Žyma CMC – skiria kovos medikas.</p>';
+    if (!field) h += row('#/korteles', 'Dozių kortelės', FC.status());
     (E.vaistuGrupes || []).forEach(g => {
       const a = D.filter(v => v.grupe === g.id);
       if (!a.length) return;
@@ -278,13 +281,13 @@ const V = {
 
   settings() {
     const b = (act, t, s) => `<button class="row" data-act="${act}"><div>${t}<small>${s}</small></div></button>`;
-    let h = '<h1>Nustatymai</h1>';
+    let h = '<h1>Nustatymai</h1>' + GL.settingRow();
     h += `<div class="ck${tikCLS() ? ' on' : ''}" data-act="tikcls" role="checkbox" aria-checked="${tikCLS()}" tabindex="0"><span class="bx">✓</span><div class="t">Rodyti tik CLS veiksmus<div class="muted">Paslepia kovos mediko (CMC) ir paramediko (CPP) veiksmus, vaistus ir įgūdžius.</div></div></div>`;
-    h += '<h2>Sužeistasis</h2>' + row('#/pacientas', 'Paciento failas', 'Sužeistųjų sąrašas, įvykių eiga, perdavimas QR') + b('new-pt', 'Naujas sužeistasis', 'Ankstesnis lieka sąraše; laikai ir žymėjimai – naujam') + REM.settings();
+    h += '<h2>Sužeistasis</h2>' + row('#/pacientas', 'Paciento failas', 'Sužeistųjų sąrašas, įvykių eiga, perdavimas QR') + b('new-pt', 'Naujas sužeistasis', 'Ankstesnis lieka sąraše; laikai ir žymėjimai – naujam') + REM.settings() + OP.settings();
     h += '<h2>Atsiliepimai</h2>' + b('fb', 'Pranešti apie klaidą ar pasiūlyti', 'Komentaras ir ekrano vaizdas – keliauja gido rengėjams');
     const nOut = FB.pending();
     if (nOut) h += b('fb-flush', 'Neišsiųsti pranešimai: ' + nOut, 'Siųsti dabar (reikia interneto)');
-    h += '<h2>Mokymasis</h2>' + b('reset-ivert', 'Ištrinti įsivertinimus', 'Visi 1–4 balai bus pašalinti');
+    h += '<h2>Mokymasis</h2>' + row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status()) + b('reset-ivert', 'Ištrinti įsivertinimus', 'Visi 1–4 balai bus pašalinti');
     h += '<h2>Programėlė</h2>';
     if (installed()) h += '<p class="muted">Programėlė įdiegta ir veikia be interneto (vaizdo įrašams reikia interneto).</p>';
     else if (installEv) h += b('install', 'Įdiegti į telefoną', 'Atsiras ženkliukas pradžios ekrane');

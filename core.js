@@ -192,6 +192,8 @@ function buildIdx() {
   Object.keys(E.puslapiai || {}).forEach(id => { const p = E.puslapiai[id]; add('Mokymosi temos', p.title, p.sub, strip(p.html), '#/p/' + id); });
   add('Įrankiai', '9 eilučių MEDEVAC prašymas', '9-Line forma su kodais', 'medevac evakuacija koordinatės skubumas urgent priority routine radijas', '#/9line');
   add('Įrankiai', 'MIST kortelė', 'Vizuali sužeistojo kortelė: mechanizmas, sužalojimai kūno schemoje, požymiai, gydymas', 'mist handover perdavimas sužeistasis keli sužeistieji kortelė kūno schema žaizda turniketas', '#/mist');
+  add('Įrankiai', 'Dozių kortelės', 'Kasdien 5 kortelės: vaistas ir kelias – prisiminkite dozę', 'dozių kortelės korteles flashcards kartojimas dozės atmintis testas', '#/korteles');
+  add('Įrankiai', 'Egzaminuotojo režimas', 'Kontrolinio sąrašo vertinimas su laiku ir kritiniais punktais', 'egzaminas egzaminuotojas vertinimas instruktorius laikmatis kritiniai punktai', '#/egzaminas');
   add('Įrankiai', 'Treniruočių scenarijai', 'Klinikiniai atvejai su klausimais ir paaiškinimais', 'scenarijai scenarijus treniruotė viktorina testas klausimai', '#/scenarijai');
   add('Įrankiai', 'SITREP – padėties pranešimas', 'Pranešimas vadui: vieta, priešas, padėtis, nuostoliai, logistika, prašymai', 'sitrep situacija padėtis pranešimas raportas vadui nuostoliai logistika dtg', '#/sitrep');
   add('Įrankiai', 'TST rūšiavimas', 'Ten Second Triage – rūšiavimas per 10 sekundžių', 'tst ten second triage triažas rūšiavimas masinė nelaimė p1 p2 p3', '#/tst');

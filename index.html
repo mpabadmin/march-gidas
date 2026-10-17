@@ -435,6 +435,51 @@ header .seg{min-width:0}header .seg button{min-width:0;white-space:nowrap;overfl
 @media(max-width:420px){header .seg button{font-size:14px}}
 @media(max-width:360px){header .ib{width:36px}header{gap:4px}header .seg button{font-size:13px}}
 @media(max-width:340px){header{padding-left:6px;padding-right:6px}header .seg{padding:2px;gap:2px}header .seg button{font-size:12px}}
+/* v24 – perdavimo kalba, TCCC kortelė, egzaminuotojo režimas, dozių kortelės, pirštinių režimas */
+.seg2.lang{margin:4px 0 6px}
+.cardimg{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+#prt{display:none}
+@media print{html.prt body>*:not(#prt){display:none!important}html.prt #prt{display:block!important}html.prt #prt img{display:block;width:100%;max-width:190mm;margin:0 auto}html.prt body{background:#fff}html.prt body::after{display:none!important}}
+.exbar{position:sticky;top:calc(60px + env(safe-area-inset-top));z-index:3;display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;margin:8px 0;border-radius:12px;background:var(--tx);color:var(--bg)}
+#ex-clock{font:800 26px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:1px}
+.exbar .exn{flex:1;min-width:0;font-size:14px;opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exbar .btn{background:var(--bg);color:var(--tx);border-color:var(--bg);font-weight:700}
+.ck .ext{margin-left:auto;flex:none;font:600 14px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--tx2);padding-top:2px}
+.ck.exi.on .t{text-decoration:none;color:var(--tx)}
+.exres{border-radius:14px;padding:14px;margin:10px 0;background:var(--card);border:1px solid var(--line)}
+.exres.bad{border-color:var(--red)}
+.exres .big{font-size:34px;font-weight:800;line-height:1.15}.exres .big small{font-size:18px;font-weight:600;color:var(--tx2)}
+.exlst{margin:6px 0 12px;padding-left:20px}.exlst li{margin:4px 0}
+.exlst.krit li{color:var(--red);font-weight:600}
+.fcard{border-radius:16px;padding:18px 16px;margin:10px 0 12px;background:var(--card);border:1px solid var(--line);min-height:150px}
+.fcard .fq{font-size:13px;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px}
+.fcard .fn{font-size:25px;font-weight:800;line-height:1.2;margin:6px 0 2px}
+.fcard .fk{font-size:17px;font-weight:600;color:var(--tx2)}
+.fcard .fa{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:21px;font-weight:700;line-height:1.35}
+.fcard .fa small{display:block;font-size:14px;font-weight:400;color:var(--tx2);margin-top:6px}
+.fbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.fbtns .btn{min-height:54px;font-weight:700}
+.fbtns .no{color:var(--red);border-color:var(--red)}
+.fbtns .yes{color:var(--grn);border-color:var(--grn)}
+html.gl body{font-size:19px}
+html.gl .btn{min-height:56px;padding:14px 16px;font-size:18px}
+html.gl .btn.sm{min-height:50px;padding:10px 14px;font-size:16px}
+html.gl .row{min-height:64px;padding:14px 16px;margin-bottom:10px}
+html.gl .ck{padding:16px 6px;gap:14px}
+html.gl .chips{gap:8px}html.gl .chips button{min-height:54px}
+html.gl .seg2 button{min-height:52px;font-size:17px}
+html.gl .opts{gap:8px}html.gl .opts button{min-height:52px;padding:12px 16px;font-size:16px}
+html.gl .stp{grid-template-columns:1fr 60px 44px 60px}html.gl .stp button,html.gl .tlr button{height:56px}
+html.gl .inp,html.gl input[type=search],html.gl input[type=time],html.gl select,html.gl textarea{min-height:54px;font-size:18px}
+html.gl main .ib{width:48px;height:48px}
+html.gl .tool{padding:16px 12px}
+html.gl .mtool button{min-height:66px}
+html.gl .tabs button{min-height:50px}
+html.gl #nav a{padding:10px 0;font-size:12px}html.gl #nav a svg{width:26px;height:26px}
+html.gl main{padding-bottom:calc(160px + env(safe-area-inset-bottom))}
+#glback{position:fixed;left:14px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:7;width:62px;height:62px;border-radius:50%;background:var(--tx);color:var(--bg);box-shadow:0 2px 10px rgba(0,0,0,.35)}
+#glback svg{width:30px;height:30px}
+#glback[hidden]{display:none}
 </style>
 </head>
 <body class="field">
@@ -461,6 +506,7 @@ header .seg{min-width:0}header .seg button{min-width:0;white-space:nowrap;overfl
 <script src="core.js"></script>
 <script src="views.js"></script>
 <script src="tools.js"></script>
+<script src="priedai.js"></script>
 <script src="fb.js"></script>
 <script src="app.js"></script>
 </body>

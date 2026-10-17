@@ -7,7 +7,7 @@ let night = !!LS.get('mg-naktis', false); // naktinis raudonas režimas
 const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
 const newPt = () => '<button class="btn newpt" data-act="new-pt">Naujas sužeistasis – išvalyti žymėjimus ir laikus</button>';
 const PT_BAR = []; // įrankiai, virš kurių rodoma pacientų juosta
-const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'scenarijai', 'pacientas', 'qr', 'qr-priimti'];
+const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'scenarijai', 'pacientas', 'qr', 'qr-priimti', 'egzaminas', 'korteles'];
 const fbLink = () => '<button class="btn fbrow" data-act="fb">Pastebėjote klaidą ar turite pasiūlymą? Praneškite</button>';
 
 // Visos vietinės iliustracijos (įgūdžiai + mokymosi puslapiai) – išsaugoti naudojimui be interneto
@@ -60,6 +60,8 @@ function view(p, q) {
     case 'paieska': return V.search(q.q || '');
     case 'nustatymai': return V.settings();
     case 'idiegimas': return V.install();
+    case 'egzaminas': return EX.view(p[1]);
+    case 'korteles': return FC.view();
     default: return notFound();
   }
 }
@@ -73,7 +75,7 @@ function render() {
   document.getElementById('mL').setAttribute('aria-pressed', mode === 'learn');
   backBtn.style.display = p.length ? '' : 'none'; // pradžios ekrane vietoje „Atgal“ – atnaujinimo mygtukas dešinėje
   const ub = document.getElementById('upd'); if (ub) ub.style.display = p.length ? 'none' : '';
-  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', scenarijai: 'igudziai', pacientas: 'home', qr: 'home', 'qr-priimti': 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai' }[p[0]] || (p.length ? '' : 'home');
+  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', scenarijai: 'igudziai', pacientas: 'home', qr: 'home', 'qr-priimti': 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai', egzaminas: 'home', korteles: 'vaistai' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   try { PT.sync(); } catch (e) { console.error(e); }
   if (typeof DICT !== 'undefined') DICT.stop();
@@ -155,6 +157,10 @@ app.addEventListener('click', e => {
   if (/^rem-/.test(d.act)) { REM.act(el); return; }
   if (/^qr-/.test(d.act)) { QR.act(el); return; }
   if (/^ts-/.test(d.act)) { TS.act(el); return; }
+  if (/^ex-/.test(d.act)) { EX.act(el); return; }
+  if (/^fc-/.test(d.act)) { FC.act(el); return; }
+  if (/^op-/.test(d.act)) { OP.act(el); return; }
+  if (/^gl-/.test(d.act)) { GL.act(el); return; }
   switch (d.act) {
     case 'ck': {
       ckToggle(d.l, +d.i); el.classList.toggle('on'); el.setAttribute('aria-checked', el.classList.contains('on'));
@@ -240,7 +246,7 @@ app.addEventListener('click', e => {
 
 app.addEventListener('keydown', e => {
   const t = e.target, a = t.dataset && t.dataset.act;
-  if ((e.key === 'Enter' || e.key === ' ') && (a === 'ck' || a === 'tikcls' || a === 'yt' || a === 'mp4')) { e.preventDefault(); t.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && (a === 'ck' || a === 'tikcls' || a === 'yt' || a === 'mp4' || a === 'ex-ck' || a === 'gl-tg')) { e.preventDefault(); t.click(); }
   if ((e.key === 'Enter' || e.key === ' ') && a === 'mc-mdel' && !(t instanceof HTMLButtonElement)) { e.preventDefault(); MC.act(t, e); } // SVG žymė
 });
 
@@ -274,6 +280,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && !t
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEv = e; if (['nustatymai', 'idiegimas', undefined].indexOf(route().p[0]) >= 0) render(); });
 if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 
+OP.init(); GL.apply();
 onNav(true);
 
 // ───────── Atnaujinimas: mygtukas antraštėje (pradžios ekrane, šalia paieškos) ─────────
