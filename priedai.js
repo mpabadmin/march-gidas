@@ -143,7 +143,7 @@ const FC = (() => {
   const shownV = v => typeof ok !== 'function' || ok(v.kam != null ? v.kam : v.lygis);
   function cards() {
     const out = [];
-    (E.vaistai || []).filter(shownV).forEach(v => {
+    (E.vaistai || []).filter(v => shownV(v) && !v.ne26).forEach(v => { // ne TCCC 2026 (March opioidai) – dozių kortelėse nemokomi
       const add = (x, pre) => {
         if (!x || !String(x.d || '').trim() || !String(x.k || '').trim()) return;
         const k = (pre ? pre + ' · ' : '') + x.k;

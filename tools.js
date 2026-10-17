@@ -15,7 +15,8 @@ const TCFG = {
   // MIST kortelės vaisto langas: greitosios dozės [būdas, kiekis, vienetai] – tik tikslios reikšmės iš vaistai.js teksto (testas tikrina)
   qd: { paracetamolis: [['PO', '1000', 'mg'], ['PO', '1300', 'mg']], meloksikamas: [['PO', '15', 'mg']], suzetriginas: [['PO', '100', 'mg'], ['PO', '50', 'mg']],
     ketaminas: [['IV', '25', 'mg'], ['IM', '100', 'mg'], ['IN', '50', 'mg']], esketaminas: [['IN', '14', 'mg'], ['IN', '28', 'mg']], cefadroksilis: [['PO', '1', 'g']], cefaleksinas: [['PO', '500', 'mg']],
-    ceftriaksonas: [['IV', '2', 'g'], ['IM', '2', 'g']], txa: [['IV', '2', 'g']], kalcis: [['IV', '30', 'ml']], ondansetronas: [['ODT', '4', 'mg'], ['IV', '4', 'mg']], 'nacl-hipert': [['IV', '250', 'ml']] },
+    ceftriaksonas: [['IV', '2', 'g'], ['IM', '2', 'g']], txa: [['IV', '2', 'g']], kalcis: [['IV', '30', 'ml']], ondansetronas: [['ODT', '4', 'mg'], ['IV', '4', 'mg']], 'nacl-hipert': [['IV', '250', 'ml']],
+    fentanilis: [['IV', '50', 'mcg'], ['IN', '100', 'mcg']], morfinas: [['IM', '10', 'mg']], naloksonas: [['IV', '0,4', 'mg'], ['IM', '0,4', 'mg'], ['IN', '0,4', 'mg']] },
   pt: ['laikai', 'ck', 'svoris'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele); svoris – kiekvienam pacientui savas
   migrate: o => migrateOldMist(o), // senos MIST formos duomenys (žr. žemiau)
   // paciento ekranas, juosta ir dažniausi sąrašai (pacientas.js – bendras kodas); MARCH PAWS apžvalga ir vaistų skiltis – march-hub.js (MPAWS)
@@ -951,6 +952,14 @@ const MC = (() => {
     save(st);
     return st.pts.length > 1 ? st.cur + 1 : 0;
   }
+  // Kiti įrankiai (nušalimai) → I dalies patikslinimas (injTxt) dabartiniam sužeistajam; ta pati pastaba nekartojama
+  function addInj(note) {
+    const st = load(), s = curOf(st), n = str(note).trim();
+    if (!n) return 0;
+    if (s.injTxt.indexOf(n) < 0) s.injTxt = [s.injTxt.trim(), n].filter(Boolean).join('; ');
+    save(st);
+    return st.pts.length > 1 ? st.cur + 1 : 0;
+  }
   const current = () => { const st = load(); return { n: st.cur + 1, tot: st.pts.length }; };
   const tqName = (k, en) => { const x = TQ.find(q => q[0] === k); return x ? (en ? x[2] : x[1].toLowerCase()) : k; };
 
@@ -1580,7 +1589,7 @@ const MC = (() => {
     readMode('Nukentėjusiojo kortelė', ['<img class="cardimg" alt="Nukentėjusiojo kortelė" src="' + url + '">'], [['Bendrinti', share], ['Išsaugoti', save], ['Spausdinti', print]]);
   }
   // Paciento failui: visa būsena ir dabartinės kortelės tekstas
-  return { view, act, onInput, status, text, addGcs, addRows, current, region, state: load, curText: en => curText(load(), en), cardCanvas, loadLogo, vitLine, tqName, outView, parts: (s, n, tot, en) => parts(s, n || 1, tot || 1, en), injText, abn,
+  return { view, act, onInput, status, text, addGcs, addRows, addInj, current, region, state: load, curText: en => curText(load(), en), cardCanvas, loadLogo, vitLine, tqName, outView, parts: (s, n, tot, en) => parts(s, n || 1, tot || 1, en), injText, abn,
     txText: (s, en) => [lc(txParts(s, en, 1)), String(s.txTxt || '').trim()].filter(Boolean).join('; '), trTs, hydrate, used, setTime, setTq, dropSrc,
     sheet, sheetOpen: () => !!SH, closeSheet: () => shClose(false), profileView, MECH, TX, TQ, MK, ROWG, EVAC, POS };
 })();

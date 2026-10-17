@@ -75,7 +75,7 @@ const MPAWS = (() => {
     return H.tBox(x) + '<h2>Dažniausi vaistai</h2>' +
       `<p class="muted mt0">Rodoma: ${cls ? 'tik CLS (CMC vaistai paslėpti)' : 'CLS ir CMC'} – keičiama nustatymuose.</p>` +
       D.map(v => row('#/vaistas/' + v.id, v.name, doseShort(v, w), C.drugTag(v))).join('') +
-      row('#/vaistai', 'Visi vaistai', plural((E.vaistai || []).filter(v => ok(v.lygis)).length, ['vaistas', 'vaistai', 'vaistų']) + ' pagal TCCC 2026');
+      row('#/vaistai', 'Visi vaistai', plural((E.vaistai || []).filter(v => ok(v.lygis) && !v.ne26).length, ['vaistas', 'vaistai', 'vaistų']) + ' pagal TCCC 2026');
   }
   return { overview, drugs, status, section };
 })();

@@ -1,18 +1,21 @@
 // March gidas – VAISTAI (TCCC gairės 2026-05-01; gamintojų PCS)
 // Laukai: id, name, klase, grupe, lygis ('CLS' – skiria kovos gelbėtojas (sau ar draugui), 'CMC' – kovos medikas),
 // ind, kontra, dozes [{k, d, p, c: skaičiuoklė {min, max, conc} mg/kg}], ispejimai, pakuote, pastabos, susije, saltinis, nuorodos.
+// ne26: true – vaisto TCCC 2026 gairėse nėra: rodoma žyma „Ne TCCC 2026“, skiriama tik pagal vieneto SOP. lt – Lietuvos preparatai (kaip ETC gide; March kol kas nerodo).
 window.ETC = window.ETC || {};
 (function () {
 const E = window.ETC;
 const TCCC = ['TCCC gairės 2026-05-01 (PDF, Deployed Medicine)', 'https://learning-media.allogy.com/api/v1/pdf/18ccfdfc-a076-47e9-8a34-376efdd81b43/contents'];
 const TCCCUA = ['TCCC gairės 2026 (ukr. / angl., tccc.org.ua)', 'https://tccc.org.ua/en/guide/tccc-guidelines-2026'];
+const TCCC24 = ['TCCC gairės 2024-01-25 (ankstesnės, PDF, tccc.org.ua)', 'https://tccc.org.ua/files/downloads/clinical-guidelines-2024-en.pdf'];
 
 E.vaistuGrupes = [
   { id: 'skausmas', pav: 'Skausmas' },
   { id: 'antibiotikai', pav: 'Antibiotikai' },
   { id: 'kraujas', pav: 'Kraujavimas ir transfuzija' },
   { id: 'vemimas', pav: 'Pykinimas ir vėmimas' },
-  { id: 'galva', pav: 'Galvos smegenų trauma' }
+  { id: 'galva', pav: 'Galvos smegenų trauma' },
+  { id: 'retai', pav: 'Retai: opioidų perdozavimas' }
 ];
 
 E.vaistai = [
@@ -68,8 +71,8 @@ E.vaistai = [
       'Tikrinkite ampulės stiprumą (50 ar 100 mg/ml) – nuo jo priklauso ml.'
     ],
     pakuote: 'Ampulės 50 mg/ml arba 100 mg/ml',
-    pastabos: ['Galima skirti ir po opioido.', 'Procedūrinė sedacija (1–2 mg/kg IV / IO arba 300 mg IM) – tik kovos paramedikams (CPP), pasiruošusiems užtikrinti kvėpavimo takus.', 'Pykinimui – ondansetronas.'],
-    susije: ['esketaminas', 'ondansetronas', 'paracetamolis'],
+    pastabos: ['Ketaminą paprastai saugu skirti ir po opioido (TCCC 2026).', 'Procedūrinė sedacija (1–2 mg/kg IV / IO arba 300 mg IM) – tik kovos paramedikams (CPP), pasiruošusiems užtikrinti kvėpavimo takus.', 'Pykinimui – ondansetronas.'],
+    susije: ['esketaminas', 'ondansetronas', 'paracetamolis', 'fentanilis', 'morfinas'],
     saltinis: 'TCCC gairės 2026-05-01 (TFC 11); PCS (Ketalar)',
     nuorodos: [TCCC, ['PCS – Ketalar (ketaminas) (JK eMC)', 'https://www.medicines.org.uk/emc/product/5202/smpc']]
   },
@@ -83,6 +86,70 @@ E.vaistai = [
     susije: ['ketaminas'],
     saltinis: 'TCCC gairės 2026-05-01 (TFC 11); PCS (Spravato)',
     nuorodos: [TCCC, ['PCS – Spravato (esketaminas), EMA', 'https://www.ema.europa.eu/en/medicines/human/EPAR/spravato']]
+  },
+  {
+    id: 'fentanilis', name: 'Fentanilis', klase: 'Opioidas (ne TCCC 2026)', grupe: 'skausmas', lygis: 'CPP', ne26: true,
+    ind: 'Tik jei opioidą numato vieneto SOP – TCCC 2026 fentanilio nebėra. TCCC 2024: skausmas, kai sužeistasis nėra šoko ar kvėpavimo sutrikimo būklės ir rizika jiems išsivystyti nedidelė; kitaip – ketaminas.',
+    kontra: 'PCS: alergija opioidams, kvėpavimo slopinimas, obstrukcinė kvėpavimo takų liga, MAO inhibitoriai (per 2 sav.). TCCC 2024: šokas, kvėpavimo sutrikimas ar didelė rizika jiems išsivystyti – ketaminas, ne fentanilis.',
+    dozes: [
+      { k: 'IV / IO (TCCC 2024)', d: '50 mcg (0,5–1 mcg/kg)', p: '50 mcg/ml – 1 ml. Lėtai (PCS).' },
+      { k: 'Į nosį (IN) (TCCC 2024)', d: '100 mcg', p: '50 mcg/ml – 2 ml.' },
+      { k: 'Kartoti', d: 'kas 30 min pagal poreikį', p: 'IV / IO ir IN (TCCC 2024).' }
+    ],
+    ispejimai: [
+      'Prieš skiriant – AVPU įrašyti į kortelę; naloksonas turi būti po ranka (TCCC 2024).',
+      'Stebėti kvėpavimo takus, kvėpavimą ir kraujotaką; kvėpavimui retėjant – „uostymo“ padėtis, toliau – ventiliacija (TCCC 2026).',
+      'Benzodiazepinų (pvz., midazolamo) kartu neskirti (TCCC 2026).',
+      'Greita IV injekcija gali sukelti raumenų, taip pat krūtinės, rigidiškumą (PCS).'
+    ],
+    pakuote: 'Ampulės 50 mcg/ml (2 ml = 100 mcg)',
+    pastabos: [
+      'TCCC 2026 fentanilio nebėra (pakeitimas 25-03: nebeliko OTFC tiekimo); negalinčiam tęsti užduoties – ketaminas arba esketaminas.',
+      'TCCC 2024 IV / IO ir IN fentanilį skyrė tik kovos paramedikai ir gydytojai (CPP).',
+      'OTFC (TCCC 2024): 800 mcg tarp skruosto ir dantenų, nekramtyti; pakartoti galima vieną kartą po 15 min.',
+      'Ketaminą paprastai saugu skirti ir po opioido (TCCC 2026).',
+      'Lietuvoje (VVKT, tikrinta 2026-10-14): tiekiamas Fentanyl Kalceks 50 mcg/ml, 2 ml ampulės; nosies purškalai Instanyl, PecFent – registruoti, netiekiami. Narkotinė medžiaga.'
+    ],
+    susije: ['ketaminas', 'naloksonas', 'morfinas', 'ondansetronas'],
+    saltinis: 'TCCC gairės 2024-01-25 (TFC 11, 2 variantas); TCCC gairės 2026-05-01 (TFC 11c); PCS (fentanilis 50 mcg/ml)',
+    nuorodos: [TCCC24, TCCC, ['PCS – fentanilis 50 mcg/ml (JK eMC)', 'https://www.medicines.org.uk/emc/product/100051/smpc']],
+    lt: { p: [
+      { n: 'Fentanyl Kalceks', d: '50 mcg/ml · ampulė 2 ml (100 mcg)', r: 'Kalceks', s: 'T' },
+      { n: 'Fentanyl-hameln', d: '50 mcg/ml · ampulė 2 ml', s: 'L' },
+      { n: 'Fentanyl PANPHARMA', d: '50 mcg/ml · ampulė 2 ml', s: 'L' }],
+      ne: 'Instanyl, PecFent (nosies purškalai) – registruoti, netiekiami', pa: 'Narkotinė medžiaga. 10 ml ampulės – tik netiekiami lygiagretaus importo įrašai.' }
+  },
+  {
+    id: 'morfinas', name: 'Morfinas', klase: 'Opioidas (ne TCCC 2026) · ⚑ be TCCC šaltinio', grupe: 'skausmas', lygis: 'CPP', ne26: true,
+    ind: 'Tik jei opioidą numato vieneto SOP – nei TCCC 2026, nei TCCC 2024 gairėse morfino nėra. Stiprus skausmas (PCS).',
+    kontra: 'Alergija. PCS: ūminis kvėpavimo slopinimas, obstrukcinė kvėpavimo takų liga, galvos trauma, padidėjęs intrakranijinis spaudimas, smegenų edema, koma, traukulių ligos, MAO inhibitoriai (per 2 sav.), paralyžinis žarnų nepraeinamumas, feochromocitoma.',
+    dozes: [
+      { k: 'IV (PCS)', d: '2,5–15 mg lėtai, titruojant pagal atsaką', p: 'Pradėti nuo mažesnės dozės; įprastai ne dažniau kaip kas 4 val., bet dozė ir intervalas titruojami, kol pasiekiamas nuskausminimas. Praskiedus iki 1 mg/ml: 10 mg/ml ampulė – 1 ml + 9 ml 0,9 % NaCl; tada 1 ml = 1 mg.' },
+      { k: 'IM (PCS)', d: '10 mg (5–20 mg) kas 4 val.', p: '10 mg/ml – 1 ml; 20 mg/ml (Maracex) – 0,5 ml.' }
+    ],
+    ispejimai: [
+      'Prieš skiriant – AVPU įrašyti į kortelę; naloksonas turi būti po ranka (TCCC 2024).',
+      'Stebėti kvėpavimo takus, kvėpavimą ir kraujotaką; kvėpavimui retėjant – „uostymo“ padėtis, toliau – ventiliacija (TCCC 2026).',
+      'Benzodiazepinų (pvz., midazolamo) kartu neskirti (TCCC 2026).',
+      'Šokas, hipotenzija – mažesnės dozės (PCS); šoko ar kvėpavimo sutrikimo atveju – ketaminas (TCCC 2024).',
+      'Tikrinkite ampulės stiprumą (10 ar 20 mg/ml) – nuo jo priklauso ml.'
+    ],
+    pakuote: 'Ampulės 10 mg/ml (1 ml); Maracex – 20 mg/ml (1 ml)',
+    pastabos: [
+      'Ketaminą paprastai saugu skirti ir po opioido (TCCC 2026).',
+      '10 mg morfino ≈ 100 mcg fentanilio (NextGen Combat Medic).',
+      'Pykinimui – ondansetronas.',
+      'Lietuvoje (VVKT, tikrinta 2026-10-14): tiekiami Morphine hydrochloride Kalceks 10 mg/ml ir Maracex 20 mg/ml (Kalceks), 1 ml ampulės. Narkotinė medžiaga.'
+    ],
+    susije: ['ketaminas', 'naloksonas', 'fentanilis', 'ondansetronas'],
+    saltinis: 'PCS (morfino sulfatas 10 mg/ml); TCCC gairės 2026-05-01 ir 2024-01-25 – morfino nėra',
+    nuorodos: [['PCS – morfino sulfatas 10 mg/ml (JK eMC)', 'https://www.medicines.org.uk/emc/product/13178/smpc'], TCCC,
+      ['NextGen Combat Medic – kai nėra ketamino', 'https://nextgencombatmedic.com/2024/11/18/what-if-you-didnt-have-ketamine-as-a-68w-combat-medic']],
+    lt: { p: [
+      { n: 'Morphine hydrochloride Kalceks', d: '10 mg/ml · ampulė 1 ml', r: 'Kalceks', s: 'T' },
+      { n: 'MORPHINE BBP', d: '10 mg/ml · ampulė 1 ml', s: 'L' },
+      { n: 'Maracex', d: '20 mg/ml · ampulė 1 ml', r: 'Kalceks', s: 'T' }],
+      ne: '', pa: 'Dėmesio: Maracex – 20 mg/ml, dvigubai stipresnis už įprastą 10 mg/ml. Narkotinė medžiaga.' }
   },
   {
     id: 'cefadroksilis', name: 'Cefadroksilis', klase: 'Geriamasis antibiotikas (cefalosporinas)', grupe: 'antibiotikai', lygis: 'CLS',
@@ -148,7 +215,7 @@ E.vaistai = [
     dozes: [{ k: 'ODT / IV / IO / IM (TCCC 2026)', d: '4 mg kas 8 val. pagal poreikį', p: 'ODT – burnoje tirpstanti tabletė. IV – lėtai, ne greičiau kaip per 30 s (PCS).' }],
     ispejimai: ['Vemiantį sužeistąjį saugokite nuo aspiracijos (šoninė padėtis).'],
     pakuote: 'Tirpstančios tabletės 4 mg; ampulės 2 mg/ml',
-    susije: ['ketaminas'],
+    susije: ['ketaminas', 'fentanilis', 'morfinas'],
     saltinis: 'TCCC gairės 2026-05-01 (TFC 11); PCS (ondansetronas)',
     nuorodos: [TCCC, ['PCS – ondansetronas (JK eMC)', 'https://www.medicines.org.uk/emc/product/13193/smpc']]
   },
@@ -162,6 +229,31 @@ E.vaistai = [
     pastabos: ['Galvos smegenų trauma (TCCC 2026): SpO₂ ≥ 92 %, sAKS > 100 mm Hg (arba normalus radialinis pulsas), ventiliuojant EtCO₂ 35–45 mm Hg (be EtCO₂ – 10 įpūtimų/min), galva ir liemuo > 30° (jei nėra šoko), neurologinė patikra kas 5–10 min.'],
     saltinis: 'TCCC gairės 2026-05-01 (TFC 8)',
     nuorodos: [TCCC]
+  },
+  {
+    id: 'naloksonas', name: 'Naloksonas', klase: 'Opioidų antagonistas (ne TCCC 2026)', grupe: 'retai', lygis: 'CMC', ne26: true,
+    ind: 'Opioidų (fentanilio, morfino) sukeltas kvėpavimo slopinimas. TCCC 2024: turi būti po ranka, kai skiriami opioidai.',
+    kontra: 'Alergija.',
+    dozes: [
+      { k: 'IV / IO / IM / IN (TCCC 2024)', d: '0,4 mg', p: '0,4 mg/ml – 1 ml.' },
+      { k: 'Kartoti (JTS)', d: 'kas 2–3 min pagal poreikį, iki 10 mg', p: 'JTS kortelė: 0,4–2 mg. Po 10 mg be atsako – peržiūrėti diagnozę (PCS).' }
+    ],
+    ispejimai: [
+      'Naloksonas gali nustoti veikti anksčiau nei opioidas – stebėti, ar kvėpavimo slopinimas neatsinaujina (JTS).',
+      'Kvėpavimas neatsistato – „uostymo“ padėtis, toliau – ventiliacija (TCCC 2026).',
+      'Per greitas atstatymas – abstinencija, hipertenzija, aritmijos, plaučių edema (PCS).'
+    ],
+    pakuote: 'Ampulės 0,4 mg/ml (1 ml)',
+    pastabos: [
+      'TCCC 2026 naloksono nebemini, nes opioidų gairėse nebėra.',
+      'Norint išlaikyti nuskausminimą – IV po 0,1–0,2 mg kas 2–3 min, kol KD > 10 k./min (PCS).',
+      'Lietuvoje (VVKT, tikrinta 2026-10-14): tiekiamas FORVEL 0,4 mg/ml; Nyxoid 1,8 mg nosies purškalas – registruotas, netiekiamas.'
+    ],
+    susije: ['fentanilis', 'morfinas'],
+    saltinis: 'TCCC gairės 2024-01-25 (TFC 11c); JTS CPP kortelė 45 „Analgesic Medications“ (2023); PCS (naloksonas 400 mcg/ml)',
+    nuorodos: [TCCC24, ['JTS CPP kortelė 45 – Analgesic Medications (tccc.org.ua)', 'https://tccc.org.ua/files/downloads/tccc-cpp-skill-card-45-analgesic-medications-en.pdf'],
+      ['PCS – naloksonas 400 mcg/ml (JK eMC)', 'https://www.medicines.org.uk/emc/product/6589/smpc']],
+    lt: { p: [{ n: 'FORVEL', d: '0,4 mg/ml · ampulė 1 ml', r: 'Medochemie', s: 'T' }], ne: 'Nyxoid 1,8 mg nosies purškalas – registruotas, netiekiamas', pa: '' }
   }
 ];
 })();
