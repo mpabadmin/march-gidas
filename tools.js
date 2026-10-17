@@ -1,6 +1,6 @@
 'use strict';
 // March gidas – įrankiai: 9 eilučių MEDEVAC prašymas (NL), vizuali MIST kortelė su keliais sužeistaisiais (MC),
-// 10S triažas – Ten Second Triage (TS), SITREP padėties pranešimas (SR). NL, MC ir GK kodas toks pat kaip ETC gide – skiriasi tik TCFG.
+// 10s triažas – Ten Second Triage (TS), SITREP padėties pranešimas (SR). NL, MC ir GK kodas toks pat kaip ETC gide – skiriasi tik TCFG.
 // GKS skaičiuoklė (GK) March gide nerodoma (vietoje jos – SITREP), bet kodas paliktas, kad bendra dalis sutaptų su ETC gidu.
 
 // ───────── Programėlės nustatymai (vienintelis NL / MC / GK kodo skirtumas tarp March ir ETC gido) ─────────
@@ -1751,7 +1751,7 @@ const TS = (() => {
   function flow(s) {
     const cur = s.res ? '' : s.st, fr = (id, q, sub, out) => `<div class="fr${cur === id || (id === 'q3' && cur === 'q3a') ? ' cur' : ''}"><div class="fq">${q}${sub ? '<small>' + sub + '</small>' : ''}</div><div class="fy">TAIP →</div>${out}</div>`;
     const no = '<div class="fn">NE ↓</div>';
-    return '<section class="tfc" aria-label="10S triažo schema"><div class="nlh"><b>Schema</b></div>' +
+    return '<section class="tfc" aria-label="10s triažo schema"><div class="nlh"><b>Schema</b></div>' +
       fr('q1', '1. Vaikšto?', '', '<div class="fo tp3">P3<small>gali palaukti</small></div>') + no +
       fr('q2', '2. Masyvus kraujavimas?', '', '<div class="fo tp1">P1<small>spaudimas, turniketas, tamponavimas</small></div>') + no +
       fr('q3', '3. Kalba?', 'dejuoja, murma – NE', '<div class="fo fsub">Penetruojantis sužalojimas (kaklas–sėdmenys)?<span><b class="tp1"><small>TAIP</small>P1</b><b class="tp2"><small>NE</small>P2</b></span></div>') + no +
@@ -1761,11 +1761,11 @@ const TS = (() => {
   }
   function view() {
     const s = get(), learn = mode === 'learn';
-    let h = '<h1>10S triažas</h1><p class="muted mt0">Ten Second Triage – rūšiavimas per 10 sekundžių</p>';
+    let h = '<h1>10s triažas</h1><p class="muted mt0">Ten Second Triage – rūšiavimas per 10 sekundžių</p>';
     shownAt = Date.now();
     h += card(s) + tally(s) + flow(s);
-    if (learn) h += '<div class="card">10S triažas (Ten Second Triage, TST) – Jungtinės Karalystės civilinė masinių nelaimių rūšiavimo priemonė (NHS England, 2023), pakeitusi ankstesnį „triage sieve“. Ją taiko visų tarnybų apmokyti pirmieji reaguotojai: keli paprasti klausimai, apie 10 sekundžių vienam sužeistajam, be fiziologinių matavimų. TCCC rūšiavimas (TCCC 2026 priedas A: I etapas – skubus / neskubus, II etapas – Urgent / Priority / Routine) ir vieneto SOP galioja toliau – TST yra pagalbinė atmintinė masinei nelaimei.</div>' + '<a class="row" href="#/igudis/36"><div>TCCC rūšiavimas ir evakuacijos skubumas<small>Įgūdis #36</small></div><span class="ar">›</span></a>';
-    h += '<div class="card"><b>Svarbu</b><ul class="tnotes"><li>Vaikas iki 2 metų – visada P1.</li><li>Akivaizdžiai kritinės būklės vaikštantis – pasodinkite ir laikykite nevaikštančiu.</li><li>10S triažas nenaudoja fiziologinių matavimų (pulso, KD, kapiliarų prisipildymo).</li><li>Skirta vienam vertintojui.</li><li>TST – ne vienkartinis vertinimas: kartokite, būklė keičiasi.</li></ul></div>';
+    if (learn) h += '<div class="card">10s triažas (Ten Second Triage, TST) – Jungtinės Karalystės civilinė masinių nelaimių rūšiavimo priemonė (NHS England, 2023), pakeitusi ankstesnį „triage sieve“. Ją taiko visų tarnybų apmokyti pirmieji reaguotojai: keli paprasti klausimai, apie 10 sekundžių vienam sužeistajam, be fiziologinių matavimų. TCCC rūšiavimas (TCCC 2026 priedas A: I etapas – skubus / neskubus, II etapas – Urgent / Priority / Routine) ir vieneto SOP galioja toliau – TST yra pagalbinė atmintinė masinei nelaimei.</div>' + '<a class="row" href="#/igudis/36"><div>TCCC rūšiavimas ir evakuacijos skubumas<small>Įgūdis #36</small></div><span class="ar">›</span></a>';
+    h += '<div class="card"><b>Svarbu</b><ul class="tnotes"><li>Vaikas iki 2 metų – visada P1.</li><li>Akivaizdžiai kritinės būklės vaikštantis – pasodinkite ir laikykite nevaikštančiu.</li><li>10s triažas nenaudoja fiziologinių matavimų (pulso, KD, kapiliarų prisipildymo).</li><li>Skirta vienam vertintojui.</li><li>TST – ne vienkartinis vertinimas: kartokite, būklė keičiasi.</li></ul></div>';
     if (learn) h += '<p class="muted">Šaltiniai: NHS England, Ten Second Triage tool (2023 m. balandis); Vassallo J. et al. Ten second triage: a novel and pragmatic approach to major incident triage. Trauma 2024;26(1); NARU, TST – Non Clinical Responders Supplementary Information, v1.0 (2023).</p>' +
       '<a class="row" href="https://www.england.nhs.uk/long-read/ten-second-triage-tool/" target="_blank" rel="noopener"><div>Ten Second Triage tool<small>NHS England</small></div><span class="ar">↗</span></a>' +
       '<a class="row" href="https://doi.org/10.1177/14604086231156219" target="_blank" rel="noopener"><div>Vassallo et al., Trauma 2024<small>doi 10.1177/14604086231156219</small></div><span class="ar">↗</span></a>';
@@ -1811,7 +1811,7 @@ const SC = (() => {
   const best = () => { const b = LS.get(KEY, {}); return b && typeof b === 'object' && !Array.isArray(b) ? b : {}; };
   const byId = id => all().find(s => s.id === id);
   const LET = ['A', 'B', 'C', 'D'];
-  const TOOLS = { '#/tst': '10S triažas', '#/9line': '9-Line MEDEVAC', '#/mist': 'MIST kortelė', '#/sitrep': 'SITREP', '#/gks': 'GKS skaičiuoklė', '#/zymejimas': 'Vaistų žymėjimas', '#/nudegimai': 'Nudegimai ir nušalimai' };
+  const TOOLS = { '#/tst': '10s triažas', '#/9line': '9-Line MEDEVAC', '#/mist': 'MIST kortelė', '#/sitrep': 'SITREP', '#/gks': 'GKS skaičiuoklė', '#/zymejimas': 'Vaistų žymėjimas', '#/nudegimai': 'Nudegimai ir nušalimai' };
   function refLabel(r) {
     let m;
     if ((m = r.match(/^#\/igudis\/(\d+)$/))) { const s = (E.igudziai || []).find(x => String(x.id) === m[1]); return s ? ['Įgūdis #' + m[1], s.pav] : null; }

@@ -63,7 +63,7 @@ const SR = (() => {
   }
   const ta = (k, v, ph, lb, rows) => `<textarea class="inp" data-sr="${k}" rows="${rows || 2}" placeholder="${esc(ph)}" aria-label="${esc(lb)}">${esc(v)}</textarea>`;
   const inp = (k, v, ph, lb, extra) => `<input class="inp" data-sr="${k}" value="${esc(v)}" placeholder="${esc(ph)}" autocomplete="off" aria-label="${esc(lb)}"${extra || ''}>`;
-  // Sužeistieji – užpildytos MIST kortelės (su evakuacijos kategorijomis), 10S triažo skaičiavimas
+  // Sužeistieji – užpildytos MIST kortelės (su evakuacijos kategorijomis), 10s triažo skaičiavimas
   function others() {
     const tst = LS.get(TCFG.pre + 'tst', null);
     let pts = []; try { pts = MC.state().pts.filter(MC.used); } catch (e) {}
@@ -88,7 +88,7 @@ const SR = (() => {
     h += card(4, s, '<div class="opts">' + EN.map(([k, t]) => chip('sr-en', k, s.en === k, t)).join('') + '</div>' + ta('enTxt', s.enTxt, 'Dydis, veikla, vieta, uniforma, laikas, įranga (SALUTE)', 'Priešo patikslinimas'));
     h += card(5, s, '<div class="opts">' + ACT.map(([k, t]) => chip('sr-act', k, s.act.indexOf(k) >= 0, t)).join('') + '</div>' + ta('actTxt', s.actTxt, 'Patikslinimas, pvz. pozicija, judėjimo kryptis', 'Savos padėties patikslinimas'));
     let fill = '';
-    if (o.mist || o.tTot || o.msTot) fill = '<p class="muted">' + [o.mist ? 'MIST kortelėse: ' + plural(o.mist, ['sužeistasis', 'sužeistieji', 'sužeistųjų']) + (evTxt(o.ev) ? ' (evakuacija: ' + evTxt(o.ev) + ')' : '') : '', o.tTot ? `10S triažas: P1 ${n99(o.t.p1)} · P2 ${n99(o.t.p2)} · P3 ${n99(o.t.p3)} · nekvėpuoja ${n99(o.t.nb)}` : '', o.msTot ? msTxt(o.ms) : ''].filter(Boolean).join(' · ') + '</p><button class="btn sm" data-act="sr-fill">Užpildyti iš pacientų (MIST / 10S triažo' + (o.msTot ? ' / Mascal' : '') + ')</button>';
+    if (o.mist || o.tTot || o.msTot) fill = '<p class="muted">' + [o.mist ? 'MIST kortelėse: ' + plural(o.mist, ['sužeistasis', 'sužeistieji', 'sužeistųjų']) + (evTxt(o.ev) ? ' (evakuacija: ' + evTxt(o.ev) + ')' : '') : '', o.tTot ? `10s triažas: P1 ${n99(o.t.p1)} · P2 ${n99(o.t.p2)} · P3 ${n99(o.t.p3)} · nekvėpuoja ${n99(o.t.nb)}` : '', o.msTot ? msTxt(o.ms) : ''].filter(Boolean).join(' · ') + '</p><button class="btn sm" data-act="sr-fill">Užpildyti iš pacientų (MIST / 10s triažo' + (o.msTot ? ' / Mascal' : '') + ')</button>';
     h += card(6, s, stepper('sr-n', 'ok', s.ok, 'Kovingi', 'gali tęsti užduotį') + stepper('sr-n', 'wia', s.wia, 'Sužeisti', 'WIA') + stepper('sr-n', 'kia', s.kia, 'Žuvę', 'KIA') + stepper('sr-n', 'mia', s.mia, 'Dingę be žinios', 'MIA') + fill + ta('perTxt', s.perTxt, 'Patikslinimas, pvz. 2 skubūs (A), 1 įprastinis (D)', 'Asmenų patikslinimas'));
     h += card(7, s, LG.map(([k, t]) => `<div class="lgr"><span>${esc(t)}</span><div class="lgs" role="group" aria-label="${esc(t)}">` + LGS.map(([c, d]) => `<button class="lg-${LGC[c]}${s.lg[k] === c ? ' on' : ''}" data-act="sr-lg" data-k="${k}" data-c="${c}" aria-pressed="${s.lg[k] === c}" aria-label="${esc(t)}: ${esc(d)}">${c}</button>`).join('') + '</div></div>').join('') + ta('lgTxt', s.lgTxt, 'Patikslinimas, pvz. trūksta turniketų, 2 l vandens', 'Logistikos patikslinimas'), 'Ž – pakanka, G – mažėja, R – kritiškai mažai, J – nėra. Ribos – pagal SOP.');
     h += card(8, s, '<div class="opts">' + COM.map(([k, t]) => chip('sr-com', k, s.com === k, t)).join('') + '</div>' + inp('comTxt', s.comTxt, 'Patikslinimas, pvz. atsarginis kanalas', 'Ryšio patikslinimas'));
@@ -114,7 +114,7 @@ const SR = (() => {
         const o = others(), tw = o.t ? n99(o.t.p1) + n99(o.t.p2) + n99(o.t.p3) : 0;
         s.wia = Math.max(o.mist, tw, o.msW, s.wia); if (o.ms.X) s.kia = Math.max(o.ms.X, s.kia);
         const et = evTxt(o.ev); if (et && s.perTxt.indexOf('Evakuacija:') < 0) s.perTxt = [s.perTxt.trim(), 'Evakuacija: ' + et].filter(Boolean).join('; ');
-        if (o.tTot) { const add = `10S triažas: P1 ${n99(o.t.p1)}, P2 ${n99(o.t.p2)}, P3 ${n99(o.t.p3)}, nekvėpuoja ${n99(o.t.nb)}`; if (s.perTxt.indexOf('10S triažas:') < 0 && s.perTxt.indexOf('TST:') < 0) s.perTxt = [s.perTxt.trim(), add].filter(Boolean).join('; '); }
+        if (o.tTot) { const add = `10s triažas: P1 ${n99(o.t.p1)}, P2 ${n99(o.t.p2)}, P3 ${n99(o.t.p3)}, nekvėpuoja ${n99(o.t.nb)}`; if (s.perTxt.indexOf('10s triažas:') < 0 && s.perTxt.indexOf('TST:') < 0) s.perTxt = [s.perTxt.trim(), add].filter(Boolean).join('; '); }
         if (o.msTot && s.perTxt.indexOf('Mascal:') < 0) s.perTxt = [s.perTxt.trim(), msTxt(o.ms).replace(/ · /g, ', ')].filter(Boolean).join('; ');
         toast('Įrašyta – patikrinkite skaičius'); break;
       }

@@ -48,11 +48,11 @@ const skRefs = t => esc(t).replace(/#(\d{1,2})(?![\d])/g, (m, n) => { const k = 
 // Susiję įrankiai įgūdžio puslapyje
 const SKILL_TOOLS = {
   31: [['#/mist', 'MIST kortelė', 'Kūno schema, požymiai, gydymas – užpildykite ir perskaitykite']], 32: [['#/9line', '9-Line MEDEVAC forma', 'Užpildykite ir perskaitykite per radiją'], ['#/mist', 'MIST kortelė', 'Kūno schema, požymiai, gydymas']],
-  34: [['#/mist', 'MIST kortelė', 'Perduokite perskaitydami kortelę']], 36: [['#/tst', '10S triažas', 'Ten Second Triage – masinei nelaimei']]
+  34: [['#/mist', 'MIST kortelė', 'Perduokite perskaitydami kortelę']], 36: [['#/tst', '10s triažas', 'Ten Second Triage – masinei nelaimei']]
 };
 // Įrankiai (tools.js): būsena rodoma po pavadinimu
 const toolRows = () => typeof MC === 'undefined' ? '' :
-  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', '10S triažas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status()) +
+  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', '10s triažas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status()) +
   row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
 const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="tag grn">CLS</span>';
 
@@ -70,7 +70,7 @@ const V = {
     return '<div class="tools">' +
       `<a class="tool" href="#/9line" aria-label="9-Line MEDEVAC prašymas: ${esc(nl)}"><span class="ti">9</span><b>9-Line</b><small>${esc(nl)}</small></a>` +
       `<a class="tool" href="#/pacientas?t=kortele" aria-label="MIST kortelė: ${esc(mc)}"><span class="ti">M</span><b>MIST</b><small>${esc(mc)}</small></a>` +
-      `<a class="tool" href="#/tst" aria-label="10S triažas: ${esc(ts)}"><span class="ti">10S</span><b>10S triažas</b><small>${esc(ts)}</small></a>` +
+      `<a class="tool" href="#/tst" aria-label="10s triažas: ${esc(ts)}"><span class="ti">10s</span><b>10s triažas</b><small>${esc(ts)}</small></a>` +
       `<a class="tool" href="#/sitrep" aria-label="SITREP padėties pranešimas: ${esc(sr)}"><span class="ti">S</span><b>SITREP</b><small>${esc(sr)}</small></a></div>`;
   },
 

@@ -98,7 +98,7 @@ function renderList(id) {
     const info = mode === 'learn' && it.i ? '<div class="muted">' + it.i + '</div>' : '';
     const T = it.tm ? (LS.get('mg-laikai', {}) || {}) : null;
     const links = (it.tm ? `<button class="sk tmk" data-act="tm-mark" data-k="${it.tm}">⏱ ${T[it.tm] ? hm(T[it.tm]) : 'Dabar'}</button>` : '') + (it.sk ? `<a class="sk" href="#/igudis/${it.sk}" data-act="go" data-r="#/igudis/${it.sk}" aria-label="Įgūdis ${it.sk}">#${it.sk}</a>` : '') +
-      (it.r ? `<a class="sk" href="${esc(it.r)}" data-act="go" data-r="${esc(it.r)}">${/9line/.test(it.r) ? '9-Line' : /mist/.test(it.r) ? 'MIST' : /tst/.test(it.r) ? '10S' : 'Dozė'}</a>` : '');
+      (it.r ? `<a class="sk" href="${esc(it.r)}" data-act="go" data-r="${esc(it.r)}">${/9line/.test(it.r) ? '9-Line' : /mist/.test(it.r) ? 'MIST' : /tst/.test(it.r) ? '10s' : 'Dozė'}</a>` : '');
     h += `<div class="ck${on ? ' on' : ''}${it.k ? ' key' : ''}" data-act="ck" data-l="${esc(id)}" data-i="${i}" role="checkbox" aria-checked="${on}" tabindex="0"><span class="bx">✓</span><div class="t"><span class="tt">${esc(it.t)}</span> ${tag(it.g)}${sub}${info}</div>${links ? '<div class="lk">' + links + '</div>' : ''}</div>`;
   });
   const pct = tot ? Math.round(n / tot * 100) : 0;
@@ -201,7 +201,7 @@ function buildIdx() {
   add('Įrankiai', 'Egzaminuotojo režimas', 'Kontrolinio sąrašo vertinimas su laiku ir kritiniais punktais', 'egzaminas egzaminuotojas vertinimas instruktorius laikmatis kritiniai punktai', '#/egzaminas');
   add('Įrankiai', 'Treniruočių scenarijai', 'Klinikiniai atvejai su klausimais ir paaiškinimais', 'scenarijai scenarijus treniruotė viktorina testas klausimai', '#/scenarijai');
   add('Įrankiai', 'SITREP – padėties pranešimas', 'Pranešimas vadui: vieta, priešas, padėtis, nuostoliai, logistika, prašymai', 'sitrep situacija padėtis pranešimas raportas vadui nuostoliai logistika dtg', '#/sitrep');
-  add('Įrankiai', '10S triažas', 'Ten Second Triage (TST) – rūšiavimas per 10 sekundžių', 'tst 10s 10 s 10 sekundžių ten second triage triažas rūšiavimas masinė nelaimė p1 p2 p3', '#/tst');
+  add('Įrankiai', '10s triažas', 'Ten Second Triage (TST) – rūšiavimas per 10 sekundžių', 'tst 10s 10 s 10 sekundžių ten second triage triažas rūšiavimas masinė nelaimė p1 p2 p3', '#/tst');
   return I;
 }
 

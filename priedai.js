@@ -242,7 +242,7 @@ const OP = (() => {
       '<button class="btn dng" data-act="op-wipe" style="width:100%">Ištrinti visų sužeistųjų duomenis</button>' +
       '<p class="muted">Automatiškai ištrinti, jei programėlė nenaudojama:</p><div class="seg2" role="group" aria-label="Automatinis ištrynimas">' +
       [[0, 'Išjungta'], [12, '12 val.'], [24, '24 val.'], [72, '3 d.']].map(([k, t]) => `<button class="${h === k ? 'on' : ''}" data-act="op-auto" data-k="${k}" aria-pressed="${h === k}">${t}</button>`).join('') + '</div>' +
-      '<p class="muted">Ištrinama: MIST kortelės, paciento failas, laikai, sąrašų žymėjimai, 9-Line, 10S triažas' + (typeof MS !== 'undefined' ? ', Mascal' : '') + (typeof VZ !== 'undefined' ? ', vaistų žymėjimas, nudegimai, šviežias kraujas' : '') + (typeof SR !== 'undefined' ? ', SITREP' : '') + '. Lieka: nustatymai, įsivertinimai, vertinimai ir dozių kortelės.</p>';
+      '<p class="muted">Ištrinama: MIST kortelės, paciento failas, laikai, sąrašų žymėjimai, 9-Line, 10s triažas' + (typeof MS !== 'undefined' ? ', Mascal' : '') + (typeof VZ !== 'undefined' ? ', vaistų žymėjimas, nudegimai, šviežias kraujas' : '') + (typeof SR !== 'undefined' ? ', SITREP' : '') + '. Lieka: nustatymai, įsivertinimai, vertinimai ir dozių kortelės.</p>';
   }
   function act(el) {
     const d = el.dataset;
