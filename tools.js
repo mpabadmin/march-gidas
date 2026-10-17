@@ -750,7 +750,7 @@ const MC = (() => {
         : `<p class="muted mqhint">Pasirinkite ženklą ir bakstelėkite schemoje (bakstelėjus žymę – ji pašalinama). D – paciento dešinė.</p>${undo.length ? '<div class="mqrow"><button class="mqc sm" data-act="mc-undo">↶ Atšaukti</button></div>' : ''}`) +
       lab('Turniketai – bakstelėkite galūnę') + '<div class="mqtq4">' + TQ.map(([k, lt]) => { const q = s.tq[k]; return `<button class="mqc${q && q.on ? ' on tq' : ''}" data-act="mc-tqs" data-k="${k}" aria-pressed="${!!(q && q.on)}">${esc(lt)}${q && q.on ? ' · ' + esc(q.tm || '—') : ''}</button>`; }).join('') + '</div>' +
       '<div class="mqrow">' + ch('mc-tx', 'tqj', s.tx.indexOf('tqj') >= 0, 'Jungties turniketas') +
-      (typeof NB !== 'undefined' ? `<a class="mqc" href="#/nudegimai">Nudegimų plotas${NB.total && +NB.total() ? ': ' + esc(String(NB.total()).replace('.', ',')) + ' %' : ''} ›</a>` : '') + '</div>' +
+      (typeof NB !== 'undefined' ? `<a class="mqc" href="#/nudegimai">Nudegimai${NB.total && +NB.total() ? ': ' + esc(String(NB.total()).replace('.', ',')) + ' %' : ''} ›</a>` : '') + '</div>' +
       pills(['injTxt'], s) + '</section>';
     // S – būklė
     const V = s.vit.map((v, i) => ({ v, i })).slice(-3), more = s.vit.length - V.length;
@@ -1811,7 +1811,7 @@ const SC = (() => {
   const best = () => { const b = LS.get(KEY, {}); return b && typeof b === 'object' && !Array.isArray(b) ? b : {}; };
   const byId = id => all().find(s => s.id === id);
   const LET = ['A', 'B', 'C', 'D'];
-  const TOOLS = { '#/tst': '10S triažas', '#/9line': '9-Line MEDEVAC', '#/mist': 'MIST kortelė', '#/sitrep': 'SITREP', '#/gks': 'GKS skaičiuoklė', '#/zymejimas': 'Vaistų žymėjimas', '#/nudegimai': 'Nudegimų plotas' };
+  const TOOLS = { '#/tst': '10S triažas', '#/9line': '9-Line MEDEVAC', '#/mist': 'MIST kortelė', '#/sitrep': 'SITREP', '#/gks': 'GKS skaičiuoklė', '#/zymejimas': 'Vaistų žymėjimas', '#/nudegimai': 'Nudegimai ir nušalimai' };
   function refLabel(r) {
     let m;
     if ((m = r.match(/^#\/igudis\/(\d+)$/))) { const s = (E.igudziai || []).find(x => String(x.id) === m[1]); return s ? ['Įgūdis #' + m[1], s.pav] : null; }
@@ -2002,7 +2002,7 @@ const PT = (() => {
     const tile = (r, t, s) => `<a class="ptt" href="${r}"><small>${esc(t)}</small><b>${esc(s)}</b></a>`;
     h += '<div class="pttiles">' + tile('#/mist', 'MIST', MC.status()) +
       (typeof VZ !== 'undefined' ? tile('#/zymejimas', 'Vaistai', VZ.status()) : tile('#/9line', '9-Line', NL.status())) +
-      (typeof NB !== 'undefined' ? tile('#/nudegimai', 'Nudegimai', NB.status()) : '') +
+      (typeof NB !== 'undefined' ? tile('#/nudegimai', 'Nudegimai ir nušalimai', NB.status()) : '') +
       (typeof KR !== 'undefined' ? tile('#/pilnas-kraujas', 'Kraujo transfuzija', KR.status()) : '') + '</div>';
     h += '<h2>Įvykių eiga</h2>' + (ev.length ? '<div class="ptev">' + ev.map(([t, x]) => `<div><b>${hm(t)}</b><span>${esc(x)}</span></div>`).join('') + '</div>' : '<p class="muted">Įvykių dar nėra: pažymėkite laikus (Pradžia → Laikai), MIST požymius' + (typeof VZ !== 'undefined' ? ', suleistus vaistus' : '') + '.</p>');
     h += '<div class="acts"><button class="btn pri" data-act="go" data-r="#/qr">Perduoti QR kodu</button><button class="btn" data-act="pt-read">Skaityti perduodant</button><button class="btn" data-act="pt-copy">Kopijuoti viską</button></div>';
