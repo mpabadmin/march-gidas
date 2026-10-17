@@ -99,8 +99,8 @@ const V = {
       '<h2>Fazė</h2>' + V.phaseTiles(true) +
       '<h2>MEDEVAC</h2>' + V.toolTiles() +
       `<h2>Dažni sąrašai${typeof LU !== 'undefined' && LU.used() ? ' · pagal naudojimą' : ''}</h2>` + L.map(lrow).join('') +
-      `<h2>Dažniausi vaistai · ${who}${w || 80} kg${w ? '' : ' (numatytas)'}</h2>` + quick.map(v => row('#/vaistas/' + v.id, v.name, doseShort(v, w || 80), TCFG.hub.drugTag(v))).join('') +
-      row('#/vaistai', 'Visi vaistai', lt((E.vaistai || []).filter(v => ok(v.lygis)).length, ['vaistas', 'vaistai', 'vaistų']) + ' pagal TCCC 2026') +
+      `<h2>Dažniausi vaistai</h2>` + quick.map(v => row('#/vaistas/' + v.id, v.name, doseShort(v, w || 80), TCFG.hub.drugTag(v))).join('') +
+      row('#/vaistai', 'Visi vaistai', lt((E.vaistai || []).filter(v => ok(v.lygis) && !v.ne26).length, ['vaistas', 'vaistai', 'vaistų']) + ' pagal TCCC 2026') +
       '<h2>Greitai</h2>' +
       row('#/igudis/36', 'Rūšiavimas ir evakuacijos skubumas', 'Keli sužeistieji') +
       row('#/p/devynios', '9-Line kodai ir skubumo kategorijos') +
@@ -193,12 +193,12 @@ const V = {
 
   drugs() {
     const D = (E.vaistai || []).filter(v => ok(v.lygis)), w = wCalc(), field = mode === 'field';
-    let h = '<h1>Vaistai</h1><p class="muted">Pagal TCCC 2026 gaires. Žyma CMC – skiria kovos medikas.</p>';
+    let h = '<h1>Vaistai</h1><p class="muted">Pagal TCCC 2026 gaires. Žyma CMC – skiria kovos medikas, CPP – kovos paramedikas ar gydytojas. „Ne TCCC 2026“ – tik pagal vieneto SOP.</p>';
     if (!field) h += row('#/korteles', 'Dozių kortelės', FC.status());
     (E.vaistuGrupes || []).forEach(g => {
       const a = D.filter(v => v.grupe === g.id);
       if (!a.length) return;
-      h += '<h2>' + esc(g.pav) + '</h2>' + a.map(v => row('#/vaistas/' + v.id, v.name, field ? doseShort(v, w) : v.klase, tag(v.lygis))).join('');
+      h += '<h2>' + esc(g.pav) + '</h2>' + a.map(v => row('#/vaistas/' + v.id, v.name, field ? doseShort(v, w) : v.klase, tag(v.lygis) + (v.ne26 ? '<span class="tag amb">Ne TCCC 2026</span>' : ''))).join('');
     });
     return h + '<p class="muted">Vaistai skiriami tik pagal kompetenciją, vieneto protokolus ir mediko nurodymus.</p>' + row('#/p/vaistai26', 'TCCC 2026 vaistai trumpai');
   },
@@ -209,7 +209,7 @@ const V = {
     const w = wCalc(), learn = mode === 'learn';
     const doseHtml = d => `<div class="dose"><div class="lb">${esc(d.k)}${d.c ? ' · ' + esc(d.d) : ''}</div><div class="big">${esc(d.c ? calc(d.c, w) : d.d)}</div>${d.p ? '<div class="lb">' + br(d.p) + '</div>' : ''}</div>`;
     let h = `<h1>${esc(v.name)}</h1><p class="muted">${esc(v.klase || '')}</p>`;
-    h += '<span class="tag grn">TCCC 2026</span>' + (v.lygis === 'CLS' ? '<span class="tag grn">CLS</span>' : tag(v.lygis));
+    h += (v.ne26 ? '<span class="tag amb">Ne TCCC 2026</span>' : '<span class="tag grn">TCCC 2026</span>') + (v.lygis === 'CLS' ? '<span class="tag grn">CLS</span>' : tag(v.lygis));
     if (v.ind) h += `<p class="ind">${esc(v.ind)}</p>`;
     if ((v.dozes || []).some(d => d.c)) h += '<h2>Paciento svoris, kg</h2>' + wChips(wNow());
     if ((v.dozes || []).length) h += '<h2>Dozė</h2>' + v.dozes.map(doseHtml).join('');

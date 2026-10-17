@@ -72,6 +72,7 @@ const HUB = (() => {
   const GO = () => Object.assign({ vit: '#/pacientas?t=kortele&f=s', vz: typeof VZ !== 'undefined' ? '#/pacientas?t=vaistai' : '#/vaistai', tq: '#/pacientas?t=kortele&f=tq', mk: '#/pacientas?t=kortele&f=i',
     apz: '#/pacientas?t=apz', kortele: '#/pacientas?t=kortele', vaistai: '#/pacientas?t=vaistai', eiga: '#/pacientas?t=eiga', perduoti: '#/pacientas?t=perduoti' }, HCFG().go);
   const FOCUS = { s: '#mcS', tq: '#mcI', i: '#mcI', c: '#mcT' };
+  let wOther = false;
   let sheet = false, wOpen = false, focus = null, fDone = false, memTab = 'apz', pend = null;
   const ss = {
     get() { try { return sessionStorage.getItem(TK) || memTab; } catch (e) { return memTab; } },
@@ -132,7 +133,9 @@ const HUB = (() => {
     const sub = [String(c.name || '').trim(), sx, (c.mech || []).join(', ').toLowerCase(), when].filter(Boolean).join(' · ');
     let h = `<div class="hbhd"><div class="hbn">${big ? `<h1>${esc(title)}</h1>` : `<b>${esc(title)}</b>`}${sub ? `<small>${esc(sub)}</small>` : ''}</div>` +
       (wOn() ? `<button class="btn hbw${w ? '' : ' unset'}" data-act="hb-w" aria-expanded="${wOpen}" aria-label="Paciento svoris${w ? ' ' + w + ' kg' : ' nenurodytas'} – keisti">${w ? w + ' kg' : 'Svoris ?'}</button>` : '') + '</div>';
-    if (wOpen && wOn()) h += '<div class="chips hbwc" role="group" aria-label="Svoris, kg">' + W_LIST.map(v => `<button class="${v === w ? 'on' : ''}" data-act="hb-wset" data-w="${v}" aria-pressed="${v === w}">${v}</button>`).join('') + '</div>' +
+    if (wOpen && wOn()) h += '<div class="chips hbwc" role="group" aria-label="Svoris, kg">' + W_LIST.map(v => `<button class="${v === w ? 'on' : ''}" data-act="hb-wset" data-w="${v}" aria-pressed="${v === w}">${v}</button>`).join('') +
+      (w && W_LIST.indexOf(w) < 0 ? `<button class="on" data-act="hb-wother" aria-pressed="true">${w}</button>` : '<button data-act="hb-wother">Kitas…</button>') + '</div>' +
+      (wOther ? '<div class="wother"><input class="inp" id="hb-win" inputmode="decimal" placeholder="kg" aria-label="Svoris, kg" autocomplete="off"><button class="btn pri" data-act="hb-wok">Gerai</button></div>' : '') +
       (w ? '' : '<p class="muted mt0">Kol nenurodyta, dozės skaičiuojamos 80 kg.</p>');
     return h;
   }
@@ -275,7 +278,9 @@ const HUB = (() => {
       case 'hb-tab': { if (!TABS.some(t => t[0] === d.k)) return; ss.set(d.k); wOpen = false; focus = null;
         try { history.replaceState(history.state, '', '#/pacientas?t=' + d.k); } catch (e) {} // adresas atitinka skiltį (atgal / perkrovimas)
         const y = scrollY; render(); scrollTo(0, y); return; }
-      case 'hb-w': wOpen = !wOpen; keep(); return;
+      case 'hb-w': wOpen = !wOpen; wOther = false; keep(); return;
+      case 'hb-wother': wOther = !wOther; keep(); if (wOther) { const i = document.getElementById('hb-win'); if (i) i.focus(); } return;
+      case 'hb-wok': { const i = document.getElementById('hb-win'), v = i ? parseFloat(String(i.value).replace(',', '.')) : NaN; if (!(v >= 3 && v <= 250)) { toast('Svoris: 3–250 kg'); if (i) i.focus(); return; } const w = Math.round(v); LS.set(WK, w); wOpen = false; wOther = false; toast('Svoris ' + w + ' kg – šiam pacientui'); keep(); return; }
       case 'hb-sh': { // laikų plytelės: laiko klaviatūra (trauma / turniketas) arba TXA vaisto langas
         if (!MC.sheet) return; const rep = !!(sheet && history.state && history.state.hb); sheet = false; keep();
         MC.sheet(d.sh, { replace: rep, field: d.f || '', drug: d.d || '' }); return;

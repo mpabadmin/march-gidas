@@ -15,7 +15,8 @@ const TCFG = {
   // MIST kortelės vaisto langas: greitosios dozės [būdas, kiekis, vienetai] – tik tikslios reikšmės iš vaistai.js teksto (testas tikrina)
   qd: { paracetamolis: [['PO', '1000', 'mg'], ['PO', '1300', 'mg']], meloksikamas: [['PO', '15', 'mg']], suzetriginas: [['PO', '100', 'mg'], ['PO', '50', 'mg']],
     ketaminas: [['IV', '25', 'mg'], ['IM', '100', 'mg'], ['IN', '50', 'mg']], esketaminas: [['IN', '14', 'mg'], ['IN', '28', 'mg']], cefadroksilis: [['PO', '1', 'g']], cefaleksinas: [['PO', '500', 'mg']],
-    ceftriaksonas: [['IV', '2', 'g'], ['IM', '2', 'g']], txa: [['IV', '2', 'g']], kalcis: [['IV', '30', 'ml']], ondansetronas: [['ODT', '4', 'mg'], ['IV', '4', 'mg']], 'nacl-hipert': [['IV', '250', 'ml']] },
+    ceftriaksonas: [['IV', '2', 'g'], ['IM', '2', 'g']], txa: [['IV', '2', 'g']], kalcis: [['IV', '30', 'ml']], ondansetronas: [['ODT', '4', 'mg'], ['IV', '4', 'mg']], 'nacl-hipert': [['IV', '250', 'ml']],
+    fentanilis: [['IV', '50', 'mcg'], ['IN', '100', 'mcg']], morfinas: [['IM', '10', 'mg']], naloksonas: [['IV', '0,4', 'mg'], ['IM', '0,4', 'mg'], ['IN', '0,4', 'mg']] },
   pt: ['laikai', 'ck', 'svoris'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele); svoris – kiekvienam pacientui savas
   migrate: o => migrateOldMist(o), // senos MIST formos duomenys (žr. žemiau)
   // paciento ekranas, juosta ir dažniausi sąrašai (pacientas.js – bendras kodas); MARCH PAWS apžvalga ir vaistų skiltis – march-hub.js (MPAWS)
@@ -749,7 +750,7 @@ const MC = (() => {
         : `<p class="muted mqhint">Pasirinkite ženklą ir bakstelėkite schemoje (bakstelėjus žymę – ji pašalinama). D – paciento dešinė.</p>${undo.length ? '<div class="mqrow"><button class="mqc sm" data-act="mc-undo">↶ Atšaukti</button></div>' : ''}`) +
       lab('Turniketai – bakstelėkite galūnę') + '<div class="mqtq4">' + TQ.map(([k, lt]) => { const q = s.tq[k]; return `<button class="mqc${q && q.on ? ' on tq' : ''}" data-act="mc-tqs" data-k="${k}" aria-pressed="${!!(q && q.on)}">${esc(lt)}${q && q.on ? ' · ' + esc(q.tm || '—') : ''}</button>`; }).join('') + '</div>' +
       '<div class="mqrow">' + ch('mc-tx', 'tqj', s.tx.indexOf('tqj') >= 0, 'Jungties turniketas') +
-      (typeof NB !== 'undefined' ? `<a class="mqc" href="#/nudegimai">Nudegimų plotas${NB.total && +NB.total() ? ': ' + esc(String(NB.total()).replace('.', ',')) + ' %' : ''} ›</a>` : '') + '</div>' +
+      (typeof NB !== 'undefined' ? `<a class="mqc" href="#/nudegimai">Nudegimai${NB.total && +NB.total() ? ': ' + esc(String(NB.total()).replace('.', ',')) + ' %' : ''} ›</a>` : '') + '</div>' +
       pills(['injTxt'], s) + '</section>';
     // S – būklė
     const V = s.vit.map((v, i) => ({ v, i })).slice(-3), more = s.vit.length - V.length;
@@ -948,6 +949,14 @@ const MC = (() => {
     const st = load(), s = curOf(st);
     (rows || []).forEach(r => { if (!r || !ROWG.some(g => g[0] === r.g)) return; const x = { g: r.g, name: str(r.name), dose: str(r.dose), route: str(r.route), time: str(r.time), src: str(r.src) }; const o = x.src ? s.rows.find(y => y.src === x.src) : null; if (o) Object.assign(o, x); else s.rows.push(x); });
     if (note && s.txTxt.indexOf(note) < 0) s.txTxt = [s.txTxt.trim(), note].filter(Boolean).join('; ');
+    save(st);
+    return st.pts.length > 1 ? st.cur + 1 : 0;
+  }
+  // Kiti įrankiai (nušalimai) → I dalies patikslinimas (injTxt) dabartiniam sužeistajam; ta pati pastaba nekartojama
+  function addInj(note) {
+    const st = load(), s = curOf(st), n = str(note).trim();
+    if (!n) return 0;
+    if (s.injTxt.indexOf(n) < 0) s.injTxt = [s.injTxt.trim(), n].filter(Boolean).join('; ');
     save(st);
     return st.pts.length > 1 ? st.cur + 1 : 0;
   }
@@ -1580,7 +1589,7 @@ const MC = (() => {
     readMode('Nukentėjusiojo kortelė', ['<img class="cardimg" alt="Nukentėjusiojo kortelė" src="' + url + '">'], [['Bendrinti', share], ['Išsaugoti', save], ['Spausdinti', print]]);
   }
   // Paciento failui: visa būsena ir dabartinės kortelės tekstas
-  return { view, act, onInput, status, text, addGcs, addRows, current, region, state: load, curText: en => curText(load(), en), cardCanvas, loadLogo, vitLine, tqName, outView, parts: (s, n, tot, en) => parts(s, n || 1, tot || 1, en), injText, abn,
+  return { view, act, onInput, status, text, addGcs, addRows, addInj, current, region, state: load, curText: en => curText(load(), en), cardCanvas, loadLogo, vitLine, tqName, outView, parts: (s, n, tot, en) => parts(s, n || 1, tot || 1, en), injText, abn,
     txText: (s, en) => [lc(txParts(s, en, 1)), String(s.txTxt || '').trim()].filter(Boolean).join('; '), trTs, hydrate, used, setTime, setTq, dropSrc,
     sheet, sheetOpen: () => !!SH, closeSheet: () => shClose(false), profileView, MECH, TX, TQ, MK, ROWG, EVAC, POS };
 })();
@@ -1802,7 +1811,7 @@ const SC = (() => {
   const best = () => { const b = LS.get(KEY, {}); return b && typeof b === 'object' && !Array.isArray(b) ? b : {}; };
   const byId = id => all().find(s => s.id === id);
   const LET = ['A', 'B', 'C', 'D'];
-  const TOOLS = { '#/tst': '10S triažas', '#/9line': '9-Line MEDEVAC', '#/mist': 'MIST kortelė', '#/sitrep': 'SITREP', '#/gks': 'GKS skaičiuoklė', '#/zymejimas': 'Vaistų žymėjimas', '#/nudegimai': 'Nudegimų plotas' };
+  const TOOLS = { '#/tst': '10S triažas', '#/9line': '9-Line MEDEVAC', '#/mist': 'MIST kortelė', '#/sitrep': 'SITREP', '#/gks': 'GKS skaičiuoklė', '#/zymejimas': 'Vaistų žymėjimas', '#/nudegimai': 'Nudegimai ir nušalimai' };
   function refLabel(r) {
     let m;
     if ((m = r.match(/^#\/igudis\/(\d+)$/))) { const s = (E.igudziai || []).find(x => String(x.id) === m[1]); return s ? ['Įgūdis #' + m[1], s.pav] : null; }
@@ -1993,7 +2002,7 @@ const PT = (() => {
     const tile = (r, t, s) => `<a class="ptt" href="${r}"><small>${esc(t)}</small><b>${esc(s)}</b></a>`;
     h += '<div class="pttiles">' + tile('#/mist', 'MIST', MC.status()) +
       (typeof VZ !== 'undefined' ? tile('#/zymejimas', 'Vaistai', VZ.status()) : tile('#/9line', '9-Line', NL.status())) +
-      (typeof NB !== 'undefined' ? tile('#/nudegimai', 'Nudegimai', NB.status()) : '') +
+      (typeof NB !== 'undefined' ? tile('#/nudegimai', 'Nudegimai ir nušalimai', NB.status()) : '') +
       (typeof KR !== 'undefined' ? tile('#/pilnas-kraujas', 'Kraujo transfuzija', KR.status()) : '') + '</div>';
     h += '<h2>Įvykių eiga</h2>' + (ev.length ? '<div class="ptev">' + ev.map(([t, x]) => `<div><b>${hm(t)}</b><span>${esc(x)}</span></div>`).join('') + '</div>' : '<p class="muted">Įvykių dar nėra: pažymėkite laikus (Pradžia → Laikai), MIST požymius' + (typeof VZ !== 'undefined' ? ', suleistus vaistus' : '') + '.</p>');
     h += '<div class="acts"><button class="btn pri" data-act="go" data-r="#/qr">Perduoti QR kodu</button><button class="btn" data-act="pt-read">Skaityti perduodant</button><button class="btn" data-act="pt-copy">Kopijuoti viską</button></div>';
