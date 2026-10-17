@@ -116,7 +116,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "Antrasis guli, nevaikšto, iš šlaunies gausiai teka kraujas.",
+    "sit": "Antrasis guli, nevaikšto, masyvus kraujavimas iš šlaunies.",
     "gp": {},
     "klaus": "Kategorija ir veiksmai?",
     "opt": [
@@ -133,14 +133,14 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Gausus kraujavimas – P1: iškart spaudimas, turniketas ar tamponavimas. Atlikite tik greitas gyvybę gelbstinčias intervencijas ir eikite prie kito – neužstrikite prie vieno.",
+    "why": "Masyvus kraujavimas – P1: iškart spaudimas, turniketas ar tamponavimas. Atlikite tik greitas gyvybę gelbstinčias intervencijas ir eikite prie kito – neužstrikite prie vieno.",
     "ref": [
      "#/tst",
      "#/igudis/36"
     ]
    },
    {
-    "sit": "Trečiasis nevaikšto, gausaus kraujavimo nėra, kalba aiškiai. Blauzda deformuota, penetruojančių sužalojimų nuo kaklo iki sėdmenų nėra.",
+    "sit": "Trečiasis nevaikšto, masyvaus kraujavimo nėra, kalba aiškiai. Blauzda deformuota, penetruojančių sužalojimų nuo kaklo iki sėdmenų nėra.",
     "gp": {},
     "klaus": "Kokia TST kategorija?",
     "opt": [
@@ -157,7 +157,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "TST: nevaikšto → gausaus kraujavimo nėra → kalba → penetruojančio sužalojimo nėra – P2. Rūšiavimą kartokite – būklė keičiasi.",
+    "why": "TST: nevaikšto → masyvaus kraujavimo nėra → kalba → penetruojančio sužalojimo nėra – P2. Rūšiavimą kartokite – būklė keičiasi.",
     "ref": [
      "#/tst"
     ]
@@ -240,7 +240,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "CLS kirkšniai – improvizuotas spaudimo įtaisas (pvz., gertuvė) ant tampono ir per jį turniketas aplink klubus. Komercinis jungties turniketas – CMC.",
+    "why": "CLS kirkšniai – improvizuotas spaudimo įtaisas (pvz., gertuvė) ant tampono ir per jį turniketas aplink klubus. Komercinis jungties turniketas – CMC arba CLS, jei apmokytas ir jį turi.",
     "ref": [
      "#/igudis/7",
      "#/f/TFC?t=1"

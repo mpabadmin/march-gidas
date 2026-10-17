@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-10-17 v8 (turinio patikra pagal TCCC 2026: 9-Line skubumo kategorijų pavyzdžiai pagal JTS CLS 19; MIST lustas „Krūtinės lipdukas“; paciento failas, priminimai, QR, diktavimas)';
+E.versija = '2026-10-17 v9 (turinio patikra: dubens diržas ir jungties turniketas – CLS, jei apmokytas ir turi; krūtinės žaizdos nugaroje; TST ir scenarijai – „masyvus kraujavimas“; 9-Line CBRN su R; cefaleksino alternatyva; v8 – 9-Line skubumo pavyzdžiai, MIST lustas)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
@@ -64,7 +64,7 @@ E.sarasai = {
       { t: 'Masyvus galūnės kraujavimas ar amputacija – turniketas 5–7,5 cm virš žaizdos, tiesiai ant odos', k: true, sk: 5 },
       { t: 'Nesustojo – antras turniketas greta pirmojo, aukščiau' },
       { t: 'Turniketu neužveržiama žaizda (kaklas, pažastis, kirkšnis) – tamponavimas hemostatiniu tvarsčiu, ≥ 3 min spaudimas', k: true, sk: 6, s: ['Po to – spaudžiamasis tvarstis'] },
-      { t: 'Kirkšnis – tamponavus, improvizuotas spaudimo įtaisas', sk: 7, s: ['Kaklas – be spaudimo įtaiso: tamponavimas ir spaudžiamasis tvarstis', 'Jungties turniketas – CMC'], i: 'CLS – tamponavimas, spaudimas ir spaudžiamasis tvarstis; kirkšniai – improvizuotas spaudimo įtaisas po turniketo juosta (' + sk(7) + '). Komercinis jungties turniketas (pvz., SAM JT) – CMC.' },
+      { t: 'Kirkšnis – tamponavus, improvizuotas spaudimo įtaisas', sk: 7, s: ['Kaklas – be spaudimo įtaiso: tamponavimas ir spaudžiamasis tvarstis', 'Jungties turniketas – CMC; CLS – jei apmokytas ir turi'], i: 'CLS – tamponavimas, spaudimas ir spaudžiamasis tvarstis; kirkšniai – improvizuotas spaudimo įtaisas po turniketo juosta (' + sk(7) + '). Komercinis jungties turniketas (pvz., SAM JT) – CMC arba CLS, jei apmokytas ir jį turi.' },
       { t: 'Patikrinkite CUF metu uždėtus turniketus – ar veiksmingi (žr. C)', sk: 8 },
       { t: 'Turniketo laikas užrašytas ant turniketo ir kortelėje', tm: 'turn' },
       { t: 'Įvertinkite hemoraginį šoką: sąmonė ir radialinis pulsas', k: true, sk: 17 }
@@ -100,7 +100,7 @@ E.sarasai = {
     title: 'C – kraujotaka', short: 'C',
     items: [
       { t: 'Šoko požymiai: sutrikusi sąmonė (be galvos traumos) ir / ar silpnas ar nečiuopiamas radialinis pulsas', k: true, sk: 17 },
-      { t: 'Dubens diržas: sunki buka ar sprogimo trauma IR bent vienas požymis', g: 'CMC', sk: 18, s: ['Dubens skausmas ar dubens lūžio požymiai', 'Didelė kojos amputacija ar beveik amputacija', 'Be sąmonės ar šokas'] },
+      { t: 'Dubens diržas: sunki buka ar sprogimo trauma IR bent vienas požymis', sk: 18, s: ['Dubens skausmas ar dubens lūžio požymiai', 'Didelė kojos amputacija ar beveik amputacija', 'Be sąmonės ar šokas'], i: 'Deda CMC arba CLS, jei apmokytas ir turi diržą; kitaip CLS praneša medikui.' },
       { t: 'Turniketų peržiūra: atidenkite žaizdą – ar turniketo reikia?', k: true, sk: 8, s: ['Reikia – naujas 5–7,5 cm virš žaizdos ant odos, tada senąjį atlaisvinkite', 'Kraujavimas sustojęs ir (jei ne amputacija) distalinio pulso nėra; jei ne – priveržkite ar antras greta', 'Nereikia – nuimkite (CLS po 2 val. – tik mediko nurodymu), laiką įrašykite į kortelę'] },
       { t: 'Konversija – kuo anksčiau (siekti < 2 val.), jei: nėra šoko, žaizdą galima stebėti, ne amputacija', k: true, sk: 8, s: ['CLS po 2 val. – tik CMC ar aukštesnio lygio mediko nurodymu', 'Uždėto > 6 val. nenuimkite (tik esant stebėsenai ir laboratorijai)'] },
       { t: 'IV / IO prieiga (šokas ar jo rizika; vaistai, kurių negalima per burną) – 18 G IV, nepavyksta – IO', g: 'CMC', sk: 19 },
@@ -131,7 +131,7 @@ E.sarasai = {
       { t: 'Negali kovoti – CWMP (jei dar negavo) ir ketaminas (ar esketaminas)', g: 'CMC', sk: 25, r: '#/vaistas/ketaminas', s: ['Prieš ketaminą – nuginkluoti, AVPU įrašyti į kortelę'] },
       { t: 'Pykinimas ar vėmimas – ondansetronas 4 mg', g: 'CMC', r: '#/vaistas/ondansetronas' },
       { h: 'A – antibiotikai' },
-      { t: 'Atvira kovinė žaizda – antibiotikas', k: true, sk: 26, s: ['Gali nuryti – cefadroksilis 1 g per burną', 'Negali nuryti – ceftriaksonas 2 g IV / IO / IM (CMC)'] },
+      { t: 'Atvira kovinė žaizda – antibiotikas', k: true, sk: 26, s: ['Gali nuryti – cefadroksilis 1 g per burną (alt. cefaleksinas 500 mg kas 6 val.)', 'Negali nuryti – ceftriaksonas 2 g IV / IO / IM (CMC)'] },
       { h: 'W – žaizdos ir nudegimai' },
       { t: 'Apžiūrėkite ir sutvarstykite visas žaizdas; ieškokite papildomų', sk: 27 },
       { t: 'Nudegimai: plotas devynių taisykle, sausi sterilūs tvarsčiai, šildymas', sk: 28, s: ['Veido nudegimai (ypač uždaroje patalpoje) – įkvėpimo trauma: stebėkite kvėpavimo takus ir SpO₂', '> 20 % – skysčiai IV / IO (CMC)'] },
@@ -225,8 +225,8 @@ E.puslapiai = {
       '<p>MARCH – gyvybei pavojingos būklės, PAWS – gydoma tik sutvarkius MARCH.</p>' +
       '<h3>Lygiai</h3><div class="tw"><table><tr><th>Lygis</th><th>Kas</th><th>Ką daro (pavyzdžiai)</th></tr>' +
       '<tr><td><b>ASM</b></td><td>Visi kariai</td><td>Turniketas, tamponavimas, spaudžiamasis tvarstis, kvėpavimo takų atvėrimas, vilkimas, greita apžiūra</td></tr>' +
-      '<tr><td><b>CLS</b></td><td>Kovos gelbėtojas (ne medikas)</td><td>+ jungties vietų kraujavimas, šoninė padėtis, NPA, ambu maišas, krūtinės lipdukas, adatos dekompresija, turniketo konversija (≤ 2 val.), hipotermija, akies skydelis, CWMP, kortelė, 9-Line, neštuvai</td></tr>' +
-      '<tr><td><b>CMC</b></td><td>Kovos medikas</td><td>+ IV / IO, TXA, kraujas, ketaminas, krikotiroidotomija, dubens diržas, IV antibiotikai</td></tr>' +
+      '<tr><td><b>CLS</b></td><td>Kovos gelbėtojas (ne medikas)</td><td>+ jungties vietų kraujavimas, šoninė padėtis, NPA, ambu maišas, krūtinės lipdukas, adatos dekompresija, turniketo konversija (≤ 2 val.), hipotermija, akies skydelis, CWMP, kortelė, 9-Line, neštuvai; jei apmokytas ir turi – dubens diržas, jungties turniketas</td></tr>' +
+      '<tr><td><b>CMC</b></td><td>Kovos medikas</td><td>+ IV / IO, TXA, kraujas, ketaminas, krikotiroidotomija, dubens diržas, jungties turniketas, IV antibiotikai</td></tr>' +
       '<tr><td><b>CPP</b></td><td>Kovos paramedikas / gydytojas</td><td>+ procedūrinė sedacija, intubacija, torakostomija pirštu</td></tr></table></div>' +
       '<p class="muted">Programėlėje CMC ir CPP veiksmai pažymėti. Nustatymuose galite rodyti tik CLS veiksmus.</p>' +
       '<h3>CASEVAC ir MEDEVAC</h3><p><b>CASEVAC</b> – sužeistųjų gabenimas ne medicininiu transportu (be medicinos personalo ar įrangos). <b>MEDEVAC</b> – specializuota medicininė evakuacija su medicinos personalu ir įranga. TACEVAC apima abu.</p>',
@@ -290,7 +290,7 @@ E.puslapiai = {
       '<tr><td>6</td><td>Karo metu – paėmimo vietos saugumas; taikos metu – sužalojimų ar ligų skaičius ir tipas</td><td>N priešo nėra, P galimas priešas, E priešas yra – artėti atsargiai, X priešas yra – reikia ginkluotos palydos</td></tr>' +
       '<tr><td>7</td><td>Vietos žymėjimas</td><td>A skydai, B pirotechnika, C dūmai, D nežymima, E kita</td></tr>' +
       '<tr><td>8</td><td>Sužeistųjų pilietybė ir statusas</td><td>A savos ir sąjungininkų (koalicijos) pajėgos, B savos šalies ir sąjungininkų civiliai, C ne koalicijos kariai ar saugumo pajėgos, D ne koalicijos civiliai, E priešo kariai ar sulaikytieji</td></tr>' +
-      '<tr><td>9</td><td>Karo metu – CBRN užterštumas; taikos metu – vietovės aprašymas</td><td>N branduolinis, B biologinis, C cheminis (R radiologinis – jei numato SOP)</td></tr></table></div>' +
+      '<tr><td>9</td><td>Karo metu – CBRN užterštumas; taikos metu – vietovės aprašymas</td><td>C cheminis, B biologinis, R radiologinis, N branduolinis (senesnė forma – NBC, be R)</td></tr></table></div>' +
       '<p class="muted">8 eilutės kodai JTS kortelėje apibrėžti JAV kariuomenei (A – JAV kariai, B – JAV civiliai, C – ne JAV kariai, D – ne JAV civiliai, E – karo belaisviai); čia pateikta koalicijos versija. Vadovaukitės savo vieneto ir NATO SOP.</p>' +
       '<h3>Evakuacijos skubumas (3 eilutė)</h3>' +
       '<div class="tw"><table><tr><th>Kategorija</th><th>JTS CLS terminas</th><th>Pavyzdžiai (JTS)</th></tr>' +
