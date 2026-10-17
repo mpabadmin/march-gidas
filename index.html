@@ -480,6 +480,46 @@ html.gl main{padding-bottom:calc(160px + env(safe-area-inset-bottom))}
 #glback{position:fixed;left:14px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:7;width:62px;height:62px;border-radius:50%;background:var(--tx);color:var(--bg);box-shadow:0 2px 10px rgba(0,0,0,.35)}
 #glback svg{width:30px;height:30px}
 #glback[hidden]{display:none}
+/* kortelės nuskaitymas */
+.skst{position:relative;touch-action:none;margin:8px 0;border-radius:10px;overflow:hidden;background:#000;user-select:none;-webkit-user-select:none}
+#skcv{display:block;width:100%}
+.skh{position:absolute;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;border:3px solid #18C964;background:rgba(24,201,100,.22);touch-action:none;cursor:grab}
+.skh::after{content:'';position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:#18C964}
+.sksides{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.sksides .card{display:flex;flex-direction:column;gap:6px;margin:0;min-width:0}
+.sksides label.btn{text-align:center;cursor:pointer;display:block}
+.skthumb{width:100%;border-radius:6px;border:1px solid var(--line)}
+.skc{display:block;max-width:100%;height:auto;margin:6px 0 2px;border-radius:6px;border:1px solid var(--line);background:#fff}
+.skbody{width:100%}
+.skr{margin:10px 0}.skr>b{display:block;margin-bottom:4px}
+.skrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0}
+.skrow>button{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:18px;padding:8px 12px;font:inherit;font-size:14px;min-height:40px}
+.skrow>button.on{background:var(--tx);color:var(--bg);border-color:var(--tx);font-weight:600}
+.skcw{flex:1 1 100%;min-width:0}.skcw .skc{width:auto;max-width:100%}.skcw .skbody{width:100%}.skrow .inp{flex:1 1 120px;margin:0}
+.sku{outline:2px solid var(--red);outline-offset:1px}
+.skv{border-top:1px solid var(--line);padding:8px 0}
+.skvg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}.skvg label{font-size:13px;color:var(--tx2);min-width:0}.skvg .inp{margin:2px 0 0;min-width:0;width:100%}
+.skcol{max-height:280px;width:auto}
+.sksel{min-height:44px}
+/* vertinimo lapas */
+.vl{margin:6px 0 12px;border-top:1px solid var(--line)}
+.vlr{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center;padding:9px 2px;border-bottom:1px solid var(--line)}
+.vlr.top{background:color-mix(in srgb,var(--card) 70%,transparent)}
+.vlt{display:flex;gap:6px;align-items:flex-start;min-width:0;line-height:1.35}
+.vlr:not(.top) .vlt{padding-left:22px;font-size:15px}
+.vlr.top .vlt span:not(.vlm):not(.vlk){font-weight:600}
+.vlr.kk .vlt span:not(.vlm):not(.vlk){font-weight:700}
+.vln{flex:none;min-width:20px}
+.vlm{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;background:#D92D20;color:#fff;font-weight:800;font-size:14px}
+.vlk{flex:none;color:#D92D20;font-weight:800;margin-left:auto;padding-left:4px}
+.vlb{display:flex;gap:4px}
+.vlb button{width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;font-weight:700}
+.vlb button.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.vlr.aT .vlb button[data-v=T].on{background:#1D9E75;border-color:#1D9E75;color:#fff}
+.vlr.aN .vlb button[data-v=N].on{background:#D92D20;border-color:#D92D20;color:#fff}
+.vlb .vle{font-weight:400}
+.vlin{grid-column:1/-1;margin:2px 0 0}
+html.gl .vlb button{width:52px;height:52px}
 </style>
 </head>
 <body class="field">
@@ -507,6 +547,7 @@ html.gl main{padding-bottom:calc(160px + env(safe-area-inset-bottom))}
 <script src="views.js"></script>
 <script src="tools.js"></script>
 <script src="priedai.js"></script>
+<script src="skenas.js"></script>
 <script src="fb.js"></script>
 <script src="app.js"></script>
 </body>

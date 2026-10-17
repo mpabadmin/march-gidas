@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-10-17 v10 (9-Line ir MIST anglų kalba, TCCC kortelė paveikslėliu, egzaminuotojo režimas, dozių kortelės, pirštinių režimas, duomenų apsauga)';
+E.versija = '2026-10-17 v11 (CLS vertinimo lapas; popierinės TCCC kortelės (DD 1380) nuotraukos atpažinimas; v24 – EN, TCCC kortelė, egzaminuotojas, dozių kortelės, pirštinės, duomenų apsauga)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
@@ -345,3 +345,73 @@ E.temos = [
   { id: 'tacevac', zenklas: 'EVAC', cls: 'fTAC', pav: 'MEDEVAC ir TACEVAC', sub: '9-Line, MIST, kortelė, neštuvai, perdavimas', puslapiai: ['tacevac', 'devynios', 'nestuvai'], igudziai: [32, 31, 33, 34, 30, 36], sarasai: ['tfc-evak', 'tac-perimimas', 'tac-march', 'tac-transport', 'tac-perdavimas'] }
 ];
 })();
+
+// CLS vertinimo lapas (TCCC-CLS-02-12, 30 JUN 20 – lietuviškas vertinimo lapas, vartotojo pateiktas PDF). Tekstas – kaip lape.
+window.ETC.vertinimai = [{
+  id: 'cls', title: 'CLS vertinimo lapas', sub: 'Combat Lifesaver (CLS) Tactical Combat Casualty Care',
+  rule: 'Siekiant gauti teigiamą įvertinimą privaloma atlikti visus „K“ raide pažymėtus punktus.',
+  src: 'TCCC CLS Skills Checklist – Tactical Trauma Assessment (TCCC-CLS-02-12, 30 JUN 20), lietuviškas vertinimo lapas',
+  items: [
+    { n: '1', t: 'Atliko pagalbą apšaudymo metu (CUF)', k: true, s: [
+      { n: 'a', t: 'Atsišaudė ir užėmė priedangą' },
+      { n: 'b', t: 'Nurodė nukentėjusiam toliau kovoti, jei tai įmanoma' },
+      { n: 'c', t: 'Nurodė nukentėjusiam judėti į priedangą ir susiteikti sau pagalbą, jei tai įmanoma' },
+      { n: 'd', t: 'Panaudojo tempimo / nešimo metodus siekiant nugabenti nesąmoningą ar negalintį judėti nukentėjusį į priedangą arba užtikrino aplinkos saugumą, kai taktinė situacija leidžia' },
+      { n: 'e', t: 'Ištraukė nukentėjusius iš degančių automobilių ar pastatų ir nugabeno į dalinai saugią vietą' },
+      { n: 'f', t: 'Ėmėsi visų įmanomų veiksmų sustabdyti degimo procesą' },
+      { n: 'g', t: 'Uždėjo turniketą ant uniformos „aukštai ir tampriai“, naudodami nukentėjusiojo priemones', k: true }] },
+    { n: '2', t: 'Atliko taktinę lauko pagalbą (TFC)', k: true, s: [
+      { n: 'a', t: 'Įkūrė saugumo perimetrą ir išlaikė taktinį situacinį budrumą' },
+      { n: 'b', t: 'Surūšiavo nukentėjusius pagal poreikį' },
+      { n: 'c', t: 'Iš nukentėjusių su sutrikusia sąmone nedelsiant paėmė ginklus ir ryšio priemones' }] },
+    { n: '3', t: 'Verbalizavo MARCH PAWS algoritmo reikšmes ir atliko nukentėjusių apžiūrą ir gydymą pagal algoritmą' },
+    { n: '4', m: 'M', t: 'Surado ir sustabdė masyvų kraujavimą', k: true, s: [
+      { n: 'a', t: 'Jei nebuvo panaudotas turniketas pagalbos apšaudymo metu (CUF) masyviam kraujavimui iš galūnių stabdyti, pašalino drabužius, kad aiškiai matytų kraujavimo vietą, ir uždėjo turniketą ant odos, 5–8 cm virš žaizdos, arba, jei nepavyko sustabdyti kraujavimo iš galūnės su vienu turniketu, panaudojo antrą greta (jei įmanoma – aukščiau pirmojo turniketo)', k: true },
+      { n: 'b', t: 'Esant masyviam gyvybei pavojingam kraujavimui iš vietų, kur negalima panaudoti turniketo, panaudojo improvizuotas jungties vietų kraujavimo stabdymo technikas kartu su hemostatiniais tvarsčiais', k: true }] },
+    { n: '5', m: 'A', t: 'Įvertino ir apsaugojo atvirus kvėpavimo takus', k: true, s: [
+      { n: 'a', t: 'Leido sąmoningam nukentėjusiam užimti jam patogiausią poziciją, įskaitant ir sėdimą, leidžiančią lengviau kvėpuoti ir apsaugančią atvirus takus' },
+      { n: 'b', t: 'Jeigu nukentėjusio takai yra uždaryti, panaudojo galvos atlošimo / smakro pakėlimo arba apatinio žandikaulio išstūmimo manevrus kvėpavimo takams atverti', k: true },
+      { n: 'c', t: 'Įvedė nazofaringinį (NPA) vamzdelį nesąmoningiems arba dalinai sąmoningiems nukentėjusiems' }] },
+    { n: '6', m: 'R', t: 'Įvertino kvėpavimą (RESPIRATION)', s: [
+      { n: 'a', t: 'Apžiūrėjo krūtinę, nugarą, šonus ir pažastis dėl galimų žaizdų', k: true },
+      { n: 'b', t: 'Užklijavo okliuzinį tvarstį ant kiauryminių krūtinės žaizdų', k: true },
+      { n: 'c', t: 'Įvertino dėl galimo įtampos pneumotorakso' },
+      { n: 'd', t: 'Jei įtariamas įtampos pneumotoraksas, atklijavo okliuzinį tvarstį ir leido orui pasišalinti per žaizdą' },
+      { n: 'e', t: 'Atliko adatinę dekompresiją esant įtampos pneumotorakso simptomams' },
+      { n: 'f', t: 'Įvertino, ar adatinė dekompresija buvo sėkminga' }] },
+    { n: '7', m: 'C', t: 'Įvertino kraujotaką (CIRCULATION)', s: [
+      { n: 'a', t: 'Patikrino prieš tai atliktų kraujavimo stabdymo priemonių veiksmingumą po kiekvieno nukentėjusio judinimo' },
+      { n: 'b', t: 'Įvertino dėl galimo dubens lūžio' },
+      { n: 'c', t: 'Įvertino dėl galimo šoko (sąmonės lygio pasikeitimai, kai neįtariama galvos trauma, ir / arba silpnas ar nečiuopiamas radialinis pulsas)', k: true }] },
+    { n: '8', m: 'H', t: 'Ėmėsi priemonių apsaugoti ir gydė hipotermiją (HYPOTHERMIA)', k: true, s: [
+      { n: 'a', t: 'Sumažino aplinkos poveikį nukentėjusiam' },
+      { n: 'b', t: 'Panaudojo aktyvias šildymo priemones, jeigu įmanoma' },
+      { n: 'c', t: 'Panaudojo pasyvias šildymo priemones, jei aktyvios neprieinamos' }] },
+    { n: '9', t: 'Įvertino dėl galimos galvos traumos', s: [
+      { n: 'a', t: 'Patikrino galimus simptomus ir ženklus dėl galimos galvos traumos' },
+      { n: 'b', t: 'Perdavė pastebėjimus medicinos personalui' }] },
+    { n: '10', t: 'Atliko MARCH algoritmą teisinga seka', k: true },
+    { n: '11', t: 'Uždengė akį standžiu akies dangteliu ir paskyrė vaistų rinkinį, jeigu įtariama penetruojanti akies trauma' },
+    { n: '12', m: 'P', t: 'Kontroliavo skausmą (PAIN)', s: [
+      { n: 'a', t: 'Paskyrė nuskausminamuosius iš vaistų rinkinio, jei nukentėjęs yra sąmoningas ir gali nuryti tabletes' },
+      { n: 'b', t: 'Jei skausmas yra stiprus, nukreipė pas medicinos personalą' }] },
+    { n: '13', m: 'A', t: 'Paskyrė antibiotikus (ANTIBIOTICS)', s: [
+      { n: 'a', t: 'Skyrė vaistų rinkinį nukentėjusiam su kiauryminiais sužeidimais, kai nukentėjęs gali ryti tabletes' },
+      { n: 'b', t: 'Nukreipė pas medicinos personalą, jei nukentėjęs negali nuryti vaistų' }] },
+    { n: '14', m: 'W', t: 'Sutvarstė kitas žaizdas (WOUNDS)', s: [
+      { n: 'a', t: 'Apžiūrėjo ir sutvarstė kitas žaizdas, jeigu reikia' },
+      { n: 'b', t: 'Įvertino / sutvarstė nudegimus su steriliu, sausu tvarsčiu ir užtikrino hipotermijos prevenciją' }] },
+    { n: '15', m: 'S', t: 'Įtvėrė kaulų lūžius, esant svetimkūniams juos įtvėrė (SPLINTING)' },
+    { n: '16', t: 'Komunikacija: perdavė 9 eilučių MEDEVAC raportą', s: [
+      { n: 'a', t: 'Bendravo su nukentėjusiu, jei tai įmanoma' },
+      { n: 'b', t: 'Bendravo su vadovybe ir perdavė 3, 4, 5 MEDEVAC raporto eilutes', k: true },
+      { n: 'c', t: 'Bendravo su evakuacijos personalu, jei tai įmanoma' },
+      { n: 'd', t: 'Bendravo su medicinos personalu ir perdavė MIST raportą' }] },
+    { n: '17', t: 'Dokumentavo nukentėjusio apžiūrą ir gydymą bei pritvirtino kortelę prie nukentėjusio', k: true },
+    { n: '18', t: 'Pasiruošė evakuacijai', s: [
+      { n: 'a', t: 'Įtvirtino visus palaidus tvarsčius, diržus ir kitą įrangą' },
+      { n: 'b', t: 'Pritvirtino nukentėjusius prie neštuvų su diržais, panaudojo paminkštinimus nukentėjusiam, jei to reikia' },
+      { n: 'c', t: 'Suteikė instrukcijas galintiems vaikščioti nukentėjusiems' },
+      { n: 'd', t: 'Išrikiavo nukentėjusius pagal evakuacijos svarbą ir suorganizavo neštuvų komandas' }] }
+  ]
+}];

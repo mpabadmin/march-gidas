@@ -9,7 +9,7 @@ const TCFG = {
   laikai: 'mg-laikai', // pradžios ekrano laikmačiai { trauma, turn }
   // nuorodos puslapių apačioje: [adresas, pavadinimas, paantraštė]
   nl: () => [['#/mist', 'MIST kortelė', MC.status()], ['#/p/devynios', '9-Line kodai ir skubumo kategorijos', 'Mokymosi medžiaga'], ['#/igudis/32', 'Kaip perduoti 9-Line ir MIST', 'Įgūdis #32'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
-  mc: () => [['#/pacientas', 'Paciento failas', 'Įvykių eiga, perdavimas QR'], ['#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą'], ['#/9line', '9-Line MEDEVAC', NL.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'], ['#/igudis/34', 'Perdavimas ir perėmimas', 'Įgūdis #34'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
+  mc: () => [['#/skenuoti', 'Nuskaityti popierinę kortelę', 'DD 1380 nuotrauka → MIST, be interneto'], ['#/pacientas', 'Paciento failas', 'Įvykių eiga, perdavimas QR'], ['#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą'], ['#/9line', '9-Line MEDEVAC', NL.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'], ['#/igudis/34', 'Perdavimas ir perėmimas', 'Įgūdis #34'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
   gk: () => [['#/mist', 'MIST kortelė', MC.status()], ['#/igudis/17', 'Šoko atpažinimas: pulsas ir sąmonė (AVPU)', 'Įgūdis #17'], ['#/igudis/22', 'Galvos smegenų trauma', 'Įgūdis #22']],
   occl: 'Krūtinės lipdukas (okliuzinis tvarstis)', // MIST gydymo lusto pavadinimas (TCCC CLS terminas)
   pt: ['laikai', 'ck'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele)

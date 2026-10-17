@@ -49,7 +49,7 @@ const SKILL_TOOLS = {
 // Įrankiai (tools.js): būsena rodoma po pavadinimu
 const toolRows = () => typeof MC === 'undefined' ? '' :
   row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', 'TST rūšiavimas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status()) +
-  row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
+  row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
 const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="tag grn">CLS</span>';
 
 const V = {
@@ -133,7 +133,7 @@ const V = {
   },
 
   lists() {
-    let h = '<h1>Kontroliniai sąrašai</h1><p class="muted">Pagal TCCC fazes. Žymėjimai išlieka, kol paspausite „Naujas sužeistasis“.</p>' + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
+    let h = '<h1>Kontroliniai sąrašai</h1><p class="muted">Pagal TCCC fazes. Žymėjimai išlieka, kol paspausite „Naujas sužeistasis“.</p>' + row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
     (E.fazes || []).forEach(f => {
       h += `<h2>${esc(f.id)} – ${esc(f.pav)}</h2>` + (f.lists || []).map(listRow).join('');
     });
@@ -287,7 +287,7 @@ const V = {
     h += '<h2>Atsiliepimai</h2>' + b('fb', 'Pranešti apie klaidą ar pasiūlyti', 'Komentaras ir ekrano vaizdas – keliauja gido rengėjams');
     const nOut = FB.pending();
     if (nOut) h += b('fb-flush', 'Neišsiųsti pranešimai: ' + nOut, 'Siųsti dabar (reikia interneto)');
-    h += '<h2>Mokymasis</h2>' + row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status()) + b('reset-ivert', 'Ištrinti įsivertinimus', 'Visi 1–4 balai bus pašalinti');
+    h += '<h2>Mokymasis</h2>' + row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status()) + b('reset-ivert', 'Ištrinti įsivertinimus', 'Visi 1–4 balai bus pašalinti');
     h += '<h2>Programėlė</h2>';
     if (installed()) h += '<p class="muted">Programėlė įdiegta ir veikia be interneto (vaizdo įrašams reikia interneto).</p>';
     else if (installEv) h += b('install', 'Įdiegti į telefoną', 'Atsiras ženkliukas pradžios ekrane');
