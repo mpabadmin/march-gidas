@@ -167,7 +167,7 @@ const V = {
     let h = `<div class="phead ${f.cls}"><b>${esc(f.id)}</b><h1 class="pht" data-title="${esc(f.id + (f.lists.length > 1 ? ' · ' + ((S[lid] || {}).short || '') : '') + ' – ' + f.pav)}">${esc(f.pav)} <small>${esc(f.en)}${f.lists.length > 1 ? ' · ' + esc((S[lid] || {}).short || '') : ''}</small></h1></div>`;
     h += '<div class="tmini-box">' + timersMini() + '</div>';
     if (mode === 'learn' && f.aprasymas) h += `<p class="muted">${esc(f.aprasymas)}</p>`;
-    if (f.lists.length > 1) h += '<div class="tabs">' + f.lists.map((l, i) => {
+    if (f.lists.length > 1) h += '<div class="tabs ph">' + f.lists.map((l, i) => {
       const [n, tot] = listDone(l);
       return `<button class="${i === t ? 'on' : ''}${n && n === tot ? ' done' : ''}" data-act="go" data-rep="1" data-r="#/f/${id}?t=${i}" aria-current="${i === t ? 'step' : 'false'}">${esc((S[l] || {}).short || l)}</button>`;
     }).join('') + '</div>';

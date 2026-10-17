@@ -41,7 +41,7 @@ E.sarasai = {
         i: 'Sau – ' + sk(4) + ', draugui – ' + sk(5) + '. Naudokite sužeistojo turniketą, ne savo.' },
       { t: 'Nejudantį sužeistąjį perkelkite į priedangą – vilkimas ar nešimas', sk: 2, i: sk(2, 'Vieno žmogaus') + ' ir ' + sk(3, 'dviejų žmonių') + ' vilkimas ir nešimas.' },
       { t: 'Kvėpavimo takų valdymą atidėkite iki TFC' },
-      { t: 'Kai saugu – pažymėkite turniketo laiką', tm: 'turn', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių uždėta; pakeisti galima pradžios ekrane (kortelė „Turniketas“). Keičiant turniketą laiko nekeiskite – 2 ir 6 val. skaičiuojamos nuo pirmojo uždėjimo.' }
+      { t: 'Kai saugu – pažymėkite turniketo laiką', tm: 'turn', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių uždėta; pakeisti galima paciento faile (kortelė „Turniketas“). Keičiant turniketą laiko nekeiskite – 2 ir 6 val. skaičiuojamos nuo pirmojo uždėjimo.' }
     ]
   },
 
@@ -53,7 +53,7 @@ E.sarasai = {
       { t: 'Perimetro sauga pagal SOP, situacinis budrumas', k: true },
       { t: 'Keli sužeistieji – rūšiavimas', sk: 36, r: '#/tst', s: ['Pirmiausia: masyvus kraujavimas, penetruojanti liemens trauma, kvėpavimo takų sutrikimas, kvėpavimo distresas, sutrikusi sąmonė'] },
       { t: 'Sutrikusios sąmonės sužeistąjį nuginkluokite (ginklas, granatos) ir apsaugokite ryšio priemones', k: true },
-      { t: 'Pažymėkite sužeidimo laiką', tm: 'trauma', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių sužeista; vėliau pataisyti galima pradžios ekrane (kortelė „Sužeidimas“). Nuo jo skaičiuojamas TXA terminas (3 val.).' },
+      { t: 'Pažymėkite sužeidimo laiką', tm: 'trauma', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių sužeista; vėliau pataisyti galima paciento faile (kortelė „Trauma“). Nuo jo skaičiuojamas TXA terminas (3 val.).' },
       { t: 'Pasakykite sužeistajam, kas vyksta, nuraminkite' }
     ]
   },
