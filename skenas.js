@@ -212,7 +212,7 @@ const SK = (() => {
   const EVAC = [['u', 'Neatidėliotina', 'Urgent'], ['p', 'Skubi', 'Priority'], ['r', 'Įprastinė', 'Routine']]; // kaip LK kortelėje
   // DD 1380 gydymo langeliai → LK kortelės T dalis: [langelis, užrašas (LK kortelės žodžiai), MIST raktas, pastaba]
   const TXB = [['tq_ext', 'Turniketas – galūnės', 'tq'], ['tq_jun', 'Turniketas – jungties', 'tqj'], ['tq_tru', 'Liemens turniketas', '', 'liemens turniketas'], ['dr_hem', 'Tvarstis – hemostatinis', 'dh'], ['dr_pre', 'Tvarstis – spaudžiamasis', 'dp'], ['dr_oth', 'Tvarstis – kita', 'dk'],
-    ['a_npa', 'Nazofar. vamzdelis', 'npa'], ['a_cric', 'Kriko.', 'cric'], ['a_ett', 'Intubacija (A – kita)', 'ak', 'intubacija'], ['a_sga', 'I-gel (supraglotinė priemonė)', 'igel'], ['b_o2', 'O₂', 'o2'], ['b_nd', 'Ad. dekompresija', 'dec'], ['b_ct', 'Krūtinės vamz.', 'ctube'], ['b_cs', 'Okliuzinis tvarstis', 'occl'],
+    ['a_npa', 'Nazofar. vamzdelis', 'npa'], ['a_cric', 'Kriko.', 'cric'], ['a_ett', 'Intubacija (A – kita)', 'ak', 'intubacija'], ['a_sga', 'I-gel (supraglotinė priemonė)', 'igel'], ['b_o2', 'O₂', 'o2'], ['b_nd', 'Ad. dekompresija', 'dec'], ['b_ct', 'Krūtinės drenas', 'ctube'], ['b_cs', 'Okliuzinis tvarstis', 'occl'],
     ['o_cpp', 'CWMP (tabletės)', '', ''], ['o_eye', 'Akies gaubtelis', ''], ['o_spl', 'Imobilizavimas', 'spl'], ['o_hypo', 'Hipotermijos prevencija', 'hypo']];
   const ROWS = [['fl', 'Skysčiai', 2], ['bl', 'Kraujo produktai', 2], ['an', 'Analgetikai', 3], ['ab', 'Antibiotikai', 2], ['ot', 'Kita (pvz., traneksamo rūgštis)', 2]];
   const has = (R, k, t) => (R.tx[k] || 0) > (t || 0.012);
@@ -375,7 +375,7 @@ const SK = (() => {
         if (card.t0 && !HM_RE.test(card.t0)) { toast('Traumos laikas: pvz. 14:05'); return; }
         PT.add(card); S.res = {}; S.form = null; S.src = null;
         toast('Įrašyta kaip naujas sužeistasis – patikrinkite MIST kortelę');
-        location.hash = '#/mist'; return;
+        location.hash = '#/pacientas?t=kortele'; return; // nuskaityta kortelė – paciento ekrane
       }
     }
   }

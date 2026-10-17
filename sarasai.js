@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-10-17 v16 (MIST kortelė pasirinkimais – kaip ETC v29: požymiai, vaistai, skysčiai, turniketai ir žymės apatiniuose languose; „Aš“ profilis; eksportas ir diktavimas sugrąžinti; v15 – paciento ekrano pataisos)';
+E.versija = '2026-10-17 v17 (vienas traumos laikas kortelėje ir laikmatyje, turniketo galūnė iš sąrašo, priminimai atveria reikiamą langą, „Atšaukti“, perdavimas „šį / visus“, ranka įvedamas vaistas, GKS nebūtinas, 9-Line pagal LK formą, „tik CLS“ – be CMC elementų, 10S triažas)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
@@ -41,7 +41,7 @@ E.sarasai = {
         i: 'Sau – ' + sk(4) + ', draugui – ' + sk(5) + '. Naudokite sužeistojo turniketą, ne savo.' },
       { t: 'Nejudantį sužeistąjį perkelkite į priedangą – vilkimas ar nešimas', sk: 2, i: sk(2, 'Vieno žmogaus') + ' ir ' + sk(3, 'dviejų žmonių') + ' vilkimas ir nešimas.' },
       { t: 'Kvėpavimo takų valdymą atidėkite iki TFC' },
-      { t: 'Kai saugu – pažymėkite turniketo laiką', tm: 'turn', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių uždėta; pakeisti galima pradžios ekrane (kortelė „Turniketas“). Keičiant turniketą laiko nekeiskite – 2 ir 6 val. skaičiuojamos nuo pirmojo uždėjimo.' }
+      { t: 'Kai saugu – pažymėkite turniketo laiką', tm: 'turn', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių uždėta; pakeisti galima paciento faile (kortelė „Turniketas“). Keičiant turniketą laiko nekeiskite – 2 ir 6 val. skaičiuojamos nuo pirmojo uždėjimo.' }
     ]
   },
 
@@ -53,7 +53,7 @@ E.sarasai = {
       { t: 'Perimetro sauga pagal SOP, situacinis budrumas', k: true },
       { t: 'Keli sužeistieji – rūšiavimas', sk: 36, r: '#/tst', s: ['Pirmiausia: masyvus kraujavimas, penetruojanti liemens trauma, kvėpavimo takų sutrikimas, kvėpavimo distresas, sutrikusi sąmonė'] },
       { t: 'Sutrikusios sąmonės sužeistąjį nuginkluokite (ginklas, granatos) ir apsaugokite ryšio priemones', k: true },
-      { t: 'Pažymėkite sužeidimo laiką', tm: 'trauma', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių sužeista; vėliau pataisyti galima pradžios ekrane (kortelė „Sužeidimas“). Nuo jo skaičiuojamas TXA terminas (3 val.).' },
+      { t: 'Pažymėkite sužeidimo laiką', tm: 'trauma', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių sužeista; vėliau pataisyti galima paciento faile (kortelė „Trauma“). Nuo jo skaičiuojamas TXA terminas (3 val.).' },
       { t: 'Pasakykite sužeistajam, kas vyksta, nuraminkite' }
     ]
   },
@@ -282,28 +282,29 @@ E.puslapiai = {
       '<p>9 eilučių prašymas (9-Line MEDEVAC) – standartinis radijo pranešimas evakuacijos priemonei iškviesti. Jis skirtas evakuacijos priemonei išsiųsti ir misijai suplanuoti; sužeistųjų medicininė informacija perduodama MIST forma. Pirmų 5 eilučių pakanka priemonei išsiųsti; 6–9 eilutes galima perduoti jai jau judant. Prieš kviesdami surinkite visą informaciją ir laikykitės ryšio saugumo bei kodų pagal operacijos planą ir SOP.</p>' +
       '<p><a class="btn" href="#/9line">Atidaryti 9-Line formą</a></p>' +
       '<h3>Eilutės</h3><div class="tw"><table><tr><th>Eil.</th><th>Turinys</th><th>Kodai</th></tr>' +
-      '<tr><td>1</td><td>Paėmimo vietos koordinatės</td><td>8 skaitmenų tinklelio koordinatė (MGRS)</td></tr>' +
-      '<tr><td>2</td><td>Paėmimo vietos radijo dažnis, šaukinys ir priesaga</td><td>–</td></tr>' +
-      '<tr><td>3</td><td>Sužeistųjų skaičius pagal skubumą</td><td>A skubi, B skubi chirurginė, C prioritetinė, D įprastinė, E patogumo; tarp kategorijų – „break“</td></tr>' +
-      '<tr><td>4</td><td>Specialioji įranga</td><td>A nereikia, B gervė, C ištraukimo įranga, D plaučių ventiliatorius</td></tr>' +
-      '<tr><td>5</td><td>Sužeistieji pagal tipą</td><td>L – neštuvuose, A – vaikštantys (pvz., L2 break A1)</td></tr>' +
-      '<tr><td>6</td><td>Karo metu – paėmimo vietos saugumas; taikos metu – sužalojimų ar ligų skaičius ir tipas</td><td>N priešo nėra, P galimas priešas, E priešas yra – artėti atsargiai, X priešas yra – reikia ginkluotos palydos</td></tr>' +
-      '<tr><td>7</td><td>Vietos žymėjimas</td><td>A skydai, B pirotechnika, C dūmai, D nežymima, E kita</td></tr>' +
-      '<tr><td>8</td><td>Sužeistųjų pilietybė ir statusas</td><td>A savos ir sąjungininkų (koalicijos) pajėgos, B savos šalies ir sąjungininkų civiliai, C ne koalicijos kariai ar saugumo pajėgos, D ne koalicijos civiliai, E priešo kariai ar sulaikytieji</td></tr>' +
-      '<tr><td>9</td><td>Karo metu – CBRN užterštumas; taikos metu – vietovės aprašymas</td><td>C cheminis, B biologinis, R radiologinis, N branduolinis (senesnė forma – NBC, be R)</td></tr></table></div>' +
-      '<p class="muted">8 eilutės kodai JTS kortelėje apibrėžti JAV kariuomenei (A – JAV kariai, B – JAV civiliai, C – ne JAV kariai, D – ne JAV civiliai, E – karo belaisviai); čia pateikta koalicijos versija. Vadovaukitės savo vieneto ir NATO SOP.</p>' +
-      '<h3>Evakuacijos skubumas (3 eilutė)</h3>' +
-      '<div class="tw"><table><tr><th>Kategorija</th><th>JTS CLS terminas</th><th>Pavyzdžiai (JTS)</th></tr>' +
-      '<tr><td><b>A – skubi</b> (Urgent)</td><td>&lt; 2 val. – gyvybei, galūnei ar regėjimui išsaugoti</td><td>Turniketai, sustabdytas kraujavimas, adatinė dekompresija, krikotiroidotomija</td></tr>' +
-      '<tr><td><b>B – skubi chirurginė</b> (Urgent surgical)</td><td>&lt; 2 val. iki artimiausio chirurgijos padalinio</td><td>Didelis vidinis kraujavimas, sunki galvos trauma, kompensuotas šokas</td></tr>' +
-      '<tr><td><b>C – prioritetinė</b> (Priority)</td><td>&lt; 4 val. arba būklė gali pablogėti iki skubios</td><td>Lūžis su išnykusiu distaliniu pulsu, II laipsnio nudegimai dideliame pilvo ar galūnių plote</td></tr>' +
-      '<tr><td><b>D – įprastinė</b> (Routine)</td><td>&lt; 24 val.</td><td>Nubrozdinimai, smulkūs lūžiai, nušalimai</td></tr>' +
-      '<tr><td><b>E – patogumo</b> (Convenience)</td><td>Mediciniškai nebūtina</td><td>Administracinis perkėlimas</td></tr></table></div>' +
+      '<tr><td>1</td><td>Surinkimo vietos koordinatės</td><td>8 skaitmenų tinklelio koordinatė (MGRS)</td></tr>' +
+      '<tr><td>2</td><td>Surinkimo vietos dažnis, šaukinys, slaptažodis</td><td>– (NATO – suffix)</td></tr>' +
+      '<tr><td>3</td><td>Sužeistųjų skaičius pagal pirmenybę</td><td>A neatidėliotini, B neatidėliotini – chirurginiai, C skubūs, D įprastinė evakuacija, E evakuojami pagal galimybes; tarp kategorijų – „break“</td></tr>' +
+      '<tr><td>4</td><td>Reikalinga speciali įranga</td><td>A nereikalinga, B keltuvai, C neštuvai, D dirbtinė plaučių ventiliacija</td></tr>' +
+      '<tr><td>5</td><td>Sužeistųjų skaičius pagal tipą</td><td>L – gulintys (neštuvuose), A – sėdintys (ambulatoriniai) (pvz., L2 break A1)</td></tr>' +
+      '<tr><td>6</td><td>Karo metu – surinkimo vietos pavojaus laipsnis; taikos metu – sužalojimų ar ligų skaičius ir tipas</td><td>N rajone priešo nėra, P priešas gali būti rajone, E priešas rajone, X priešas rajone, reikalinga ginkluota palyda</td></tr>' +
+      '<tr><td>7</td><td>Surinkimo vietos pažymėjimo būdas</td><td>A spalvotas ženklas, B pirotechnika, C dūmai, D nėra, E kita</td></tr>' +
+      '<tr><td>8</td><td>Sužeistųjų tautybė ir statusas</td><td>A LT karys, B LT civilis, C ne LT karys, D ne LT civilis, E priešo karo belaisvis</td></tr>' +
+      '<tr><td>9</td><td>Karo metu – MNG situacija ir vietovės užterštumas; taikos metu – vietovės aprašymas</td><td>A branduolinis, B biologinis, C cheminis</td></tr></table></div>' +
+      '<p class="muted">Lietuviški pavadinimai ir kodai – pagal LK formą (kuopos Q priedo priedėlis Nr. 2 „9-liner/MIST (pagal LK)“). Perduodant angliškai (programėlėje „English (NATO)“) – NATO / JTS terminai: 4 eilutė C – extraction equipment, 8 eilutė – koalicijos kodai, 9 eilutė – N branduolinis, B biologinis, C cheminis, R radiologinis (LK formoje R nėra – patikslinkite žodžiu). Vadovaukitės savo vieneto ir NATO SOP.</p>' +
+      '<h3>Evakuacijos pirmenybė (3 eilutė)</h3>' +
+      '<div class="tw"><table><tr><th>Kategorija</th><th>Terminas (LK forma; JTS CLS)</th><th>Pavyzdžiai (JTS)</th></tr>' +
+      '<tr><td><b>A – neatidėliotini</b> (Urgent)</td><td>Reikia evakuoti 2 val. laikotarpyje – gyvybei, galūnei ar regėjimui išsaugoti</td><td>Turniketai, sustabdytas kraujavimas, adatinė dekompresija, krikotiroidotomija</td></tr>' +
+      '<tr><td><b>B – neatidėliotini – chirurginiai</b> (Urgent surgical)</td><td>Reikalingas chirurginis gydymas per 2 valandas</td><td>Didelis vidinis kraujavimas, sunki galvos trauma, kompensuotas šokas</td></tr>' +
+      '<tr><td><b>C – skubūs</b> (Priority)</td><td>Išgelbėjimui reikalinga evakuacija per 4 valandas (būklė gali pablogėti iki neatidėliotinos)</td><td>Lūžis su išnykusiu distaliniu pulsu, II laipsnio nudegimai dideliame pilvo ar galūnių plote</td></tr>' +
+      '<tr><td><b>D – įprastinė evakuacija</b> (Routine)</td><td>&lt; 24 val.</td><td>Nubrozdinimai, smulkūs lūžiai, nušalimai</td></tr>' +
+      '<tr><td><b>E – evakuojami pagal galimybes</b> (Convenience)</td><td>Mediciniškai nebūtina</td><td>Administracinis perkėlimas</td></tr></table></div>' +
+      '<p class="muted">MIST kortelės evakuacija atitinka 3 eilutę: neatidėliotina – A (chirurginė – B), skubi – C, įprastinė – D.</p>' +
       '<p class="muted">Terminai priklauso nuo doktrinos ir SOP: JTS CLS (2020) nurodo &lt; 2 val., kai kurios JAV ir NATO procedūros skubiai kategorijai numato 1 val. ar 90 min. Vadovaukitės savo vieneto SOP.</p>' +
       '<p><b>Pervertinimas</b> – polinkis priskirti per aukštą kategoriją. Tai atima priemones iš labiausiai jų reikalingų sužeistųjų; kategoriją tikslinkite keičiantis būklei.</p>' +
       '<h3>MIST</h3><ul><li><b>M</b> – mechanizmas ir sužeidimo laikas (jei žinomas)</li><li><b>I</b> – sužalojimai (sunkiausi pirmiausia)</li><li><b>S</b> – simptomai ir gyvybiniai rodikliai</li><li><b>T</b> – suteiktas gydymas</li></ul>' +
       '<p>MIST sudaromas iš nukentėjusiojo kortelės (DD 1380) ir perduodamas evakuacijos medikams ar priimančiai grandžiai. <a href="#/mist">Atidaryti MIST formą</a>.</p>',
-    saltinis: 'JTS CLS kursas (19 modulis, įgūdžio kortelė 19.2, 2020); TCCC gairės 2026-05-01 (TFC 18)'
+    saltinis: 'LK 9-liner/MIST forma (kuopos Q priedas, priedėlis Nr. 2); JTS CLS kursas (19 modulis, įgūdžio kortelė 19.2, 2020); TCCC gairės 2026-05-01 (TFC 18)'
   },
   nestuvai: {
     title: 'Neštuvai ir pasiruošimas evakuacijai', sub: 'Kaip supakuoti sužeistąjį ir saugiai jį nešti',

@@ -5,7 +5,18 @@ const IMG_CACHE = 'march-img-1';
 let depth = 0;
 let night = !!LS.get('mg-naktis', false); // naktinis raudonas režimas
 const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
-const newPt = () => '<button class="btn newpt" data-act="new-pt">Naujas sužeistasis – išvalyti žymėjimus ir laikus</button>';
+// Sąrašo apačioje: išvalyti šio sąrašo žymėjimus (dabartinio sužeistojo; su „Atšaukti“). Naujas sužeistasis – juostos „+“.
+const clrCk = (p, q) => { let id = ''; try { id = HCFG().listOf(p, q || {}); } catch (e) {} if (!id) return ''; const n = (ckAll()[id] || []).length;
+  return `<button class="btn newpt" data-act="ck-clr" data-l="${esc(id)}"${n ? '' : ' disabled'}>Išvalyti žymėjimus${n ? ' (' + n + ')' : ''}</button>`; };
+// „Išvalyti žymėjimus“ mygtuko būsena po žymėjimo (be perpiešimo)
+const ckBtn = l => { const cb = app.querySelector('[data-act=ck-clr]'); if (!cb || cb.dataset.l !== l) return; const n = (ckAll()[l] || []).length; cb.disabled = !n; cb.textContent = 'Išvalyti žymėjimus' + (n ? ' (' + n + ')' : ''); };
+// Senas MIST maršrutas – paciento ekrano kortelė (mokymosi režime lieka atskiras puslapis su paaiškinimais)
+const REDIR = p => p[0] === 'mist' && mode !== 'learn' ? '#/pacientas?t=kortele' : '';
+// Sąrašo ⏱ turniketui: po laiko – galūnės pasirinkimas (rašoma į MIST kortelę)
+const limbsOn = () => { try { const st = MC.state(), c = st.pts[st.cur]; return Object.keys(c.tq || {}).some(k => c.tq[k] && c.tq[k].on); } catch (e) { return false; } };
+const limbPick = t => `<span class="muted">Turniketas ${esc(t)} – kuri galūnė?</span><div class="tmq tml" role="group" aria-label="Turniketo galūnė">` +
+  MC.TQ.map(([k, lt]) => `<button class="btn" data-act="tm-limb" data-k="${k}">${esc(lt)}</button>`).join('') + '<button class="btn" data-act="tm-limbx">Vėliau</button></div>';
+const ckOn = ck => { if (!ck || !ck.classList.contains('ck') || ck.classList.contains('on')) return; ckToggle(ck.dataset.l, +ck.dataset.i); ck.classList.add('on'); ck.setAttribute('aria-checked', 'true'); const cl = ck.closest('.cl'); if (cl) updCount(cl); ckBtn(ck.dataset.l); };
 const PT_BAR = []; // įrankiai, virš kurių rodoma pacientų juosta
 const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'scenarijai', 'pacientas', 'qr', 'qr-priimti', 'egzaminas', 'korteles', 'skenuoti', 'vertinimas'];
 const fbLink = () => '<button class="btn fbrow" data-act="fb">Pastebėjote klaidą ar turite pasiūlymą? Praneškite</button>';
@@ -40,8 +51,8 @@ function route() {
 function view(p, q) {
   switch (p[0]) {
     case undefined: return V.home();
-    case 'f': return V.phase(p[1], +q.t || 0) + newPt();
-    case 's': return V.list(p[1]) + newPt();
+    case 'f': return V.phase(p[1], +q.t || 0) + clrCk(p, q);
+    case 's': return V.list(p[1]) + clrCk(p, q);
     case 'sarasai': return V.lists();
     case '9line': return NL.view();
     case 'mist': return MC.view();
@@ -95,6 +106,7 @@ function render() {
 }
 
 function onNav(first) {
+  { const r = REDIR(route().p); if (r) { try { history.replaceState(history.state, '', r); } catch (e) { location.replace(r); return; } } }
   const { p, q } = route(), s = history.state;
   if (!(s && s.d != null)) { try { LU.onRoute(p, q); } catch (e) { console.error(e); } } // dažniausi sąrašai: tik naujas perėjimas (ne atgal / pirmyn / perkrovimas)
   HUB.close();
@@ -176,7 +188,7 @@ app.addEventListener('click', e => {
   switch (d.act) {
     case 'ck': {
       ckToggle(d.l, +d.i); el.classList.toggle('on'); el.setAttribute('aria-checked', el.classList.contains('on'));
-      const box = el.closest('.cl'); updCount(box);
+      const box = el.closest('.cl'); updCount(box); ckBtn(d.l);
       const tb = document.querySelector('.tabs button.on'), all = box.querySelectorAll('.ck').length;
       if (tb) tb.classList.toggle('done', all > 0 && box.querySelectorAll('.ck.on').length === all);
       if (navigator.vibrate) navigator.vibrate(15); break;
@@ -196,39 +208,35 @@ app.addEventListener('click', e => {
       el.classList.remove('vthumb'); el.removeAttribute('style'); el.removeAttribute('data-act'); el.removeAttribute('role'); el.innerHTML = ''; el.appendChild(f);
       break;
     }
-    case 'tm': {
-      tmEdit = d.k; updTimers();
-      const T = LS.get('mg-laikai', {}) || {}, inp = document.getElementById('tm-in'), box = document.querySelector('.tme');
-      if (inp) inp.value = T[d.k] ? hm(T[d.k]) : nowHM();
-      if (box) showAboveNav(box);
-      break;
-    }
-    case 'tm-q': {
-      const k = d.k, ts = Date.now() - (+d.m || 0) * 60000, lb = k === 'turn' ? 'Turniketas' : 'Sužeidimas';
-      setTm(ts, k); app.querySelectorAll('.tmq-ck').forEach(x => x.remove());
+    case 'tm': MC.sheet('time', { field: d.k }); break; // laiko langas – tas pats visur (kartu su MIST kortele)
+    case 'tm-q': { // sąrašo ⏱: laikas, punktas pažymimas; turniketui – dar galūnė
+      const k = d.k, ts = Date.now() - (+d.m || 0) * 60000, lb = k === 'turn' ? 'Turniketas' : 'Trauma', box = el.closest('.tmq-ck');
+      setTm(ts, k);
       app.querySelectorAll('.tmk[data-k="' + k + '"]').forEach(x => { x.textContent = '⏱ ' + hm(ts); });
+      if (box) ckOn(box.previousElementSibling);
       toast(lb + ': ' + hm(ts)); if (navigator.vibrate) navigator.vibrate(30);
+      if (k === 'turn' && box && !limbsOn()) { box.innerHTML = limbPick(hm(ts)); showAboveNav(box); } else app.querySelectorAll('.tmq-ck').forEach(x => x.remove());
       break;
     }
-    case 'tm-mark': {
-      const T = LS.get('mg-laikai', {}) || {}, lb = d.k === 'turn' ? 'Turniketas' : 'Sužeidimas';
-      if (T[d.k]) { toast(lb + ' jau pažymėtas ' + hm(T[d.k]) + ' · keisti – pradžios ekrane'); break; }
-      const ck = el.closest('.ck'), open = ck && ck.nextElementSibling && ck.nextElementSibling.classList.contains('tmq-ck');
+    case 'tm-limb': {
+      const T = LS.get('mg-laikai', {}) || {}; if (!MC.setTq(d.k, T.turn ? hm(T.turn) : nowHM())) break;
       app.querySelectorAll('.tmq-ck').forEach(x => x.remove());
+      toast('Turniketas: ' + MC.tqName(d.k) + (T.turn ? ' · ' + hm(T.turn) : '')); break;
+    }
+    case 'tm-limbx': app.querySelectorAll('.tmq-ck').forEach(x => x.remove()); break;
+    case 'tm-mark': {
+      const T = LS.get('mg-laikai', {}) || {}, lb = d.k === 'turn' ? 'Turniketas' : 'Trauma', ck = el.closest('.ck');
+      const open = ck && ck.nextElementSibling && ck.nextElementSibling.classList.contains('tmq-ck');
+      app.querySelectorAll('.tmq-ck').forEach(x => x.remove());
+      if (T[d.k]) {
+        ckOn(ck);
+        if (d.k === 'turn' && ck && !open && !limbsOn()) { ck.insertAdjacentHTML('afterend', `<div class="tmq-ck">${limbPick(hm(T.turn))}</div>`); showAboveNav(ck.nextElementSibling); }
+        else toast(lb + ' jau pažymėtas ' + hm(T[d.k]) + ' · keisti – paciento faile');
+        break;
+      }
       if (ck && !open) { ck.insertAdjacentHTML('afterend', `<div class="tmq-ck"><span class="muted">${d.k === 'turn' ? 'Kada uždėtas turniketas?' : 'Kada sužeista?'}</span>${tmQuick(d.k)}</div>`); showAboveNav(ck.nextElementSibling); }
       break;
     }
-    case 'tm-set': {
-      const v = (document.getElementById('tm-in') || {}).value;
-      if (!v) { toast('Įveskite laiką'); break; }
-      const [hh, mm] = v.split(':').map(Number), t = new Date();
-      t.setHours(hh, mm, 0, 0);
-      let y = false;
-      if (t.getTime() > Date.now() + 5 * 60000) { t.setDate(t.getDate() - 1); y = true; }
-      setTm(t.getTime()); toast(y ? 'Nustatyta vakar, ' + v : 'Nustatyta ' + v); break;
-    }
-    case 'tm-clr': setTm(null); break;
-    case 'tm-x': tmEdit = null; updTimers(); break;
     case 'ok': LS.set('mg-ok', true); el.closest('.warn').remove(); break;
     case 'w': LS.set('mg-svoris', +d.w); render(); break;
     case 'rate': {
@@ -236,7 +244,13 @@ app.addEventListener('click', e => {
       if (R[d.id] === v) delete R[d.id]; else R[d.id] = v;
       LS.set('mg-ivert', R); render(); break;
     }
-    case 'new-pt': if (confirm('Pradėti naują sužeistąjį? Dabartinis lieka sąraše (Paciento failas); 9-Line ir TST skaičiavimas – bendri.')) { PT.add(); render(); toast('Naujas sužeistasis'); } break;
+    case 'new-pt': { const prev = PT.list().cur; PT.add(); render(); PT.added(prev); break; } // kitas sužeistasis; ankstesni lieka sąraše
+    case 'ck-clr': {
+      const all = ckAll(), prev = all[d.l]; if (!prev || !prev.length) break;
+      delete all[d.l]; LS.set('mg-ck', all); { const y = scrollY; render(); scrollTo(0, y); }
+      toastAct('Žymėjimai išvalyti', 'Atšaukti', () => { const a = ckAll(); a[d.l] = prev; LS.set('mg-ck', a); const y = scrollY; render(); scrollTo(0, y); });
+      break;
+    }
     case 'tikcls': { LS.set('mg-tikcls', !tikCLS()); IDX = null; render(); const f = app.querySelector('[data-act=tikcls]'); if (f) f.focus(); toast(tikCLS() ? 'Rodomi tik CLS veiksmai' : 'Rodomi visi veiksmai'); break; }
     case 'reset-ivert': if (confirm('Ištrinti visus įsivertinimus?')) { LS.set('mg-ivert', {}); render(); } break;
     case 'fb': FB.open(); break;

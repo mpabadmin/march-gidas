@@ -242,7 +242,7 @@ const OP = (() => {
       '<button class="btn dng" data-act="op-wipe" style="width:100%">Ištrinti visų sužeistųjų duomenis</button>' +
       '<p class="muted">Automatiškai ištrinti, jei programėlė nenaudojama:</p><div class="seg2" role="group" aria-label="Automatinis ištrynimas">' +
       [[0, 'Išjungta'], [12, '12 val.'], [24, '24 val.'], [72, '3 d.']].map(([k, t]) => `<button class="${h === k ? 'on' : ''}" data-act="op-auto" data-k="${k}" aria-pressed="${h === k}">${t}</button>`).join('') + '</div>' +
-      '<p class="muted">Ištrinama: MIST kortelės, paciento failas, laikai, sąrašų žymėjimai, 9-Line, TST' + (typeof MS !== 'undefined' ? ', Mascal' : '') + (typeof VZ !== 'undefined' ? ', vaistų žymėjimas, nudegimai, šviežias kraujas' : '') + (typeof SR !== 'undefined' ? ', SITREP' : '') + '. Lieka: nustatymai, įsivertinimai, vertinimai ir dozių kortelės.</p>';
+      '<p class="muted">Ištrinama: MIST kortelės, paciento failas, laikai, sąrašų žymėjimai, 9-Line, 10S triažas' + (typeof MS !== 'undefined' ? ', Mascal' : '') + (typeof VZ !== 'undefined' ? ', vaistų žymėjimas, nudegimai, šviežias kraujas' : '') + (typeof SR !== 'undefined' ? ', SITREP' : '') + '. Lieka: nustatymai, įsivertinimai, vertinimai ir dozių kortelės.</p>';
   }
   function act(el) {
     const d = el.dataset;
@@ -335,7 +335,7 @@ const VL = (() => {
       return h;
     }
     const li = (a, f) => '<ul class="exlst' + (f ? ' ' + f : '') + '">' + a.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
-    h += `<div class="exres${X.pass ? '' : ' bad'}"><div class="muted">${esc(c.who || 'Vertinamasis')} · ${esc(c.ins ? 'instruktorius ' + c.ins : '')} · ${esc(dtStr(c.t0))}${c.att > 1 ? ' · ' + c.att + ' bandymas' : ''}</div><div class="big">${X.pass ? 'Įskaityta' : 'Neįskaityta'}</div><div>K punktų atlikta: <b>${X.K.length - X.kBad.length} / ${X.K.length}</b> · T: ${X.t} · N: ${X.nList.length}${X.empty.length ? ' · nepažymėta: ' + X.empty.length : ''}</div></div>`;
+    h += `<div class="exres${X.pass ? '' : ' bad'}"><div class="muted">${esc([c.who || 'Vertinamasis nenurodytas', c.ins ? 'instruktorius ' + c.ins : '', dtStr(c.t0), c.att > 1 ? c.att + ' bandymas' : ''].filter(Boolean).join(' · '))}</div><div class="big">${X.pass ? 'Įskaityta' : 'Neįskaityta'}</div><div>K punktų atlikta: <b>${X.K.length - X.kBad.length} / ${X.K.length}</b> · T: ${X.t} · N: ${X.nList.length}${X.empty.length ? ' · nepažymėta: ' + X.empty.length : ''}</div></div>`;
     if (X.kBad.length) h += '<h2>Neatlikti K punktai</h2>' + li(X.kBad.map(label), 'krit');
     const nk = X.nList.filter(r => !r.k); if (nk.length) h += '<h2>Kiti „N“</h2>' + li(nk.map(label));
     const nts = Object.keys(c.nt).filter(k => String(c.nt[k]).trim()); if (nts.length || c.notes.trim()) h += '<h2>Pastabos</h2>' + li(nts.map(k => { const r = X.R.find(x => x.key === k); return (r ? (r.top ? r.n : r.par + r.n) + ' ' : '') + c.nt[k].trim(); }).concat(c.notes.trim() ? [c.notes.trim()] : []));

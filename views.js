@@ -26,7 +26,7 @@ const listRow = id => {
 };
 function doseShort(v, w) {
   const d = (v.dozes || [])[0]; if (!d) return v.klase || '';
-  return d.k + ': ' + (d.c ? calc(d.c, w) + ' (' + w + ' kg)' : d.d);
+  return d.k + ': ' + (d.c ? calc(d.c, w) + ' (' + w + ' kg)' + (d.c.alt ? ' · ' + d.c.alt : '') : d.d);
 }
 function tocHtml(html) {
   const hs = []; let i = 0;
@@ -48,11 +48,11 @@ const skRefs = t => esc(t).replace(/#(\d{1,2})(?![\d])/g, (m, n) => { const k = 
 // Susiję įrankiai įgūdžio puslapyje
 const SKILL_TOOLS = {
   31: [['#/mist', 'MIST kortelė', 'Kūno schema, požymiai, gydymas – užpildykite ir perskaitykite']], 32: [['#/9line', '9-Line MEDEVAC forma', 'Užpildykite ir perskaitykite per radiją'], ['#/mist', 'MIST kortelė', 'Kūno schema, požymiai, gydymas']],
-  34: [['#/mist', 'MIST kortelė', 'Perduokite perskaitydami kortelę']], 36: [['#/tst', 'TST rūšiavimas', 'Ten Second Triage – masinei nelaimei']]
+  34: [['#/mist', 'MIST kortelė', 'Perduokite perskaitydami kortelę']], 36: [['#/tst', '10S triažas', 'Ten Second Triage – masinei nelaimei']]
 };
 // Įrankiai (tools.js): būsena rodoma po pavadinimu
 const toolRows = () => typeof MC === 'undefined' ? '' :
-  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', 'TST rūšiavimas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status()) +
+  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', '10S triažas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status()) +
   row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
 const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="tag grn">CLS</span>';
 
@@ -70,7 +70,7 @@ const V = {
     return '<div class="tools">' +
       `<a class="tool" href="#/9line" aria-label="9-Line MEDEVAC prašymas: ${esc(nl)}"><span class="ti">9</span><b>9-Line</b><small>${esc(nl)}</small></a>` +
       `<a class="tool" href="#/pacientas?t=kortele" aria-label="MIST kortelė: ${esc(mc)}"><span class="ti">M</span><b>MIST</b><small>${esc(mc)}</small></a>` +
-      `<a class="tool" href="#/tst" aria-label="TST rūšiavimas: ${esc(ts)}"><span class="ti">T</span><b>TST</b><small>${esc(ts)}</small></a>` +
+      `<a class="tool" href="#/tst" aria-label="10S triažas: ${esc(ts)}"><span class="ti">10S</span><b>10S triažas</b><small>${esc(ts)}</small></a>` +
       `<a class="tool" href="#/sitrep" aria-label="SITREP padėties pranešimas: ${esc(sr)}"><span class="ti">S</span><b>SITREP</b><small>${esc(sr)}</small></a></div>`;
   },
 
@@ -152,7 +152,7 @@ const V = {
   },
 
   lists() {
-    let h = '<h1>Kontroliniai sąrašai</h1><p class="muted">Pagal TCCC fazes. Žymėjimai išlieka, kol paspausite „Naujas sužeistasis“.</p>' + row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
+    let h = '<h1>Kontroliniai sąrašai</h1><p class="muted">Pagal TCCC fazes. Žymėjimai priklauso dabartiniam sužeistajam; išvalyti – mygtukas „Išvalyti žymėjimus“ sąrašo apačioje.</p>' + row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
     (E.fazes || []).forEach(f => {
       h += `<h2>${esc(f.id)} – ${esc(f.pav)}</h2>` + (f.lists || []).map(listRow).join('');
     });
@@ -167,7 +167,7 @@ const V = {
     let h = `<div class="phead ${f.cls}"><b>${esc(f.id)}</b><h1 class="pht" data-title="${esc(f.id + (f.lists.length > 1 ? ' · ' + ((S[lid] || {}).short || '') : '') + ' – ' + f.pav)}">${esc(f.pav)} <small>${esc(f.en)}${f.lists.length > 1 ? ' · ' + esc((S[lid] || {}).short || '') : ''}</small></h1></div>`;
     h += '<div class="tmini-box">' + timersMini() + '</div>';
     if (mode === 'learn' && f.aprasymas) h += `<p class="muted">${esc(f.aprasymas)}</p>`;
-    if (f.lists.length > 1) h += '<div class="tabs">' + f.lists.map((l, i) => {
+    if (f.lists.length > 1) h += '<div class="tabs ph">' + f.lists.map((l, i) => {
       const [n, tot] = listDone(l);
       return `<button class="${i === t ? 'on' : ''}${n && n === tot ? ' done' : ''}" data-act="go" data-rep="1" data-r="#/f/${id}?t=${i}" aria-current="${i === t ? 'step' : 'false'}">${esc((S[l] || {}).short || l)}</button>`;
     }).join('') + '</div>';
@@ -302,7 +302,7 @@ const V = {
     const b = (act, t, s) => `<button class="row" data-act="${act}"><div>${t}<small>${s}</small></div></button>`;
     let h = '<h1>Nustatymai</h1>' + GL.settingRow();
     h += `<div class="ck${tikCLS() ? ' on' : ''}" data-act="tikcls" role="checkbox" aria-checked="${tikCLS()}" tabindex="0"><span class="bx">✓</span><div class="t">Rodyti tik CLS veiksmus<div class="muted">Paslepia kovos mediko (CMC) ir paramediko (CPP) veiksmus, vaistus ir įgūdžius.</div></div></div>`;
-    h += '<h2>Sužeistasis</h2>' + (typeof MC !== 'undefined' && MC.profileView ? MC.profileView() : '') + row('#/pacientas', 'Paciento failas', 'Sužeistųjų sąrašas, įvykių eiga, perdavimas QR') + b('new-pt', 'Naujas sužeistasis', 'Ankstesnis lieka sąraše; laikai ir žymėjimai – naujam') + REM.settings() + OP.settings();
+    h += '<h2>Sužeistasis</h2>' + (typeof MC !== 'undefined' && MC.profileView ? MC.profileView() : '') + row('#/pacientas', 'Paciento failas', 'Sužeistųjų sąrašas, įvykių eiga, perdavimas QR') + b('new-pt', '+ Kitas sužeistasis', 'Ankstesni lieka sąraše; naujam – švarūs laikai ir žymėjimai') + REM.settings() + OP.settings();
     h += '<h2>Atsiliepimai</h2>' + b('fb', 'Pranešti apie klaidą ar pasiūlyti', 'Komentaras ir ekrano vaizdas – keliauja gido rengėjams');
     const nOut = FB.pending();
     if (nOut) h += b('fb-flush', 'Neišsiųsti pranešimai: ' + nOut, 'Siųsti dabar (reikia interneto)');

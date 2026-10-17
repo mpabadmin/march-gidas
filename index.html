@@ -701,6 +701,91 @@ html.gl .hbqa{min-height:60px}
 .mpr.attn .mpl,.mpr.attn .mps{background:var(--ambbg);color:var(--amb)}.mpr.attn .mpt small{color:var(--amb)}
 .mpa{flex:none;font-size:13px;font-weight:700;color:var(--acc);white-space:nowrap}
 .mpr.none .mpl{background:transparent;border:1.5px solid var(--line);color:var(--tx2)}
+/* v30 Y – pradžia (išdėstymas: maži ekranai, pirštinės, naktinis režimas) */
+/* paciento ekrano skirtukai – visi matomi, lygūs stulpeliai */
+.hbt{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:visible}
+.hbt button{min-width:0;padding:9px 2px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:clip;letter-spacing:-.1px}
+html.gl .hbt button{font-size:15px;padding-left:1px;padding-right:1px}
+@media(max-width:400px){.hbt button{font-size:13px}html.gl .hbt button{font-size:13.5px}}
+@media(max-width:350px){.hbt button,html.gl .hbt button{font-size:12px;letter-spacing:-.25px}}
+/* požymių ir kiti langai – laiko lustai vienoje eilutėje */
+.mqtm .mqc{flex:1 1 auto;justify-content:center;padding:0 7px;white-space:nowrap}
+@media(max-width:360px){.mqtm .mqc{font-size:13px;padding:0 6px}}
+.mqtm .mqst{flex:1}
+html.gl .mqtm .mqc,html.gl .mqqv .mqc{min-height:56px;font-size:16px}
+/* žemi ekranai (pvz. 320×640): klaviatūra telpa be slinkimo */
+@media(max-height:760px){
+  .mqshh{padding:4px 12px 2px}.mqshh b{font-size:16px}
+  .mqsh .mqrow{margin-top:6px}.mqsh .mqc{min-height:40px}.mqsh .mqlab{margin-top:6px}
+  .mqtm .mqst{display:none}
+  .mqavpu{margin-top:6px;gap:5px}.mqavpu button{min-height:44px}.mqavpu b{font-size:17px}.mqavpu small{font-size:10px}
+  .mqvf{grid-template-columns:repeat(6,minmax(0,1fr));margin-top:6px}.mqvf button{min-height:44px}
+  .mqdisp{margin:6px 0 0;min-height:40px}.mqdisp b,.mqbp{font-size:32px;min-height:40px}
+  .mqkp{gap:5px;margin-top:6px}.mqkp button{min-height:46px;font-size:22px}
+  .mqpain{gap:5px;margin-top:6px}.mqpain button{min-height:44px}
+  .mqshf{padding-top:6px}.mqsave{min-height:48px}
+  .mqsh .mqrow:has(> [data-sa="gcson"]){margin-top:4px}.mqsh [data-sa="gcson"]{min-height:32px}
+  .mqqv .mqc{min-height:36px}
+}
+@media(max-height:680px){.mqkp button{min-height:40px;font-size:20px}.mqavpu button,.mqvf button{min-height:40px}.mqdisp{min-height:36px}.mqdisp b,.mqbp{font-size:28px;min-height:36px}.mqsh .mqc{min-height:38px}}
+@media(max-height:760px) and (max-width:360px){.mqvf span{font-size:9.5px;letter-spacing:-.2px}.mqvf b{font-size:13px}}
+/* pirštinių „Atgal“ – dešinėje, virš juostos: neuždengia žymėjimų ir MARCH PAWS raidžių */
+#glback{left:auto;right:12px;width:56px;height:56px}
+html.gl body.hasbar #glback{left:10px;right:auto;bottom:calc(78px + env(safe-area-inset-bottom));width:62px;height:62px}
+html.gl body.hasbar .hbar{left:max(80px,calc(50% - 280px))}
+/* evakuacija – žodis nelaužomas viduryje */
+.mqev{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,1.1fr)}
+.mqev button{overflow-wrap:normal;word-break:keep-all;hyphens:none;padding:4px 3px}
+.mqev button b{font-size:clamp(10.5px,3.3vw,13px);letter-spacing:-.2px;white-space:nowrap}
+/* transportavimo padėtis – matomi užrašai */
+.mqpos{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.mqpos button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;padding:4px 2px;font:inherit}
+.mqpos button::after{content:attr(title);font-size:11.5px;line-height:1.15;text-align:center}
+.mqpos svg{height:24px}
+@media(min-width:600px){.mqpos{grid-template-columns:repeat(6,minmax(0,1fr))}}
+/* pranešimai – viršuje po antrašte, kad neuždengtų ką tik pakeisto turinio */
+#toast,body.hasbar #toast,html.gl body.hasbar #toast{bottom:auto;top:calc(62px + env(safe-area-inset-top));transform:translate(-50%,-12px);width:max-content;max-width:calc(100vw - 32px);box-sizing:border-box;text-align:center}
+#toast.show,body.hasbar #toast.show{transform:translate(-50%,0)}
+html.mqopen body #toast,html body.hbopen #toast,html.fbopen body #toast{top:calc(12px + env(safe-area-inset-top))}
+/* antraštės perjungiklis – „Mokymasis“ nenukerpamas */
+@media(max-width:420px){header .seg button{font-size:13.5px;letter-spacing:-.2px}header .seg button.on{font-weight:700}}
+@media(max-width:360px){header .seg button{font-size:12.5px}}
+/* fazės skirtukai (March) – visi matomi, keliomis eilutėmis */
+.tabs.ph{flex-wrap:wrap;overflow:visible;margin:0 0 10px;padding:2px 0 4px;gap:5px}
+.tabs.ph button{padding:7px 12px;font-size:14px;min-height:40px}
+html.gl .tabs.ph button{min-height:50px;padding:8px 14px}
+/* naktinis raudonas režimas: spalvos tampa raudonomis – skiriame forma ir kontrastu */
+body.night .mqev button{background:#000!important;color:#fff!important;border:2px solid #fff}
+body.night .mqev button.on{background:#fff!important;color:#000!important;box-shadow:none}
+body.night .mqev button small{opacity:1}
+body.night .mqg{background:#000;color:#fff;box-shadow:0 0 0 2px #fff}
+body.night .mk .dot{fill:#000;stroke:#fff;stroke-width:1.8}body.night .mk text{fill:#fff}
+body.night .mqtools button.on{background:#fff;color:#000;border-color:#fff}
+body.night td.ab::after,body.night b.ab::after,body.night .mqvf button.ab b::after{content:'!';margin-left:2px;font-weight:900}
+/* įrankių pavadinimai: „10S triažas“, „Kraujo transfuzija“ – ikona „10S“ telpa, pavadinimas gali būti 2 eilutėse */
+.tool[href="#/tst"] .ti{font-size:17px;letter-spacing:-.6px}.tool.big[href="#/tst"] .ti{font-size:19px}
+.tool b{overflow-wrap:normal;word-break:normal}
+/* v30 Y – pabaiga */
+/* v30 X – pradžia (būsena ir eiga: pranešimas su „Atšaukti“, priminimų taškas, kortelės „Daugiau…“, ankstesnės reikšmės) */
+#toast.show.act{pointer-events:auto;display:flex;align-items:center;gap:12px;text-align:left}
+#toast .tsa{flex:none;min-height:40px;padding:6px 14px;border:2px solid currentColor;border-radius:10px;background:transparent;color:inherit;font:inherit;font-weight:800;cursor:pointer;touch-action:manipulation}
+.ptbar button{position:relative}
+.ptdue{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--abn);box-shadow:0 0 0 2px var(--card)}
+.ptbar button.on .ptdue{box-shadow:0 0 0 2px var(--tx)}
+.mqedh{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:1;background:var(--bg);margin:-2px 0 6px;padding:2px 0 4px}
+.mqedh b{flex:1;font-size:14px}.mqedh .btn{margin:0;min-width:84px}
+.mqmore{margin:10px 0 0;border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.mqmore summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer;list-style:none}
+.mqmore summary::-webkit-details-marker{display:none}.mqmore summary::after{content:'›';margin-left:auto;font-size:20px;transform:rotate(90deg)}
+.mqmore[open]{padding-bottom:10px}.mqmore[open] summary::after{transform:rotate(-90deg)}
+.mqscope{margin:0 0 8px}
+.mqpv{display:block;font-size:10px;line-height:1.1;color:var(--tx2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mqavpu button.on .mqpv{color:inherit;opacity:.8}
+.mqsh .mqvf.n5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.nlfill{margin:0 0 8px}
+.tml .btn{flex:1 1 40%}
+body.night .ptdue{background:#fff}
+/* v30 X – pabaiga */
 </style>
 </head>
 <body class="field">
@@ -727,6 +812,7 @@ html.gl .hbqa{min-height:60px}
 <script src="core.js"></script>
 <script src="views.js"></script>
 <script src="tools.js"></script>
+<script src="sitrep.js"></script>
 <script src="priedai.js"></script>
 <script src="skenas.js"></script>
 <script src="pacientas.js"></script>
