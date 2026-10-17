@@ -9,11 +9,27 @@ const TCFG = {
   laikai: 'mg-laikai', // pradžios ekrano laikmačiai { trauma, turn }
   // nuorodos puslapių apačioje: [adresas, pavadinimas, paantraštė]
   nl: () => [['#/mist', 'MIST kortelė', MC.status()], ['#/p/devynios', '9-Line kodai ir skubumo kategorijos', 'Mokymosi medžiaga'], ['#/igudis/32', 'Kaip perduoti 9-Line ir MIST', 'Įgūdis #32'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
-  mc: () => [['#/skenuoti', 'Nuskaityti popierinę kortelę', 'DD 1380 nuotrauka → MIST, be interneto'], ['#/pacientas', 'Paciento failas', 'Įvykių eiga, perdavimas QR'], ['#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą'], ['#/9line', '9-Line MEDEVAC', NL.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'], ['#/igudis/34', 'Perdavimas ir perėmimas', 'Įgūdis #34'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
+  mc: () => [['#/skenuoti', 'Nuskaityti popierinę kortelę', 'DD 1380 nuotrauka → MIST, be interneto'], ['#/pacientas', 'Pacientas', 'Apžvalga, vaistai, eiga, perdavimas'], ['#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą'], ['#/9line', '9-Line MEDEVAC', NL.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'], ['#/igudis/34', 'Perdavimas ir perėmimas', 'Įgūdis #34'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
   gk: () => [['#/mist', 'MIST kortelė', MC.status()], ['#/igudis/17', 'Šoko atpažinimas: pulsas ir sąmonė (AVPU)', 'Įgūdis #17'], ['#/igudis/22', 'Galvos smegenų trauma', 'Įgūdis #22']],
   occl: 'Krūtinės lipdukas (okliuzinis tvarstis)', // MIST gydymo lusto pavadinimas (TCCC CLS terminas)
-  pt: ['laikai', 'ck'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele)
-  migrate: o => migrateOldMist(o) // senos MIST formos duomenys (žr. žemiau)
+  pt: ['laikai', 'ck', 'svoris'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele); svoris – kiekvienam pacientui savas
+  migrate: o => migrateOldMist(o), // senos MIST formos duomenys (žr. žemiau)
+  // paciento ekranas, juosta ir dažniausi sąrašai (pacientas.js – bendras kodas); MARCH PAWS apžvalga ir vaistų skiltis – march-hub.js (MPAWS)
+  hub: {
+    listDefaults: ['tfc-m', 'tfc-evak', 'tac-perdavimas'],
+    listOf: (p, q) => { if (p[0] === 's') return p[1] || ''; if (p[0] !== 'f') return ''; const f = (E.fazes || []).find(x => x.id === p[1]); return f ? (f.lists || [])[+q.t || 0] || '' : ''; },
+    listSkip: () => false,
+    drugs: ['paracetamolis', 'ketaminas', 'txa', 'cefadroksilis', 'ceftriaksonas', 'ondansetronas'],
+    drugOk: v => ok(v.lygis), drugTag: v => isAdv(v.lygis) ? tag(v.lygis) : '<span class="tag grn">CLS</span>',
+    noBar: ['pacientas', 'mist', 'skenuoti', 'qr-priimti', 'egzaminas', 'vertinimas'],
+    quick: [['vit', '+ Požymiai', 1], ['rx', '+ Vaistas', 1], ['tq', '+ Turniketas', 1], ['mk', '+ Žymė schemoje'], ['nl', '9-Line'], ['sr', 'SITREP']],
+    sheetQuick: [['vit', '+ Požymiai', 1], ['rx', '+ Vaistas', 1], ['tq', '+ Turniketas', 1], ['kortele', 'Kortelė'], ['nl', '9-Line'], ['perduoti', 'Perduoti']],
+    go: { rx: '#/pacientas?t=kortele&f=c', vz: '#/pacientas?t=kortele&f=c', nl: '#/9line', sr: '#/sitrep' }, // be vaistų žymėjimo: vaistai – į kortelės C lentelę
+    handoff: () => [['#/9line', '9-Line MEDEVAC', NL.status()], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'],
+      ['#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą'], ['#/skenuoti', 'Nuskaityti popierinę kortelę', 'DD 1380 nuotrauka → MIST']],
+    overview: (x, H) => typeof MPAWS !== 'undefined' ? MPAWS.overview(x, H) : H.quick(false) + H.sTable(x.c) + H.iBox(x.c) + H.tBox(x),
+    sections: { vaistai: (x, H) => typeof MPAWS !== 'undefined' ? MPAWS.drugs(x, H) : H.tBox(x) }
+  }
 };
 
 // ───────── Senos MIST formos (iki 2026-10, „MI“: keli sužeistieji, tekstiniai laukai) duomenų perkėlimas į MIST kortelę ─────────

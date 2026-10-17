@@ -48,7 +48,7 @@ function view(p, q) {
     case 'sitrep': return SR.view();
     case 'tst': return TS.view();
     case 'scenarijai': return SC.view(p[1], q);
-    case 'pacientas': return PT.view();
+    case 'pacientas': return HUB.view(q);
     case 'qr': case 'qr-priimti': return QR.view(p[0]);
     case 'vaistai': return V.drugs();
     case 'vaistas': return V.drug(p[1]);
@@ -77,12 +77,16 @@ function render() {
   document.getElementById('mL').setAttribute('aria-pressed', mode === 'learn');
   backBtn.style.display = p.length ? '' : 'none'; // pradžios ekrane vietoje „Atgal“ – atnaujinimo mygtukas dešinėje
   const ub = document.getElementById('upd'); if (ub) ub.style.display = p.length ? 'none' : '';
-  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'mist', tst: 'home', sitrep: 'home', scenarijai: 'igudziai', pacientas: 'home', qr: 'home', 'qr-priimti': 'home', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai', egzaminas: 'home', korteles: 'vaistai', skenuoti: 'mist', vertinimas: 'home' }[p[0]] || (p.length ? '' : 'home');
+  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'pacientas', tst: 'home', sitrep: 'home', scenarijai: 'igudziai', pacientas: 'pacientas', qr: 'pacientas', 'qr-priimti': 'pacientas', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai', egzaminas: 'home', korteles: 'vaistai', skenuoti: 'pacientas', vertinimas: 'home' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   try { PT.sync(); } catch (e) { console.error(e); }
   if (typeof DICT !== 'undefined') DICT.stop();
-  try { app.innerHTML = (PT_BAR.indexOf(p[0]) >= 0 ? PT.bar() : '') + view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : ''); if (p[0] === 'nustatymai') imgStatus(); }
+  let pb = ''; try { pb = HUB.bar(p[0]); } catch (e) { console.error(e); } // sužeistojo juosta virš apatinės navigacijos (ir atvertas langas)
+  if (pb) document.body.classList.add('hasbar');
+  if (pb && HUB.isOpen()) document.body.classList.add('hbopen');
+  try { app.innerHTML = (PT_BAR.indexOf(p[0]) >= 0 ? PT.bar() : '') + view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : '') + pb; if (p[0] === 'nustatymai') imgStatus(); }
   catch (err) { console.error(err); app.innerHTML = '<h1>Klaida</h1><p class="muted">Nepavyko atidaryti puslapio. Grįžkite į pradžią arba praneškite apie klaidą.</p>' + fbLink(); }
+  try { HUB.nav(); } catch (e) { console.error(e); }
   app.querySelectorAll('.tabs, .ptabs').forEach(sc => { const b = sc.querySelector('button.on'), add = sc.querySelector('.add'); if (b && sc.scrollWidth > sc.clientWidth) { const av = sc.clientWidth - (add ? add.offsetWidth + 12 : 0); sc.scrollLeft = Math.max(0, b.offsetLeft - (av - b.offsetWidth) / 2); } });
   const h1 = app.querySelector('h1');
   document.title = h1 && p.length ? (h1.dataset.title || (h1.childNodes[0] || h1).textContent.trim()) + ' · March gidas' : 'March gidas';
@@ -91,12 +95,15 @@ function render() {
 }
 
 function onNav(first) {
-  const { p } = route(), s = history.state;
+  const { p, q } = route(), s = history.state;
+  if (!first && !(s && s.d != null)) { try { LU.onRoute(p, q); } catch (e) { console.error(e); } } // dažniausi sąrašai: tik naujas perėjimas pirmyn (ne „Atgal“, ne perkrovimas)
+  HUB.close();
   depth = !p.length ? 0 : (s && s.d != null ? s.d : (first ? 0 : depth + 1));
   history.replaceState(Object.assign({}, s, { d: depth }), '');
   tmEdit = null;
   render();
   if (!first) scrollTo(0, 0);
+  HUB.after();
 }
 
 function setMode(m) { if (m === mode) return; mode = m; LS.set('mg-rezimas', m); tmEdit = null; render(); }
@@ -156,6 +163,7 @@ app.addEventListener('click', e => {
   if (/^sr-/.test(d.act)) { SR.act(el); return; }
   if (/^sc-/.test(d.act)) { SC.act(el); return; }
   if (/^pt-/.test(d.act)) { PT.act(el); return; }
+  if (/^hb-/.test(d.act)) { HUB.act(el); return; }
   if (/^rem-/.test(d.act)) { REM.act(el); return; }
   if (/^qr-/.test(d.act)) { QR.act(el); return; }
   if (/^ts-/.test(d.act)) { TS.act(el); return; }
@@ -190,7 +198,7 @@ app.addEventListener('click', e => {
     }
     case 'tm': {
       tmEdit = d.k; updTimers();
-      const T = LS.get('mg-laikai', {}), inp = document.getElementById('tm-in'), box = document.querySelector('.tme');
+      const T = LS.get('mg-laikai', {}) || {}, inp = document.getElementById('tm-in'), box = document.querySelector('.tme');
       if (inp) inp.value = T[d.k] ? hm(T[d.k]) : nowHM();
       if (box) showAboveNav(box);
       break;
@@ -203,7 +211,7 @@ app.addEventListener('click', e => {
       break;
     }
     case 'tm-mark': {
-      const T = LS.get('mg-laikai', {}), lb = d.k === 'turn' ? 'Turniketas' : 'Sužeidimas';
+      const T = LS.get('mg-laikai', {}) || {}, lb = d.k === 'turn' ? 'Turniketas' : 'Sužeidimas';
       if (T[d.k]) { toast(lb + ' jau pažymėtas ' + hm(T[d.k]) + ' · keisti – pradžios ekrane'); break; }
       const ck = el.closest('.ck'), open = ck && ck.nextElementSibling && ck.nextElementSibling.classList.contains('tmq-ck');
       app.querySelectorAll('.tmq-ck').forEach(x => x.remove());
@@ -280,7 +288,8 @@ app.addEventListener('input', e => {
   } else history.replaceState(history.state, '', '#/paieska' + (empty ? '' : '?q=' + encodeURIComponent(v)));
 });
 
-setInterval(() => { if (!tmEdit) updTimers(); REM.tick(); }, 30000);
+setInterval(() => { if (!tmEdit) updTimers(); REM.tick(); HUB.tick(); }, 30000);
+addEventListener('keydown', e => { if (e.key === 'Escape' && HUB.isOpen()) { HUB.close(); const y = scrollY; render(); scrollTo(0, y); } });
 setTimeout(() => REM.tick(), 3000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !tmEdit) updTimers(); });
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEv = e; if (['nustatymai', 'idiegimas', undefined].indexOf(route().p[0]) >= 0) render(); });

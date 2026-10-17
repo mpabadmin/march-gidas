@@ -96,7 +96,7 @@ function renderList(id) {
     const on = done.indexOf(i) >= 0; if (on) n++;
     const sub = (it.s || []).length ? '<ul>' + it.s.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '';
     const info = mode === 'learn' && it.i ? '<div class="muted">' + it.i + '</div>' : '';
-    const T = it.tm ? LS.get('mg-laikai', {}) : null;
+    const T = it.tm ? (LS.get('mg-laikai', {}) || {}) : null;
     const links = (it.tm ? `<button class="sk tmk" data-act="tm-mark" data-k="${it.tm}">⏱ ${T[it.tm] ? hm(T[it.tm]) : 'Dabar'}</button>` : '') + (it.sk ? `<a class="sk" href="#/igudis/${it.sk}" data-act="go" data-r="#/igudis/${it.sk}" aria-label="Įgūdis ${it.sk}">#${it.sk}</a>` : '') +
       (it.r ? `<a class="sk" href="${esc(it.r)}" data-act="go" data-r="${esc(it.r)}">${/9line/.test(it.r) ? '9-Line' : /mist/.test(it.r) ? 'MIST' : /tst/.test(it.r) ? 'TST' : 'Dozė'}</a>` : '');
     h += `<div class="ck${on ? ' on' : ''}${it.k ? ' key' : ''}" data-act="ck" data-l="${esc(id)}" data-i="${i}" role="checkbox" aria-checked="${on}" tabindex="0"><span class="bx">✓</span><div class="t"><span class="tt">${esc(it.t)}</span> ${tag(it.g)}${sub}${info}</div>${links ? '<div class="lk">' + links + '</div>' : ''}</div>`;
@@ -115,7 +115,10 @@ function updCount(box) {
 const tmDur = m => m < 1 ? 'ką tik' : m < 60 ? m + ' min' : Math.floor(m / 60) + ' val. ' + String(m % 60).padStart(2, '0') + ' min';
 const tmAgo = (ts, now) => { const m = Math.max(0, Math.floor((now - ts) / 60000)); return m < 1 ? 'ką tik' : 'prieš ' + tmDur(m); };
 function timersHtml() {
-  const T = LS.get('mg-laikai', {}), now = Date.now();
+  const T = Object.assign({}, LS.get('mg-laikai', {})), now = Date.now();
+  // turniketo laikas – ir iš MIST kortelės (galūnės langelis), jei laikmatis nepažymėtas; TXA suleista – iš kortelės C lentelės
+  let txaT = 0;
+  try { const st = MC.state(), c = st.pts[st.cur]; if (!T.turn && PT.hmTs(c.tqT)) T.turn = PT.hmTs(c.tqT); if ((c.tx || []).indexOf('txa') >= 0 || c.txaT) txaT = PT.hmTs(c.txaT) || -1; } catch (e) {}
   const card = (k, lb, val, sub, cls) => `<button class="tmc ${cls || ''}" data-act="tm" data-k="${k}" aria-label="${lb}: ${T[k] ? 'keisti laiką' : 'pažymėti laiką'}"><span class="muted">${lb}</span><b>${val}</b>${sub ? '<small>' + sub + '</small>' : ''}</button>`;
   const txa = T.trauma ? T.trauma + 3 * 3600e3 : 0, conv = T.turn ? T.turn + 2 * 3600e3 : 0, six = T.turn ? T.turn + 6 * 3600e3 : 0;
   let h = '<div class="tmrow">';
@@ -124,7 +127,8 @@ function timersHtml() {
     T.turn ? tmAgo(T.turn, now) + '<br>' + (now > six ? 'praėjo 6 val. – nenuimti, palikti iki ligoninės' : now > conv ? 'praėjo 2 val. – CLS konversija tik mediko (CMC / CPP) nurodymu' : 'konversija iki ' + hm(conv)) : 'pirmojo uždėjimo laikas',
     T.turn ? (now > conv ? 'bad' : 'warn') : '');
   const left = txa ? Math.ceil((txa - now) / 60000) : 0;
-  h += `<div class="tmc ${txa ? (now > txa ? 'bad' : left <= 60 ? 'warn' : '') : 'dim'}"><span class="muted">TXA iki</span><b>${txa ? (now > txa ? 'Praėjo' : hm(txa)) : '—'}</b><small>${txa ? (now > txa ? 'po 3 val. neskirti' : 'liko ' + tmDur(left)) : 'pažymėkite sužeidimą'}</small></div>`;
+  if (txaT) h += `<div class="tmc ok"><span class="muted">TXA</span><b>Suleista</b><small>${txaT > 0 ? hm(txaT) : 'pažymėta kortelėje'}</small></div>`;
+  else h += `<div class="tmc ${txa ? (now > txa ? 'bad' : left <= 60 ? 'warn' : '') : 'dim'}"><span class="muted">TXA iki</span><b>${txa ? (now > txa ? 'Praėjo' : hm(txa)) : '—'}</b><small>${txa ? (now > txa ? 'po 3 val. neskirti' : 'liko ' + tmDur(left)) : 'pažymėkite sužeidimą'}</small></div>`;
   h += '</div>';
   if (tmEdit) h += `<div class="card tme"><b>${tmEdit === 'trauma' ? 'Sužeidimo laikas' : 'Pirmojo turniketo uždėjimo laikas'}</b>` + tmQuick(tmEdit) +
     (tmEdit === 'turn' ? '<p class="muted">Keičiant ar perkeliant turniketą laiko nekeiskite – 2 ir 6 val. ribos skaičiuojamos nuo pirmojo uždėjimo.</p>' : '') +
@@ -135,7 +139,7 @@ function timersHtml() {
 const tmQuick = k => `<div class="tmq" role="group" aria-label="Kada?">${[0, 5, 10, 15, 30].map(m => `<button class="btn${m ? '' : ' pri sm'}" data-act="tm-q" data-k="${k}" data-m="${m}">${m ? '−' + m + ' min' : 'Dabar'}</button>`).join('')}</div>`;
 // Kompaktiška laikų juosta fazių puslapiuose ir mokymosi pradžioje (rodoma, kai bent vienas laikas pažymėtas)
 function timersMini() {
-  const T = LS.get('mg-laikai', {}), now = Date.now();
+  const T = LS.get('mg-laikai', {}) || {}, now = Date.now();
   if (!T.trauma && !T.turn) return '';
   const a = [];
   if (T.trauma) { const txa = T.trauma + 3 * 3600e3; a.push(`<span>Sužeista <b>${hm(T.trauma)}</b></span>`); if (ok('CMC')) a.push(`<span class="${now > txa ? 'x' : txa - now <= 3600e3 ? 'w' : ''}">TXA ${now > txa ? '<b>praėjo</b>' : 'iki <b>' + hm(txa) + '</b>'}</span>`); }
@@ -147,7 +151,7 @@ function updTimers() {
   document.querySelectorAll('.tmini-box').forEach(b => { b.innerHTML = timersMini(); });
 }
 function setTm(ts, k) {
-  const T = LS.get('mg-laikai', {}); k = k || tmEdit;
+  const T = LS.get('mg-laikai', {}) || {}; k = k || tmEdit;
   if (ts) T[k] = ts; else delete T[k];
   LS.set('mg-laikai', T); tmEdit = null; updTimers();
 }

@@ -65,24 +65,40 @@ const V = {
     const nl = st(() => NL), mc = st(() => MC), ts = st(() => TS), sr = st(() => SR);
     return '<div class="tools">' +
       `<a class="tool" href="#/9line" aria-label="9-Line MEDEVAC prašymas: ${esc(nl)}"><span class="ti">9</span><b>9-Line</b><small>${esc(nl)}</small></a>` +
-      `<a class="tool" href="#/mist" aria-label="MIST kortelė: ${esc(mc)}"><span class="ti">M</span><b>MIST</b><small>${esc(mc)}</small></a>` +
+      `<a class="tool" href="#/pacientas?t=kortele" aria-label="MIST kortelė: ${esc(mc)}"><span class="ti">M</span><b>MIST</b><small>${esc(mc)}</small></a>` +
       `<a class="tool" href="#/tst" aria-label="TST rūšiavimas: ${esc(ts)}"><span class="ti">T</span><b>TST</b><small>${esc(ts)}</small></a>` +
       `<a class="tool" href="#/sitrep" aria-label="SITREP padėties pranešimas: ${esc(sr)}"><span class="ti">S</span><b>SITREP</b><small>${esc(sr)}</small></a></div>`;
   },
 
+  // Mokymosi pradžia: įrankiai plytelėmis (kaip MEDEVAC plytelės) – dvi grupės
+  learnTools() {
+    const st = m => { try { return m().status(); } catch (e) { return ''; } };
+    const ic = d => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const t = (href, ti, b, sm, lb) => `<a class="tool" href="${href}" aria-label="${esc(lb)}: ${esc(sm)}"><span class="ti">${ti}</span><b>${b}</b><small>${esc(sm)}</small></a>`;
+    return '<h2>MEDEVAC įrankiai</h2>' + V.toolTiles() + '<h2>Treniruotė ir vertinimas</h2><div class="tools">' +
+      t('#/scenarijai', ic('<path d="M8 5v14l11-7z"/>'), 'Scenarijai', st(() => SC), 'Treniruočių scenarijai') +
+      t('#/vertinimas', ic('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4M9 12l2 2 4-4"/>'), 'CLS vertinimas', st(() => VL), 'CLS vertinimo lapas') +
+      t('#/korteles', ic('<rect x="3" y="7" width="13" height="13" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v11"/>'), 'Dozių kortelės', st(() => FC), 'Dozių kortelės') +
+      t('#/egzaminas', ic('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>'), 'Egzaminas', st(() => EX), 'Egzaminuotojo režimas') + '</div>';
+  },
+
+  // Taikymo pradžia: fazės, MEDEVAC plytelės, 3 dažniausiai naudojami sąrašai, dažniausi vaistai pagal dabartinio paciento svorį.
+  // Laikai, svoris, kortelė – paciento ekrane (apatinė navigacija „Pacientas“) ir juostoje virš jos.
   homeField() {
-    const w = LS.get('mg-svoris', 80);
-    const quick = ['paracetamolis', 'ketaminas', 'txa', 'cefadroksilis', 'ceftriaksonas', 'ondansetronas'].map(drugById).filter(v => v && ok(v.lygis));
+    const w = +LS.get('mg-svoris', 0) || 0;
+    const quick = TCFG.hub.drugs.map(drugById).filter(v => v && ok(v.lygis));
+    const L = typeof LU !== 'undefined' ? LU.top() : TCFG.hub.listDefaults;
+    let who = ''; try { const P = PT.list(); who = '#' + (P.cur + 1) + ', '; } catch (e) {}
+    const lrow = id => { const Ls = (E.sarasai || {})[id]; if (!Ls) return ''; const f = (E.fazes || []).find(x => (x.lists || []).indexOf(id) >= 0), [n, t] = listDone(id);
+      return row(listRoute(id), Ls.title, f ? f.id + ' · ' + f.pav : '', n ? `<span class="tag ${n === t ? 'grn' : 'amb'}">${n} / ${t}</span>` : ''); };
     return brand() + disclaimer() + REM.banners() +
       '<h2>Fazė</h2>' + V.phaseTiles(true) +
       '<h2>MEDEVAC</h2>' + V.toolTiles() +
-      '<h2>Laikai</h2><div id="tm">' + timersHtml() + '</div>' + PT.homeRow() +
-      '<h2>Dažniausi vaistai</h2>' + quick.map(v => row('#/vaistas/' + v.id, v.name, doseShort(v, w), tag(v.lygis))).join('') +
+      `<h2>Dažni sąrašai${typeof LU !== 'undefined' && LU.used() ? ' · pagal naudojimą' : ''}</h2>` + L.map(lrow).join('') +
+      `<h2>Dažniausi vaistai · ${who}${w || 80} kg${w ? '' : ' (numatytas)'}</h2>` + quick.map(v => row('#/vaistas/' + v.id, v.name, doseShort(v, w || 80), TCFG.hub.drugTag(v))).join('') +
       row('#/vaistai', 'Visi vaistai', lt((E.vaistai || []).filter(v => ok(v.lygis)).length, ['vaistas', 'vaistai', 'vaistų']) + ' pagal TCCC 2026') +
       '<h2>Greitai</h2>' +
       row('#/igudis/36', 'Rūšiavimas ir evakuacijos skubumas', 'Keli sužeistieji') +
-      row(listRoute('tfc-evak'), 'Pasiruošimas evakuacijai', 'Ryšys, kortelė, supakavimas') +
-      row(listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'MIST, kas tęstina') +
       row('#/p/devynios', '9-Line kodai ir skubumo kategorijos') +
       installRow() + row('#/nustatymai', 'Nustatymai');
   },
@@ -91,11 +107,10 @@ const V = {
     const S = (E.igudziai || []).filter(s => ok(s.lygis)), R = ratings(), n = S.length, rated = S.filter(s => R[s.id]).length, good = S.filter(s => R[s.id] >= 3).length;
     return brand() + disclaimer() + REM.banners() +
       '<input type="search" id="q" placeholder="Paieška: vaistas, įgūdis, veiksmas" autocomplete="off" aria-label="Paieška">' +
-      (timersMini() ? '<h2>Laikai</h2><div id="tm">' + timersHtml() + '</div>' : '') +
       `<a class="card prog-card" href="#/igudziai"><b>Mano pažanga</b><div class="muted">Įsivertinta: ${rated} iš ${n} · atlieku savarankiškai (3–4): ${good}</div>${progBar(rated, n)}</a>` +
+      V.learnTools() +
       '<h2>Temos</h2>' + V.topicCards() +
       '<h2>Fazės</h2>' + V.phaseTiles(false) +
-      '<h2>Įrankiai</h2>' + toolRows() +
       '<h2>Viskas vienoje vietoje</h2>' +
       row('#/igudziai', 'Įgūdžiai', lt(n, ['įgūdis', 'įgūdžiai', 'įgūdžių']) + ': žingsniai, svarbiausi priminimai, praktiniai video') +
       row('#/sarasai', 'Kontroliniai sąrašai', 'CUF, TFC (MARCH PAWS), TACEVAC') +
