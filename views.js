@@ -26,7 +26,7 @@ const listRow = id => {
 };
 function doseShort(v, w) {
   const d = (v.dozes || [])[0]; if (!d) return v.klase || '';
-  return d.k + ': ' + (d.c ? calc(d.c, w) + ' (' + w + ' kg)' : d.d);
+  return d.k + ': ' + (d.c ? calc(d.c, w) + ' (' + w + ' kg)' + (d.c.alt ? ' · ' + d.c.alt : '') : d.d);
 }
 function tocHtml(html) {
   const hs = []; let i = 0;
@@ -152,7 +152,7 @@ const V = {
   },
 
   lists() {
-    let h = '<h1>Kontroliniai sąrašai</h1><p class="muted">Pagal TCCC fazes. Žymėjimai išlieka, kol paspausite „Naujas sužeistasis“.</p>' + row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
+    let h = '<h1>Kontroliniai sąrašai</h1><p class="muted">Pagal TCCC fazes. Žymėjimai priklauso dabartiniam sužeistajam; išvalyti – mygtukas „Išvalyti žymėjimus“ sąrašo apačioje.</p>' + row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status());
     (E.fazes || []).forEach(f => {
       h += `<h2>${esc(f.id)} – ${esc(f.pav)}</h2>` + (f.lists || []).map(listRow).join('');
     });
@@ -302,7 +302,7 @@ const V = {
     const b = (act, t, s) => `<button class="row" data-act="${act}"><div>${t}<small>${s}</small></div></button>`;
     let h = '<h1>Nustatymai</h1>' + GL.settingRow();
     h += `<div class="ck${tikCLS() ? ' on' : ''}" data-act="tikcls" role="checkbox" aria-checked="${tikCLS()}" tabindex="0"><span class="bx">✓</span><div class="t">Rodyti tik CLS veiksmus<div class="muted">Paslepia kovos mediko (CMC) ir paramediko (CPP) veiksmus, vaistus ir įgūdžius.</div></div></div>`;
-    h += '<h2>Sužeistasis</h2>' + (typeof MC !== 'undefined' && MC.profileView ? MC.profileView() : '') + row('#/pacientas', 'Paciento failas', 'Sužeistųjų sąrašas, įvykių eiga, perdavimas QR') + b('new-pt', 'Naujas sužeistasis', 'Ankstesnis lieka sąraše; laikai ir žymėjimai – naujam') + REM.settings() + OP.settings();
+    h += '<h2>Sužeistasis</h2>' + (typeof MC !== 'undefined' && MC.profileView ? MC.profileView() : '') + row('#/pacientas', 'Paciento failas', 'Sužeistųjų sąrašas, įvykių eiga, perdavimas QR') + b('new-pt', '+ Kitas sužeistasis', 'Ankstesni lieka sąraše; naujam – švarūs laikai ir žymėjimai') + REM.settings() + OP.settings();
     h += '<h2>Atsiliepimai</h2>' + b('fb', 'Pranešti apie klaidą ar pasiūlyti', 'Komentaras ir ekrano vaizdas – keliauja gido rengėjams');
     const nOut = FB.pending();
     if (nOut) h += b('fb-flush', 'Neišsiųsti pranešimai: ' + nOut, 'Siųsti dabar (reikia interneto)');

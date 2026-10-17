@@ -123,7 +123,7 @@ E.vaistai = [
     ind: 'Kai tikėtina transfuzija (hemoraginis šokas, viena ar daugiau didelių amputacijų, penetruojanti liemens trauma, stiprus kraujavimas) arba reikšminga galvos smegenų trauma ar sutrikusi sąmonė po sprogimo ar bukos traumos (TCCC 2026).',
     kontra: 'PCS: padidėjęs jautrumas; ūminė trombozė; traukulių anamnezė.',
     dozes: [{ k: 'IV / IO (TCCC 2026)', d: '2 g lėtai – kuo anksčiau, ne vėliau kaip per 3 val. nuo sužalojimo', p: '4 ampulės po 500 mg / 5 ml = 20 ml.' }],
-    ispejimai: ['Po 3 val. nuo sužalojimo neskirti. Pažymėkite sužeidimo laiką pradžios ekrane – „TXA iki“ parodys terminą.', 'TCCC: lėta IV / IO injekcija. PCS nurodo ne greičiau kaip 1 ml/min – per greitai leidžiant gali kristi kraujospūdis.', 'Tik IV / IO.'],
+    ispejimai: ['Po 3 val. nuo sužalojimo neskirti. Pažymėkite traumos laiką paciento faile – „TXA iki“ parodys terminą.', 'TCCC: lėta IV / IO injekcija. PCS nurodo ne greičiau kaip 1 ml/min – per greitai leidžiant gali kristi kraujospūdis.', 'Tik IV / IO.'],
     pakuote: 'Ampulės 500 mg / 5 ml (100 mg/ml)',
     pastabos: ['Įrašykite į kortelę dozę ir laiką.'],
     susije: ['kalcis'],

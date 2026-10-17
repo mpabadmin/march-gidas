@@ -1,7 +1,7 @@
 const VERSION = 'march-gidas-v16';
 const IMG = 'march-img-1';
 const EXT = 'march-ext-1';
-const FILES = ['./', './index.html', './core.js', './views.js', './tools.js', './priedai.js', './skenas.js', './pacientas.js', './march-hub.js', './img/skenas/dd1380-f.png', './img/skenas/dd1380-b.png', './fb.js', './vendor/html2canvas.min.js', './vendor/qrcode.min.js', './vendor/jsqr.min.js', './app.js', './sarasai.js', './vaistai.js', './igudziai.js', './scenarijai.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png', './favicon-64.png', './apple-touch-icon.png', './img/badge-balt.png', './img/badge-juod.png', './img/logo-juod.png', './img/qr.svg'];
+const FILES = ['./', './index.html', './core.js', './views.js', './tools.js', './sitrep.js', './priedai.js', './skenas.js', './pacientas.js', './march-hub.js', './img/skenas/dd1380-f.png', './img/skenas/dd1380-b.png', './fb.js', './vendor/html2canvas.min.js', './vendor/qrcode.min.js', './vendor/jsqr.min.js', './app.js', './sarasai.js', './vaistai.js', './igudziai.js', './scenarijai.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png', './favicon-64.png', './apple-touch-icon.png', './img/badge-balt.png', './img/badge-juod.png', './img/logo-juod.png', './img/qr.svg'];
 
 self.addEventListener('install', e => {
   // cache: 'reload' – apeiti naršyklės HTTP talpyklą (GitHub Pages max-age 600), kad nauja versija gautų naujus failus

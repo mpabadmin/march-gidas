@@ -8,7 +8,7 @@ const MPAWS = (() => {
   const R = [['M', 'Masyvus kraujavimas', 'tfc-m'], ['A', 'Kvėpavimo takai', 'tfc-a'], ['R', 'Kvėpavimas', 'tfc-r'], ['C', 'Kraujotaka', 'tfc-c'], ['H', 'Hipotermija, galva, akys', 'tfc-h'],
     ['P', 'Skausmas', 'tfc-paws', 'P'], ['A', 'Antibiotikai', 'tfc-paws', 'A'], ['W', 'Žaizdos', 'tfc-paws', 'W'], ['S', 'Įtvėrimas', 'tfc-paws', 'S']];
   const TXN = { tq: 'turniketas', tqj: 'jungties turniketas', dh: 'hemostatinis tvarstis', dp: 'spaudžiamasis tvarstis', dk: 'tvarstis', npa: 'NPA', igel: 'I-gel', cric: 'krikotiroidotomija', ak: 'kvėpavimo takai – kita',
-    occl: 'okliuzinis tvarstis', dec: 'adatinė dekompresija', o2: 'O₂', ctube: 'krūtinės vamzdelis', hypo: 'hipotermijos prevencija', eyeR: 'akies gaubtelis D', eyeL: 'akies gaubtelis K', dress: 'tvarstymas', spl: 'imobilizavimas' };
+    occl: 'okliuzinis tvarstis', dec: 'adatinė dekompresija', o2: 'O₂', ctube: 'krūtinės drenas', hypo: 'hipotermijos prevencija', eyeR: 'akies gaubtelis D', eyeL: 'akies gaubtelis K', dress: 'tvarstymas', spl: 'imobilizavimas' };
   // pažymėtų punktų skaičius sąraše (tfc-paws – tik vienos raidės dalyje), atsižvelgiant į „tik CLS“
   function ck(id, sec) {
     const L = (E.sarasai || {})[id]; if (!L) return 0;
@@ -28,8 +28,10 @@ const MPAWS = (() => {
     const tqs = Object.keys(c.tq || {}).filter(k => c.tq[k] && c.tq[k].on).map(k => 'turniketas ' + MC.tqName(k) + (c.tq[k].tm ? ' ' + c.tq[k].tm : ''));
     const bleed = (c.mk || []).some(m => m.t === 'K');
     const O = {};
-    // M – masyvus kraujavimas
-    { const d = tqs.concat(names(['tqj', 'dh', 'dp'])); O.M = { done: d.length > 0, attn: bleed && !d.length, t: d.length ? d.join(', ') : bleed ? 'kraujavimas pažymėtas schemoje – nesustabdytas?' : '' }; }
+    // M – masyvus kraujavimas; turniketo laikas pažymėtas, bet galūnė ne – dėmesio (→ turniketo langas)
+    { const d = tqs.concat(names(['tqj', 'dh', 'dp'])), noLimb = +x.la.turn && !tqs.length && !has('tqj');
+      O.M = { done: d.length > 0 && !noLimb, attn: (bleed && !d.length) || !!noLimb, href: noLimb ? '#/pacientas?sh=tq' : '',
+        t: noLimb ? ['dėmesio: turniketas ' + hm(+x.la.turn) + ' – galūnė?'].concat(d).join(' · ') : d.length ? d.join(', ') : bleed ? 'kraujavimas pažymėtas schemoje – nesustabdytas?' : '' }; }
     // A – kvėpavimo takai
     { const d = names(['npa', 'igel', 'cric', 'ak']), u = v.av === 'P' || v.av === 'U'; O.A = { done: d.length > 0, attn: u && !d.length, t: [u ? 'AVPU ' + v.av : '', d.join(', ')].filter(Boolean).join(' · ') }; }
     // R – kvėpavimas
@@ -52,7 +54,7 @@ const MPAWS = (() => {
       const e = ev[i === 6 ? 'A2' : l] || { done: false, attn: false, t: '' }, n = ck(id, sec);
       const st = e.attn ? 'attn' : e.done || n ? 'done' : 'none';
       const t = e.t || (n ? 'sąraše pažymėta: ' + n : '');
-      return { l, nm, id, st, t, href: typeof listRoute === 'function' ? listRoute(id) : '#/s/' + id };
+      return { l, nm, id, st, t, href: e.href || (typeof listRoute === 'function' ? listRoute(id) : '#/s/' + id) };
     });
   }
   const ICON = { done: '✓', attn: '!' };
@@ -65,15 +67,15 @@ const MPAWS = (() => {
       (mode === 'learn' ? '<p class="muted mt0">Būsena – iš MIST kortelės (pagalba, požymiai, C lentelė) ir TFC sąrašų žymėjimų. „!“ – nukrypę požymiai ar nesustabdytas kraujavimas.</p>' : '') + '</section>';
   }
   const overview = (x, H) => H.quick(false) + section(x) + H.tBox(x);
-  // Skiltis „Vaistai“: suleista (C lentelė) ir dažniausi vaistai su dozėmis pagal šio paciento svorį, CLS / CMC žymos
+  // Skiltis „Vaistai“: suleista (C lentelė) ir dažniausi vaistai su dozėmis (March dozės nepriklauso nuo svorio), CLS / CMC žymos
   function drugs(x, H) {
-    const C = TCFG.hub, ws = +LS.get(TCFG.pre + 'svoris', 0) || 0, w = ws || 80;
+    const C = TCFG.hub, w = +LS.get(TCFG.pre + 'svoris', 0) || 80;
     const D = (C.drugs || []).map(drugById).filter(v => v && C.drugOk(v));
     const cls = typeof tikCLS === 'function' && tikCLS();
-    return H.tBox(x) + `<h2>Dažniausi vaistai · ${w} kg${ws ? '' : ' (numatytas)'}</h2>` +
+    return H.tBox(x) + '<h2>Dažniausi vaistai</h2>' +
       `<p class="muted mt0">Rodoma: ${cls ? 'tik CLS (CMC vaistai paslėpti)' : 'CLS ir CMC'} – keičiama nustatymuose.</p>` +
       D.map(v => row('#/vaistas/' + v.id, v.name, doseShort(v, w), C.drugTag(v))).join('') +
-      row('#/vaistai', 'Visi vaistai', (E.vaistai || []).filter(v => ok(v.lygis)).length + ' vaistai pagal TCCC 2026');
+      row('#/vaistai', 'Visi vaistai', plural((E.vaistai || []).filter(v => ok(v.lygis)).length, ['vaistas', 'vaistai', 'vaistų']) + ' pagal TCCC 2026');
   }
   return { overview, drugs, status, section };
 })();

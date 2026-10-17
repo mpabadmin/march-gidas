@@ -724,7 +724,10 @@ html.gl .mqtm .mqc,html.gl .mqqv .mqc{min-height:56px;font-size:16px}
   .mqkp{gap:5px;margin-top:6px}.mqkp button{min-height:46px;font-size:22px}
   .mqpain{gap:5px;margin-top:6px}.mqpain button{min-height:44px}
   .mqshf{padding-top:6px}.mqsave{min-height:48px}
+  .mqsh .mqrow:has(> [data-sa="gcson"]){margin-top:4px}.mqsh [data-sa="gcson"]{min-height:32px}
+  .mqqv .mqc{min-height:36px}
 }
+@media(max-height:680px){.mqkp button{min-height:40px;font-size:20px}.mqavpu button,.mqvf button{min-height:40px}.mqdisp{min-height:36px}.mqdisp b,.mqbp{font-size:28px;min-height:36px}.mqsh .mqc{min-height:38px}}
 @media(max-height:760px) and (max-width:360px){.mqvf span{font-size:9.5px;letter-spacing:-.2px}.mqvf b{font-size:13px}}
 /* pirštinių „Atgal“ – dešinėje, virš juostos: neuždengia žymėjimų ir MARCH PAWS raidžių */
 #glback{left:auto;right:12px;width:56px;height:56px}
@@ -759,7 +762,30 @@ body.night .mqg{background:#000;color:#fff;box-shadow:0 0 0 2px #fff}
 body.night .mk .dot{fill:#000;stroke:#fff;stroke-width:1.8}body.night .mk text{fill:#fff}
 body.night .mqtools button.on{background:#fff;color:#000;border-color:#fff}
 body.night td.ab::after,body.night b.ab::after,body.night .mqvf button.ab b::after{content:'!';margin-left:2px;font-weight:900}
+/* įrankių pavadinimai: „10S triažas“, „Kraujo transfuzija“ – ikona „10S“ telpa, pavadinimas gali būti 2 eilutėse */
+.tool[href="#/tst"] .ti{font-size:17px;letter-spacing:-.6px}.tool.big[href="#/tst"] .ti{font-size:19px}
+.tool b{overflow-wrap:normal;word-break:normal}
 /* v30 Y – pabaiga */
+/* v30 X – pradžia (būsena ir eiga: pranešimas su „Atšaukti“, priminimų taškas, kortelės „Daugiau…“, ankstesnės reikšmės) */
+#toast.show.act{pointer-events:auto;display:flex;align-items:center;gap:12px;text-align:left}
+#toast .tsa{flex:none;min-height:40px;padding:6px 14px;border:2px solid currentColor;border-radius:10px;background:transparent;color:inherit;font:inherit;font-weight:800;cursor:pointer;touch-action:manipulation}
+.ptbar button{position:relative}
+.ptdue{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--abn);box-shadow:0 0 0 2px var(--card)}
+.ptbar button.on .ptdue{box-shadow:0 0 0 2px var(--tx)}
+.mqedh{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:1;background:var(--bg);margin:-2px 0 6px;padding:2px 0 4px}
+.mqedh b{flex:1;font-size:14px}.mqedh .btn{margin:0;min-width:84px}
+.mqmore{margin:10px 0 0;border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.mqmore summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer;list-style:none}
+.mqmore summary::-webkit-details-marker{display:none}.mqmore summary::after{content:'›';margin-left:auto;font-size:20px;transform:rotate(90deg)}
+.mqmore[open]{padding-bottom:10px}.mqmore[open] summary::after{transform:rotate(-90deg)}
+.mqscope{margin:0 0 8px}
+.mqpv{display:block;font-size:10px;line-height:1.1;color:var(--tx2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mqavpu button.on .mqpv{color:inherit;opacity:.8}
+.mqsh .mqvf.n5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.nlfill{margin:0 0 8px}
+.tml .btn{flex:1 1 40%}
+body.night .ptdue{background:#fff}
+/* v30 X – pabaiga */
 </style>
 </head>
 <body class="field">
@@ -786,6 +812,7 @@ body.night td.ab::after,body.night b.ab::after,body.night .mqvf button.ab b::aft
 <script src="core.js"></script>
 <script src="views.js"></script>
 <script src="tools.js"></script>
+<script src="sitrep.js"></script>
 <script src="priedai.js"></script>
 <script src="skenas.js"></script>
 <script src="pacientas.js"></script>

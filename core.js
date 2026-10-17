@@ -98,7 +98,7 @@ function renderList(id) {
     const info = mode === 'learn' && it.i ? '<div class="muted">' + it.i + '</div>' : '';
     const T = it.tm ? (LS.get('mg-laikai', {}) || {}) : null;
     const links = (it.tm ? `<button class="sk tmk" data-act="tm-mark" data-k="${it.tm}">⏱ ${T[it.tm] ? hm(T[it.tm]) : 'Dabar'}</button>` : '') + (it.sk ? `<a class="sk" href="#/igudis/${it.sk}" data-act="go" data-r="#/igudis/${it.sk}" aria-label="Įgūdis ${it.sk}">#${it.sk}</a>` : '') +
-      (it.r ? `<a class="sk" href="${esc(it.r)}" data-act="go" data-r="${esc(it.r)}">${/9line/.test(it.r) ? '9-Line' : /mist/.test(it.r) ? 'MIST' : /tst/.test(it.r) ? 'TST' : 'Dozė'}</a>` : '');
+      (it.r ? `<a class="sk" href="${esc(it.r)}" data-act="go" data-r="${esc(it.r)}">${/9line/.test(it.r) ? '9-Line' : /mist/.test(it.r) ? 'MIST' : /tst/.test(it.r) ? '10S' : 'Dozė'}</a>` : '');
     h += `<div class="ck${on ? ' on' : ''}${it.k ? ' key' : ''}" data-act="ck" data-l="${esc(id)}" data-i="${i}" role="checkbox" aria-checked="${on}" tabindex="0"><span class="bx">✓</span><div class="t"><span class="tt">${esc(it.t)}</span> ${tag(it.g)}${sub}${info}</div>${links ? '<div class="lk">' + links + '</div>' : ''}</div>`;
   });
   const pct = tot ? Math.round(n / tot * 100) : 0;
@@ -118,22 +118,19 @@ function timersHtml() {
   const T = Object.assign({}, LS.get('mg-laikai', {})), now = Date.now();
   // turniketo laikas – ir iš MIST kortelės (galūnės langelis), jei laikmatis nepažymėtas; TXA suleista – iš kortelės C lentelės
   let txaT = 0;
-  try { const st = MC.state(), c = st.pts[st.cur]; if (!T.turn && PT.hmTs(c.tqT)) T.turn = PT.hmTs(c.tqT); if ((c.tx || []).indexOf('txa') >= 0 || c.txaT) txaT = PT.hmTs(c.txaT) || -1; } catch (e) {}
+  try { const st = MC.state(), c = st.pts[st.cur]; if (!T.turn && PT.hmTs(c.tqT)) T.turn = PT.hmTs(c.tqT); if (!T.trauma && MC.trTs) T.trauma = MC.trTs(c); if ((c.tx || []).indexOf('txa') >= 0 || c.txaT) txaT = PT.hmTs(c.txaT) || -1; } catch (e) {}
   const card = (k, lb, val, sub, cls) => `<button class="tmc ${cls || ''}" data-act="tm" data-k="${k}" aria-label="${lb}: ${T[k] ? 'keisti laiką' : 'pažymėti laiką'}"><span class="muted">${lb}</span><b>${val}</b>${sub ? '<small>' + sub + '</small>' : ''}</button>`;
   const txa = T.trauma ? T.trauma + 3 * 3600e3 : 0, conv = T.turn ? T.turn + 2 * 3600e3 : 0, six = T.turn ? T.turn + 6 * 3600e3 : 0;
   let h = '<div class="tmrow">';
-  h += card('trauma', 'Sužeidimas', T.trauma ? hm(T.trauma) : 'Žymėti', T.trauma ? tmAgo(T.trauma, now) : 'spauskite, kai sužeista', '');
+  h += card('trauma', 'Trauma', T.trauma ? hm(T.trauma) : 'Žymėti', T.trauma ? tmAgo(T.trauma, now) : 'spauskite, kai sužeista', '');
   h += card('turn', 'Turniketas', T.turn ? hm(T.turn) : 'Žymėti',
     T.turn ? tmAgo(T.turn, now) + '<br>' + (now > six ? 'praėjo 6 val. – nenuimti, palikti iki ligoninės' : now > conv ? 'praėjo 2 val. – CLS konversija tik mediko (CMC / CPP) nurodymu' : 'konversija iki ' + hm(conv)) : 'pirmojo uždėjimo laikas',
     T.turn ? (now > conv ? 'bad' : 'warn') : '');
   const left = txa ? Math.ceil((txa - now) / 60000) : 0;
   if (txaT) h += `<div class="tmc ok"><span class="muted">TXA</span><b>Suleista</b><small>${txaT > 0 ? hm(txaT) : 'pažymėta kortelėje'}</small></div>`;
-  else h += `<div class="tmc ${txa ? (now > txa ? 'bad' : left <= 60 ? 'warn' : '') : 'dim'}"><span class="muted">TXA iki</span><b>${txa ? (now > txa ? 'Praėjo' : hm(txa)) : '—'}</b><small>${txa ? (now > txa ? 'po 3 val. neskirti' : 'liko ' + tmDur(left)) : 'pažymėkite sužeidimą'}</small></div>`;
+  else if (ok('CMC')) h += `<div class="tmc ${txa ? (now > txa ? 'bad' : left <= 60 ? 'warn' : '') : 'dim'}"><span class="muted">TXA iki</span><b>${txa ? (now > txa ? 'Praėjo' : hm(txa)) : '—'}</b><small>${txa ? (now > txa ? 'po 3 val. neskirti' : 'liko ' + tmDur(left)) : 'pažymėkite traumos laiką'}</small></div>`;
   h += '</div>';
-  if (tmEdit) h += `<div class="card tme"><b>${tmEdit === 'trauma' ? 'Sužeidimo laikas' : 'Pirmojo turniketo uždėjimo laikas'}</b>` + tmQuick(tmEdit) +
-    (tmEdit === 'turn' ? '<p class="muted">Keičiant ar perkeliant turniketą laiko nekeiskite – 2 ir 6 val. ribos skaičiuojamos nuo pirmojo uždėjimo.</p>' : '') +
-    `<div class="tmb"><input type="time" id="tm-in" aria-label="Kitas laikas"><button class="btn" data-act="tm-set">Nustatyti</button><button class="btn" data-act="tm-clr">Išvalyti</button><button class="btn" data-act="tm-x">Uždaryti</button></div></div>`;
-  return h;
+  return h; // keičiama bakstelėjus kortelę – laiko langas (MC.sheet 'time'), kartu su MIST kortele
 }
 // Greitas laiko pasirinkimas: dabar arba prieš 5–30 min
 const tmQuick = k => `<div class="tmq" role="group" aria-label="Kada?">${[0, 5, 10, 15, 30].map(m => `<button class="btn${m ? '' : ' pri sm'}" data-act="tm-q" data-k="${k}" data-m="${m}">${m ? '−' + m + ' min' : 'Dabar'}</button>`).join('')}</div>`;
@@ -142,18 +139,20 @@ function timersMini() {
   const T = LS.get('mg-laikai', {}) || {}, now = Date.now();
   if (!T.trauma && !T.turn) return '';
   const a = [];
-  if (T.trauma) { const txa = T.trauma + 3 * 3600e3; a.push(`<span>Sužeista <b>${hm(T.trauma)}</b></span>`); if (ok('CMC')) a.push(`<span class="${now > txa ? 'x' : txa - now <= 3600e3 ? 'w' : ''}">TXA ${now > txa ? '<b>praėjo</b>' : 'iki <b>' + hm(txa) + '</b>'}</span>`); }
+  if (T.trauma) { const txa = T.trauma + 3 * 3600e3; a.push(`<span>Trauma <b>${hm(T.trauma)}</b></span>`); if (ok('CMC')) a.push(`<span class="${now > txa ? 'x' : txa - now <= 3600e3 ? 'w' : ''}">TXA ${now > txa ? '<b>praėjo</b>' : 'iki <b>' + hm(txa) + '</b>'}</span>`); }
   if (T.turn) { const conv = T.turn + 2 * 3600e3; a.push(`<span class="${now > conv ? 'x' : 'w'}">Turniketas <b>${hm(T.turn)}</b> · ${tmAgo(T.turn, now)}</span>`); }
-  return `<a class="tmini" href="#/" aria-label="Laikai – atidaryti pradžios ekrane">${a.join('')}</a>`;
+  return `<a class="tmini" href="#/pacientas" aria-label="Laikai – atidaryti paciento faile">${a.join('')}</a>`;
 }
 function updTimers() {
   const el = document.getElementById('tm'); if (el) el.innerHTML = timersHtml();
   document.querySelectorAll('.tmini-box').forEach(b => { b.innerHTML = timersMini(); });
 }
+// Laikas dabartiniam sužeistajam (kartu su MIST kortele – MC.setTime)
 function setTm(ts, k) {
-  const T = LS.get('mg-laikai', {}) || {}; k = k || tmEdit;
-  if (ts) T[k] = ts; else delete T[k];
-  LS.set('mg-laikai', T); tmEdit = null; updTimers();
+  k = k || tmEdit;
+  if (typeof MC !== 'undefined' && MC.setTime) MC.setTime(k, ts);
+  else { const T = LS.get('mg-laikai', {}) || {}; if (ts) T[k] = ts; else delete T[k]; LS.set('mg-laikai', T); }
+  tmEdit = null; updTimers();
 }
 
 function disclaimer() {
@@ -202,7 +201,7 @@ function buildIdx() {
   add('Įrankiai', 'Egzaminuotojo režimas', 'Kontrolinio sąrašo vertinimas su laiku ir kritiniais punktais', 'egzaminas egzaminuotojas vertinimas instruktorius laikmatis kritiniai punktai', '#/egzaminas');
   add('Įrankiai', 'Treniruočių scenarijai', 'Klinikiniai atvejai su klausimais ir paaiškinimais', 'scenarijai scenarijus treniruotė viktorina testas klausimai', '#/scenarijai');
   add('Įrankiai', 'SITREP – padėties pranešimas', 'Pranešimas vadui: vieta, priešas, padėtis, nuostoliai, logistika, prašymai', 'sitrep situacija padėtis pranešimas raportas vadui nuostoliai logistika dtg', '#/sitrep');
-  add('Įrankiai', 'TST rūšiavimas', 'Ten Second Triage – rūšiavimas per 10 sekundžių', 'tst ten second triage triažas rūšiavimas masinė nelaimė p1 p2 p3', '#/tst');
+  add('Įrankiai', '10S triažas', 'Ten Second Triage (TST) – rūšiavimas per 10 sekundžių', 'tst 10s 10 s 10 sekundžių ten second triage triažas rūšiavimas masinė nelaimė p1 p2 p3', '#/tst');
   return I;
 }
 
