@@ -258,7 +258,7 @@ app.addEventListener('keydown', e => {
 function toolInput(t) {
   const d = t.dataset || {};
   if (d.nl) { NL.onInput(t); return true; }
-  if (d.mc || d.mcf || d.mcm != null) { MC.onInput(t); return true; }
+  if (d.mc || d.mcf || d.mcm != null || d.mctq || d.mcp != null || d.mcr) { MC.onInput(t); return true; }
   if (d.sr) { SR.onInput(t); return true; }
   if (d.sk != null) { SK.onInput(t); return true; }
   if (d.vl) { VL.onInput(t); return true; }
