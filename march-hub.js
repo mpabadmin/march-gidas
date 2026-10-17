@@ -78,15 +78,15 @@ const MPAWS = (() => {
   return { overview, drugs, status, section };
 })();
 
-// „+ Vaistas“ (be vaistų žymėjimo): kortelės C lentelė – po perėjimo į paciento kortelę ją parodome
+// „+ Vaistas“ (be vaistų žymėjimo): kortelės C lentelė – po perėjimo į paciento kortelę (&f=c) ją parodome.
+// Adresą tikriname prieš HUB.after(), nes jis &f= pašalina (fokusas pritaikomas vieną kartą).
 (() => {
   if (typeof HUB === 'undefined') return;
-  const a0 = HUB.after; let last = '';
+  const a0 = HUB.after;
   HUB.after = () => {
+    const c = /[?&]f=c(&|$)/.test(location.hash);
     a0();
-    const h = location.hash;
-    if (!/[?&]f=c(&|$)/.test(h)) { last = ''; return; }
-    if (last === h) return; last = h;
+    if (!c) return;
     const el = app.querySelector('.lkc'); if (el) (el.closest('.lkrow') || el).scrollIntoView({ block: 'start' });
   };
 })();

@@ -96,7 +96,7 @@ function render() {
 
 function onNav(first) {
   const { p, q } = route(), s = history.state;
-  if (!first && !(s && s.d != null)) { try { LU.onRoute(p, q); } catch (e) { console.error(e); } } // dažniausi sąrašai: tik naujas perėjimas pirmyn (ne „Atgal“, ne perkrovimas)
+  if (!(s && s.d != null)) { try { LU.onRoute(p, q); } catch (e) { console.error(e); } } // dažniausi sąrašai: tik naujas perėjimas (ne atgal / pirmyn / perkrovimas)
   HUB.close();
   depth = !p.length ? 0 : (s && s.d != null ? s.d : (first ? 0 : depth + 1));
   history.replaceState(Object.assign({}, s, { d: depth }), '');
@@ -289,7 +289,7 @@ app.addEventListener('input', e => {
 });
 
 setInterval(() => { if (!tmEdit) updTimers(); REM.tick(); HUB.tick(); }, 30000);
-addEventListener('keydown', e => { if (e.key === 'Escape' && HUB.isOpen()) { HUB.close(); const y = scrollY; render(); scrollTo(0, y); } });
+addEventListener('keydown', e => { if (e.key === 'Escape' && HUB.isOpen()) HUB.esc(); });
 setTimeout(() => REM.tick(), 3000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !tmEdit) updTimers(); });
 addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEv = e; if (['nustatymai', 'idiegimas', undefined].indexOf(route().p[0]) >= 0) render(); });

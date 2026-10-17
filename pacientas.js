@@ -41,19 +41,20 @@ const HCFG = () => Object.assign({
 const LU = (() => {
   const K = TCFG.pre + 'sarasu-naud', N = 3;
   const L = () => E.sarasai || {};
+  const has = id => typeof id === 'string' && Object.prototype.hasOwnProperty.call(L(), id); // ne „constructor“ ir pan.
   // pradžioje jau rodomi (pvz. Escape planai, vaidmenų pirminės apžiūros) – jų nekartojame
   const shown = id => !!HCFG().listSkip(id);
   const data = () => { const s = LS.get(K, {}); return s && typeof s === 'object' && !Array.isArray(s) ? s : {}; };
   function hit(id) {
-    if (!id || !L()[id] || shown(id)) return;
+    if (!has(id) || shown(id)) return;
     const s = data(), o = s[id] && typeof s[id] === 'object' ? s[id] : {};
     s[id] = { n: (+o.n || 0) + 1, t: Date.now() }; LS.set(K, s);
   }
   function top() {
     const s = data();
-    const ids = Object.keys(s).filter(id => L()[id] && !shown(id) && s[id] && +s[id].n > 0)
+    const ids = Object.keys(s).filter(id => has(id) && !shown(id) && s[id] && +s[id].n > 0)
       .sort((a, b) => (+s[b].n - +s[a].n) || (+s[b].t - +s[a].t)).slice(0, N);
-    HCFG().listDefaults.forEach(id => { if (ids.length < N && ids.indexOf(id) < 0 && L()[id]) ids.push(id); });
+    HCFG().listDefaults.forEach(id => { if (ids.length < N && ids.indexOf(id) < 0 && has(id)) ids.push(id); });
     return ids;
   }
   function onRoute(p, q) { const id = HCFG().listOf(p, q || {}); if (id) hit(id); }
@@ -69,7 +70,7 @@ const HUB = (() => {
   const GO = () => Object.assign({ vit: '#/pacientas?t=kortele&f=s', vz: typeof VZ !== 'undefined' ? '#/pacientas?t=vaistai' : '#/vaistai', tq: '#/pacientas?t=kortele&f=tq', mk: '#/pacientas?t=kortele&f=i',
     apz: '#/pacientas?t=apz', kortele: '#/pacientas?t=kortele', vaistai: '#/pacientas?t=vaistai', eiga: '#/pacientas?t=eiga', perduoti: '#/pacientas?t=perduoti' }, HCFG().go);
   const FOCUS = { s: '.lkadd', tq: '.lktq2', i: '.lktools' };
-  let sheet = false, wOpen = false, focus = null, memTab = 'apz';
+  let sheet = false, wOpen = false, focus = null, fDone = false, memTab = 'apz';
   const ss = {
     get() { try { return sessionStorage.getItem(TK) || memTab; } catch (e) { return memTab; } },
     set(v) { memTab = v; try { sessionStorage.setItem(TK, v); } catch (e) {} }
@@ -110,6 +111,7 @@ const HUB = (() => {
   }
   const barLabel = x => 'Sužeistasis ' + x.n + (x.id ? ' – ' + x.id : '') + (x.tqT ? ', turniketas ' + dur(Date.now() - x.tqT) : '') + '. Atverti santrauką';
   function bar(r) {
+    queueMicrotask(a11y);
     if (HCFG().noBar.indexOf(r) >= 0) { sheet = false; return ''; }
     const x = cur(); if (!x) return '';
     if (mode === 'learn' && !x.has && x.tot < 2) return '';
@@ -134,7 +136,7 @@ const HUB = (() => {
     return '<div class="hbtms">' +
       card('', 'Trauma', x.la.trauma ? hm(x.la.trauma) : '—', x.la.trauma ? 'prieš ' + Math.max(0, Math.round((now - x.la.trauma) / 60000)) + ' min' : 'nenurodyta') +
       card(x.tqT ? 'amb' : '', 'Turniketas', x.tqT ? dur(now - x.tqT) : '—', x.tqT ? 'nuo ' + hm(x.tqT) : 'neuždėtas') +
-      card(x.txa ? 'grn' : tx && tx.c === 'hbbad' ? 'red' : '', 'TXA', x.txa ? 'Suleista' : tx ? tx.t.replace('TXA ', '') : '—', x.txa && x.txaT ? hm(x.txaT) : '') + '</div>';
+      card(x.txa ? 'grn' : tx && tx.c === 'hbbad' ? 'red' : '', 'TXA', x.txa ? 'Suleista' : tx ? tx.t.replace(/^TXA\s*[–-]?\s*/, '') : '—', x.txa && x.txaT ? hm(x.txaT) : '') + '</div>';
   }
   function vitLine(v) {
     const ab = (k, val) => MC.abn(k, val) ? `<b class="ab">${esc(val)}</b>` : `<b>${esc(val)}</b>`, a = [];
@@ -219,30 +221,47 @@ const HUB = (() => {
   function view(q) {
     q = q || {};
     if (q.t && TABS.some(t => t[0] === q.t)) ss.set(q.t);
-    if (q.f && FOCUS[q.f]) focus = q.f;
+    if (q.f && FOCUS[q.f] && !fDone) focus = q.f; // tik vieną kartą po perėjimo (after() pašalina &f= iš adreso)
     sheet = false;
     const x = cur(); if (!x) return notFound();
     const t = tab();
     let h = ptTabs() + head(x, true);
     if (mode === 'learn') h += '<p class="muted">Viskas apie pasirinktą sužeistąjį vienoje vietoje. Juosta ekrano apačioje rodo jį ir kituose puslapiuose.</p>';
     h += '<div id="tm">' + HCFG().timers() + '</div>';
-    h += '<div class="seg2 hbt" role="tablist" aria-label="Paciento skiltys">' + TABS.map(([k, l]) => `<button role="tab" aria-selected="${k === t}" class="${k === t ? 'on' : ''}" data-act="hb-tab" data-k="${k}">${l}</button>`).join('') + '</div>';
+    h += '<div class="seg2 hbt" role="tablist" aria-label="Paciento skiltys">' + TABS.map(([k, l]) => `<button role="tab" id="hbt-${k}" aria-controls="hbpane" aria-selected="${k === t}" tabindex="${k === t ? 0 : -1}" class="${k === t ? 'on' : ''}" data-act="hb-tab" data-k="${k}">${l}</button>`).join('') + '</div>';
     const own = HCFG().sections || {}, fn = typeof own[t] === 'function' ? own[t] : SEC[t];
-    return h + '<div class="hbpane" role="tabpanel">' + (fn ? fn(x, H) : '') + '</div>';
+    return h + `<div class="hbpane" id="hbpane" role="tabpanel" aria-labelledby="hbt-${t}">` + (fn ? fn(x, H) : '') + '</div>';
   }
   function after() {
-    if (sheet) { const s = app.querySelector('.hbs'); if (s && !s.contains(document.activeElement)) s.focus({ preventScroll: true }); }
+    a11y();
+    if (/[?&]f=/.test(location.hash)) { fDone = true; try { history.replaceState(history.state, '', location.hash.replace(/&f=[^&]*/, '').replace(/\?f=[^&]*&?/, '?').replace(/\?$/, '')); } catch (e) {} }
     if (!focus) return;
     const el = app.querySelector(FOCUS[focus]); focus = null;
     if (el) el.scrollIntoView({ block: 'center' });
   }
-  function go(h) { sheet = false; if (location.hash === h) { render(); scrollTo(0, 0); after(); } else location.hash = h; }
+  // Atvertas langas – modalinis: kas už jo, neaktyvu (inert); fokusas lange. Kviečiama po kiekvieno piešimo (bar() suplanuoja).
+  function a11y() {
+    const s = sheet ? app.querySelector('.hbs') : null;
+    document.querySelectorAll('body > header, #nav, #glback').forEach(e => { if (s) e.setAttribute('inert', ''); else e.removeAttribute('inert'); });
+    if (!s) return;
+    Array.from(app.children).forEach(c => { if (!c.classList.contains('hbs') && !c.classList.contains('hbbg')) c.setAttribute('inert', ''); });
+    if (!s.contains(document.activeElement)) s.focus({ preventScroll: true });
+  }
+  // Uždaryti langą: jei atidarant buvo įrašyta istorijos būsena – atgal (Android „Atgal“ irgi uždaro), kitaip – iškart
+  function closeSheet(viaPop) {
+    if (!sheet) return;
+    if (!viaPop && history.state && history.state.hb) { try { history.back(); return; } catch (e) {} }
+    sheet = false; keep();
+    const b = app.querySelector('.hbar'); if (b) b.focus({ preventScroll: true });
+  }
+  addEventListener('popstate', e => { if (sheet && !(e.state && e.state.hb)) closeSheet(true); });
+  function go(h) { sheet = false; fDone = false; if (location.hash === h) { render(); scrollTo(0, 0); after(); } else location.hash = h; }
   const keep = () => { const y = scrollY; render(); scrollTo(0, y); after(); };
   function act(el) {
     const d = el.dataset;
     switch (d.act) {
-      case 'hb-open': sheet = true; keep(); return;
-      case 'hb-close': sheet = false; keep(); { const b = app.querySelector('.hbar'); if (b) b.focus({ preventScroll: true }); } return;
+      case 'hb-open': if (sheet) return; sheet = true; try { history.pushState(Object.assign({}, history.state, { hb: 1 }), ''); } catch (e) {} keep(); return;
+      case 'hb-close': closeSheet(false); return;
       case 'hb-tab': { if (!TABS.some(t => t[0] === d.k)) return; ss.set(d.k); wOpen = false; focus = null;
         try { history.replaceState(history.state, '', '#/pacientas?t=' + d.k); } catch (e) {} // adresas atitinka skiltį (atgal / perkrovimas)
         const y = scrollY; render(); scrollTo(0, y); return; }
@@ -271,5 +290,5 @@ const HUB = (() => {
     const x = cur(); if (!x) return;
     b.innerHTML = barInner(x); b.setAttribute('aria-label', barLabel(x));
   }
-  return { view, bar, act, after, nav, tick, isOpen: () => sheet, close: () => { sheet = false; }, tab };
+  return { view, bar, act, after, nav, tick, isOpen: () => sheet, close: () => { sheet = false; fDone = false; }, esc: () => closeSheet(false), tab };
 })();

@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-10-17 v14 (paciento ekranas su MARCH PAWS apžvalga, sužeistojo juosta, asmeniniai dažni sąrašai, mokymosi įrankiai plytelėmis; v12 – MIST kortelė pagal LK „Nukentėjusiojo kortelę“)';
+E.versija = '2026-10-17 v15 (paciento ekrano ir juostos pataisos – kaip ETC v28; v14 – paciento ekranas su MARCH PAWS apžvalga, sužeistojo juosta, asmeniniai dažni sąrašai, mokymosi įrankiai plytelėmis)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };

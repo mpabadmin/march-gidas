@@ -1435,7 +1435,7 @@ const PT = (() => {
   const dismissed = () => store().dis;
   const hmTs = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || '').trim()); if (!m) return 0; const d = new Date(); d.setHours(+m[1], +m[2], 0, 0); if (d.getTime() > Date.now() + 5 * 60000) d.setDate(d.getDate() - 1); return d.getTime(); };
   const CATC = { T1: 'msT1', T2: 'msT2', T3: 'msT3', T4: 'msT4', X: 'msX' };
-  const chipLbl = p => (p.cat ? `<span class="ptc ${CATC[p.cat] || ''}">${p.cat === 'X' ? '✝' : p.cat}</span>` : '') + '#' + (p.i + 1) + (p.card.id ? ' ' + esc(String(p.card.id).slice(0, 14)) : '');
+  const chipLbl = p => (p.cat ? `<span class="ptc ${CATC[p.cat] || ''}">${p.cat === 'X' ? '✝' : esc(p.cat)}</span>` : '') + '#' + (p.i + 1) + (p.card.id ? ' ' + esc(String(p.card.id).slice(0, 14)) : '');
   function bar() {
     sync(); const L = list(); if (!L.pts.length) return '';
     return '<div class="ptbar" role="tablist" aria-label="Pacientai">' + L.pts.map(p => `<button role="tab" aria-selected="${p.i === L.cur}" class="${p.i === L.cur ? 'on' : ''}" data-act="pt-sel" data-k="${p.i}">${chipLbl(p)}</button>`).join('') +
@@ -1578,7 +1578,7 @@ const QR = (() => {
   function payload() {
     PT.sync(); const st = MC.state(), c = Object.assign({}, st.pts[st.cur]); delete c.pid;
     const L = PT.list(), me = L.pts[L.cur], o = { v: 1, a: APP, t: Date.now() };
-    if (sel.m) { o.m = c; const la = LS.get(TCFG.laikai, null); if (la && (la.trauma || la.turn)) o.lk = { trauma: +la.trauma || 0, turn: +la.turn || 0 }; if (me && me.cat) o.c = me.cat; }
+    if (sel.m) { o.m = c; const la = LS.get(TCFG.laikai, null); if (la && (la.trauma || la.turn)) o.lk = { trauma: +la.trauma || 0, turn: +la.turn || 0 }; if (me && me.cat) o.c = me.cat; const kg = +LS.get(TCFG.pre + 'svoris', 0); if (kg > 0) o.kg = kg; }
     if (sel.z && typeof VZ !== 'undefined') o.z = VZ.get().e.map(e => ({ id: e.id, t: e.t, v: e.v, a: e.a, u: e.u, r: e.r, n: e.n }));
     if (sel.n) o.n = LS.get(TCFG.pre + 'nb', null);
     if (sel.w) o.w = LS.get(TCFG.pre + 'wbb', null);
@@ -1619,7 +1619,7 @@ const QR = (() => {
     PT.sync(); const L = PT.list(), p = L.pts[L.cur];
     if (!sel) { sel = {}; PARTS().forEach(([k]) => { sel[k] = has(k); }); }
     let h = PT.bar().replace(/<a class="ptf"[^>]*>[^<]*<\/a>/, '') + '<h1>Perduoti QR kodu</h1>';
-    h += `<p class="muted">${esc(p ? p.label : '')}${p && p.cat ? ' · ' + p.cat : ''} · be interneto</p>`;
+    h += `<p class="muted">${esc(p ? p.label : '')}${p && p.cat ? ' · ' + esc(p.cat) : ''} · be interneto</p>`;
     h += '<div class="opts">' + PARTS().map(([k, t]) => chip('qr-p', k, !!sel[k], (sel[k] ? '✓ ' : '') + esc(t)) + '').join('') + '</div>';
     h += '<div class="qrbox" id="qrbox" aria-label="QR kodas"><p class="muted">Ruošiama…</p></div><div class="qrn" id="qrn"></div>';
     h += '<section class="krc"><b>Kaip priimti</b><p class="muted" style="margin:4px 0 0">Kitame telefone atidarykite ETC ar March gidą → Paciento failas → <b>Priimti pacientą QR kodu</b> ir nukreipkite kamerą. Jei kodų keli – jie keičiasi patys, laikykite kamerą, kol bus nuskaityti visi. Padidinkite šio ekrano ryškumą.</p></section>';
@@ -1706,6 +1706,7 @@ const QR = (() => {
     if (typeof VZ === 'undefined' && Array.isArray(o.z) && o.z.length) c.txTxt = [String(c.txTxt || '').trim(), 'Vaistai: ' + zText(o.z)].filter(Boolean).join('; ');
     PT.add(c);
     if (o.lk && typeof o.lk === 'object') { const la = {}; if (+o.lk.trauma) la.trauma = +o.lk.trauma; if (+o.lk.turn) la.turn = +o.lk.turn; LS.set(TCFG.laikai, la); }
+    if (+o.kg > 0 && +o.kg < 400) LS.set(TCFG.pre + 'svoris', +o.kg); // paciento svoris (naujas pacientas jau dabartinis)
     if (typeof VZ !== 'undefined' && Array.isArray(o.z)) LS.set(TCFG.pre + 'vz', { e: o.z });
     if (typeof NB !== 'undefined' && o.n && typeof o.n === 'object') LS.set(TCFG.pre + 'nb', o.n);
     if (typeof KR !== 'undefined' && o.w && typeof o.w === 'object') LS.set(TCFG.pre + 'wbb', o.w);
@@ -1728,6 +1729,7 @@ const QR = (() => {
     c.vit = c.vit.concat((Array.isArray(m.vit) ? m.vit : []).filter(x => x && !c.vit.some(y => k2(y) === k2(x))));
     LS.set(TCFG.pre + 'mist', st);
     const la = LS.get(TCFG.laikai, {}) || {}; if (o.lk) { if (!la.trauma && +o.lk.trauma) la.trauma = +o.lk.trauma; if (!la.turn && +o.lk.turn) la.turn = +o.lk.turn; } LS.set(TCFG.laikai, la);
+    if (+o.kg > 0 && +o.kg < 400 && !(+LS.get(TCFG.pre + 'svoris', 0) > 0)) LS.set(TCFG.pre + 'svoris', +o.kg);
     if (typeof VZ !== 'undefined' && Array.isArray(o.z)) { const cur = VZ.get().e; LS.set(TCFG.pre + 'vz', { e: cur.concat(o.z.filter(e => e && !cur.some(x => x.id === e.id))) }); }
     if (typeof NB !== 'undefined' && o.n && !NB.total()) LS.set(TCFG.pre + 'nb', o.n);
     if (typeof KR !== 'undefined' && o.w) { const w = LS.get(TCFG.pre + 'wbb', null); if (!w || !(w.t1 || w.t2 || w.don)) LS.set(TCFG.pre + 'wbb', o.w); }
@@ -1744,7 +1746,7 @@ const QR = (() => {
     }
   }
   // Testams: be kameros perduoti nuskaitytą tekstą
-  return { view, after, act, stopAll, encode, decode, onText, reset: () => { sel = null; got = null; rx = null; err = ''; } };
+  return { view, after, act, stopAll, encode, decode, onText, payload, reset: () => { sel = null; got = null; rx = null; err = ''; } };
 })();
 
 // ───────── Balso diktavimas (DICT): mikrofono mygtukas prie tekstinių laukų ─────────

@@ -7,7 +7,11 @@ const skillById = id => (E.igudziai || []).find(x => String(x.id) === String(id)
 const fazeById = id => (E.fazes || []).find(x => x.id === id);
 const ratings = () => LS.get('mg-ivert', {});
 const progBar = (n, tot) => `<div class="prog"><i style="width:${tot ? Math.round(n / tot * 100) : 0}%"></i></div>`;
-const wChips = w => '<div class="chips" role="group" aria-label="Paciento svoris">' + W_LIST.map(x => `<button class="${x === w ? 'on' : ''}" data-act="w" data-w="${x}">${x}</button>`).join('') + '</div>';
+// Paciento svoris: wNow() – nurodytas (0 – nenurodytas), wCalc() – skaičiavimui (nenurodžius – 80 kg)
+const wNow = () => { const w = +LS.get('mg-svoris', 0); return w > 0 ? w : 0; };
+const wCalc = () => wNow() || 80;
+const wChips = w => '<div class="chips" role="group" aria-label="Paciento svoris">' + W_LIST.map(x => `<button class="${x === w ? 'on' : ''}" data-act="w" data-w="${x}" aria-pressed="${x === w}">${x}</button>`).join('') + '</div>' +
+  (w ? '' : '<p class="muted mt0">Svoris nenurodytas – dozės skaičiuojamos 80 kg (numatytas).</p>');
 const rateBadge = (R, id) => R[id] ? `<span class="tag ${R[id] >= 3 ? 'grn' : 'amb'}">${R[id]} / 4</span>` : '';
 const listDone = id => {
   const L = (E.sarasai || {})[id]; if (!L) return [0, 0];
@@ -85,7 +89,7 @@ const V = {
   // Taikymo pradžia: fazės, MEDEVAC plytelės, 3 dažniausiai naudojami sąrašai, dažniausi vaistai pagal dabartinio paciento svorį.
   // Laikai, svoris, kortelė – paciento ekrane (apatinė navigacija „Pacientas“) ir juostoje virš jos.
   homeField() {
-    const w = +LS.get('mg-svoris', 0) || 0;
+    const w = wNow();
     const quick = TCFG.hub.drugs.map(drugById).filter(v => v && ok(v.lygis));
     const L = typeof LU !== 'undefined' ? LU.top() : TCFG.hub.listDefaults;
     let who = ''; try { const P = PT.list(); who = '#' + (P.cur + 1) + ', '; } catch (e) {}
@@ -188,7 +192,7 @@ const V = {
   },
 
   drugs() {
-    const D = (E.vaistai || []).filter(v => ok(v.lygis)), w = LS.get('mg-svoris', 80), field = mode === 'field';
+    const D = (E.vaistai || []).filter(v => ok(v.lygis)), w = wCalc(), field = mode === 'field';
     let h = '<h1>Vaistai</h1><p class="muted">Pagal TCCC 2026 gaires. Žyma CMC – skiria kovos medikas.</p>';
     if (!field) h += row('#/korteles', 'Dozių kortelės', FC.status());
     (E.vaistuGrupes || []).forEach(g => {
@@ -202,12 +206,12 @@ const V = {
   drug(id) {
     const v = drugById(id);
     if (!v) return notFound();
-    const w = LS.get('mg-svoris', 80), learn = mode === 'learn';
+    const w = wCalc(), learn = mode === 'learn';
     const doseHtml = d => `<div class="dose"><div class="lb">${esc(d.k)}${d.c ? ' · ' + esc(d.d) : ''}</div><div class="big">${esc(d.c ? calc(d.c, w) : d.d)}</div>${d.p ? '<div class="lb">' + br(d.p) + '</div>' : ''}</div>`;
     let h = `<h1>${esc(v.name)}</h1><p class="muted">${esc(v.klase || '')}</p>`;
     h += '<span class="tag grn">TCCC 2026</span>' + (v.lygis === 'CLS' ? '<span class="tag grn">CLS</span>' : tag(v.lygis));
     if (v.ind) h += `<p class="ind">${esc(v.ind)}</p>`;
-    if ((v.dozes || []).some(d => d.c)) h += '<h2>Paciento svoris, kg</h2>' + wChips(w);
+    if ((v.dozes || []).some(d => d.c)) h += '<h2>Paciento svoris, kg</h2>' + wChips(wNow());
     if ((v.dozes || []).length) h += '<h2>Dozė</h2>' + v.dozes.map(doseHtml).join('');
     const iw = v.ispejimai || [];
     if (iw.length) h += '<div class="warn wl"><b>Įspėjimai</b>' + (iw.length > 1 ? ul(iw) : '<div>' + esc(iw[0]) + '</div>') + '</div>';
