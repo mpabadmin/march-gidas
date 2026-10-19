@@ -398,7 +398,8 @@ const MC = (() => {
   const SEX = [['V', 'Vyras', 'male'], ['M', 'Moteris', 'female']];
   const VF = ['t', 'av', 'hr', 'rr', 'bp', 'spo2', 'gcs', 'pain'];
   const blankF = () => ({ t: '', av: '', hr: '', rr: '', bp: '', spo2: '', gcs: '', pain: '' });
-  const def = () => ({ id: '', name: '', sex: '', dob: '', unit: '', country: '', allerg: '', dt: '', t0: '', nat: [], mech: [], mechTxt: '', mk: [], tq: {}, injTxt: '', vit: [], f: blankF(), sympt: '', tx: [], rows: [], txTxt: '', evac: '', pos: '', resp: ['', ''], tqT: '', txaT: '' });
+  const ABO = ['O−', 'O+', 'A−', 'A+', 'B−', 'B+', 'AB−', 'AB+'];
+  const def = () => ({ id: '', name: '', sex: '', dob: '', unit: '', country: '', allerg: '', dt: '', t0: '', nat: [], mech: [], mechTxt: '', mk: [], tq: {}, injTxt: '', vit: [], f: blankF(), sympt: '', tx: [], rows: [], txTxt: '', evac: '', pos: '', abo: '', resp: ['', ''], tqT: '', txaT: '' });
   const str = v => v == null ? '' : String(v);
   const strs = a => Array.isArray(a) ? a.filter(x => typeof x === 'string') : [];
   const isTxa = n => /\btxa\b|tranek/i.test(String(n || ''));
@@ -406,6 +407,7 @@ const MC = (() => {
   function fix(raw) {
     const s = Object.assign(def(), raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {});
     ['id', 'name', 'sex', 'dob', 'unit', 'country', 'allerg', 'dt', 't0', 'mechTxt', 'injTxt', 'sympt', 'txTxt', 'evac', 'pos', 'tqT', 'txaT'].forEach(k => { s[k] = str(s[k]); });
+    s.abo = ABO.indexOf(s.abo) >= 0 ? s.abo : '';
     s.nat = strs(s.nat).filter(k => NAT.some(x => x[0] === k)); s.tx = strs(s.tx);
     // mechanizmas: senos reikšmės → LK kortelės
     const mt = [], mech = [];
@@ -413,7 +415,7 @@ const MC = (() => {
     s.mech = mech; if (mt.length) s.mechTxt = [mt.join(', '), s.mechTxt.trim()].filter(Boolean).join('; ');
     const f = s.f && typeof s.f === 'object' ? s.f : {}; s.f = blankF(); VF.forEach(k => { s.f[k] = str(f[k]); });
     s.vit = (Array.isArray(s.vit) ? s.vit : []).filter(v => v && typeof v === 'object').map(v => { const o = { ts: str(v.ts) }; VF.slice(1).concat('gcsD').forEach(k => { o[k] = str(v[k]); }); return o; });
-    s.rows = (Array.isArray(s.rows) ? s.rows : []).filter(r => r && typeof r === 'object' && ROWG.some(g => g[0] === r.g)).map(r => ({ g: r.g, name: str(r.name), dose: str(r.dose), route: str(r.route), time: str(r.time), src: str(r.src) }));
+    s.rows = (Array.isArray(s.rows) ? s.rows : []).filter(r => r && typeof r === 'object' && ROWG.some(g => g[0] === r.g)).map(r => Object.assign({ g: r.g, name: str(r.name), dose: str(r.dose), route: str(r.route), time: str(r.time), src: str(r.src) }, ABO.indexOf(r.grp) >= 0 ? { grp: r.grp } : {}));
     const tq = s.tq && typeof s.tq === 'object' && !Array.isArray(s.tq) ? s.tq : {}; s.tq = {};
     TQ.forEach(([k]) => { const q = tq[k]; if (q && typeof q === 'object' && q.on) s.tq[k] = { on: true, tm: str(q.tm) }; });
     s.resp = [0, 1].map(i => str((Array.isArray(s.resp) ? s.resp : [])[i]));
@@ -1197,6 +1199,7 @@ const MC = (() => {
         if (F.man) h += '<div class="mqpan"><label class="mqf">Pavadinimas' + `<input class="inp" data-si="fname" data-dict list="mqfl" value="${esc(F.name)}" placeholder="pvz. Plasma-Lyte" autocomplete="off"></label>` +
           '<datalist id="mqfl">' + BLP.concat(FLP).map(x => `<option value="${esc(x)}">`).join('') + '</datalist>' +
           '<div class="mqlab">C lentelėje</div><div class="mqrow">' + MGRP.slice(3).map(([k, l]) => `<button class="mqc sm${(F.g || 'fl') === k ? ' on' : ''}" data-sa="flg" data-v="${k}" aria-pressed="${(F.g || 'fl') === k}">${l}</button>`).join('') + '</div></div>';
+        if (TCFG.krGrupes && isB) h += bloodGrp(F, s);
         if (F.name || F.man) h += '<div class="mqpan"><div class="mqlab">Kiekis</div><div class="mqrow">' + amts.map(a => `<button class="mqc${F.amt === a ? ' on' : ''}" data-sa="fla" data-v="${esc(a)}" aria-pressed="${F.amt === a}">${esc(a)}</button>`).join('') +
           `<button class="mqc${F.amt && amts.indexOf(F.amt) < 0 ? ' on' : ''}" data-sa="flc">${F.amt && amts.indexOf(F.amt) < 0 ? esc(F.amt) + ' ✎' : 'Kita…'}</button></div>` +
           '<div class="mqlab">Būdas</div><div class="mqrow">' + ['IV', 'IO'].map(r => `<button class="mqc${F.r === r ? ' on' : ''}" data-sa="flr" data-v="${r}" aria-pressed="${F.r === r}">${r}</button>`).join('') + '</div>' +
@@ -1239,9 +1242,24 @@ const MC = (() => {
     const M = SH.man, nm = String(M.name || '').trim(), D = M.dose;
     return `<button class="btn pri mqsave" data-sa="save"${nm ? '' : ' disabled'}>${nm ? 'Įrašyti: ' + esc([nm, D ? D.a + ' ' + D.u : '', D ? D.r : ''].filter(Boolean).join(' ')) + ' · ' + shT() : 'Įveskite vaisto pavadinimą'}</button>`;
   }
+  // Kraujo produktai (ETC, TCFG.krGrupes): gavėjo grupė (nustatyta, ABO/Rh) ir pilamo kraujo donoro grupė
+  const ABO_OK = { O: ['O'], A: ['O', 'A'], B: ['O', 'B'], AB: ['O', 'A', 'B', 'AB'] };
+  const aboOk = (rec, dg) => ABO_OK[rec.slice(0, -1)].indexOf(dg.slice(0, -1)) >= 0 && (dg.slice(-1) === '−' || rec.slice(-1) === '+');
+  function bloodGrp(F, c) {
+    const rec = ABO.indexOf(c.abo) >= 0 ? c.abo : '', dg = ABO.indexOf(F.dg) >= 0 ? F.dg : '', rbc = F.name !== 'Plazma';
+    const chips = (cur, act, unk) => (unk ? `<button class="mqc sm${!cur ? ' on' : ''}" data-sa="${act}" data-v="" aria-pressed="${!cur}">${unk}</button>` : '') +
+      ABO.map(g => `<button class="mqc sm${cur === g ? ' on' : ''}" data-sa="${act}" data-v="${g}" aria-pressed="${cur === g}">${g}</button>`).join('');
+    let w = '';
+    if (rbc && dg && rec) w = aboOk(rec, dg) ? `<p class="muted mqhint">Suderinama su gavėjo grupe (${rec}).</p>` : `<div class="warn"><b>Nesuderinama</b> – donoras ${dg}, gavėjas ${rec}. Patikrinkite prieš perpylimą.</div>`;
+    else if (rbc && !rec) w = '<p class="muted mqhint">Gavėjo grupė nežinoma – kol nustatoma, eritrocitų masė skiriama pagal protokolą (O−).</p>';
+    else if (!rbc) w = '<p class="muted mqhint">Plazmai ABO taisyklės kitokios – derinkite su kraujo banku.</p>';
+    return '<div class="mqpan"><div class="mqlab">Gavėjo grupė (nustatyta)</div><div class="mqrow">' + chips(rec, 'pgrp', 'Nežinoma') + '</div>' +
+      '<div class="mqlab">Pilamo kraujo grupė (donoro)</div><div class="mqrow">' + chips(dg, 'dgrp') + '</div>' + w + '</div>';
+  }
   function flFoot() {
-    const F = SH.fl, ok2 = String(F.name || '').trim() && F.amt;
-    return `<button class="btn pri mqsave" data-sa="save"${ok2 ? '' : ' disabled'}>${ok2 ? 'Įrašyti: ' + esc(String(F.name).trim() + ' ' + F.amt + ' ' + F.r) + ' · ' + shT() : 'Pasirinkite produktą ir kiekį'}</button>`;
+    const F = SH.fl, ok0 = String(F.name || '').trim() && F.amt, bl = TCFG.krGrupes && BLP.indexOf(F.name) >= 0, needG = bl && ABO.indexOf(F.dg) < 0;
+    const lbl = needG ? 'Pasirinkite pilamo kraujo grupę' : ok0 ? 'Įrašyti: ' + esc(String(F.name).trim() + (bl ? ' ' + F.dg : '') + ' ' + F.amt + ' ' + F.r) + ' · ' + shT() : 'Pasirinkite produktą ir kiekį';
+    return `<button class="btn pri mqsave" data-sa="save"${ok0 && !needG ? '' : ' disabled'}>${lbl}</button>`;
   }
   function footUpd() { const f = shEl && shEl.querySelector('.mqshf'); if (f && SH && SH.kind === 'rx') f.innerHTML = SH.tab === 'fl' ? flFoot() : SH.man ? manFoot() : f.innerHTML; }
   function timeBody(o) {
@@ -1356,7 +1374,9 @@ const MC = (() => {
       }
       case 'qd': { const q = (QDF()[SH.drug] || [])[+v]; if (!q) return; SH.dose = { i: +v, r: q[0], a: q[1], u: q[2] }; return shRender(); }
       case 'cdose': { const q = (QDF()[SH.drug] || [])[0]; SH.sub = { kind: 'num', ctx: 'rx', buf: SH.dose && SH.dose.c ? SH.dose.a : '', unit: SH.dose ? SH.dose.u : q ? q[2] : 'mg', route: SH.dose ? SH.dose.r : q ? q[0] : 'IV' }; SH.top = 1; return shRender(); }
-      case 'flp': SH.fl = { name: !SH.fl.man && SH.fl.name === v ? '' : v, amt: '', r: SH.fl.r || 'IV' }; return shRender();
+      case 'flp': SH.fl = { name: !SH.fl.man && SH.fl.name === v ? '' : v, amt: '', r: SH.fl.r || 'IV', dg: SH.fl.dg || '' }; return shRender();
+      case 'dgrp': SH.fl.dg = SH.fl.dg === v ? '' : v; return shRender();
+      case 'pgrp': { const st = load(), c = curOf(st); c.abo = ABO.indexOf(v) >= 0 ? v : ''; save(st); return shRender(); }
       case 'fla': SH.fl.amt = v; return shRender();
       case 'flr': SH.fl.r = v; return shRender();
       case 'flc': SH.sub = { kind: 'num', ctx: 'fl', buf: '', unit: BLP.indexOf(SH.fl.name) >= 0 ? 'vnt.' : 'ml' }; SH.top = 1; return shRender();
@@ -1441,8 +1461,10 @@ const MC = (() => {
           }
           return commit(s => { s.rows.push({ g: grpOf(v), name: dn(v), dose: D.a + ' ' + D.u, route: D.r, time: t, src: 'mc:' + Date.now().toString(36) }); addNote(s, dn(v)); }, 'Įrašyta: ' + dn(v) + ' ' + D.a + ' ' + D.u + ' ' + D.r + ' · ' + t);
         }
-        const F = SH.fl, fn = String(F.name || '').trim(); if (!fn || !F.amt) return;
-        return commit(s => { s.rows.push({ g: F.man ? (F.g === 'bl' ? 'bl' : 'fl') : BLP.indexOf(fn) >= 0 ? 'bl' : 'fl', name: fn, dose: F.amt, route: F.r, time: t, src: 'mc:' + Date.now().toString(36) }); addNote(s, fn); }, 'Įrašyta: ' + fn + ' ' + F.amt + ' ' + F.r + ' · ' + t);
+        const F = SH.fl, fn0 = String(F.name || '').trim(); if (!fn0 || !F.amt) return;
+        const bl = TCFG.krGrupes && BLP.indexOf(fn0) >= 0, bg = bl ? F.dg : '', fn = bg && ABO.indexOf(bg) >= 0 ? fn0 + ' ' + bg : fn0;
+        if (bl && ABO.indexOf(bg) < 0) return;
+        return commit(s => { s.rows.push(Object.assign({ g: F.man ? (F.g === 'bl' ? 'bl' : 'fl') : BLP.indexOf(fn0) >= 0 ? 'bl' : 'fl', name: fn, dose: F.amt, route: F.r, time: t, src: 'mc:' + Date.now().toString(36) }, bl ? { grp: bg } : {})); addNote(s, fn); }, 'Įrašyta: ' + fn + ' ' + F.amt + ' ' + F.r + ' · ' + t);
       }
       case 'mk': {
         const pt = SH.pt; if (!pt) return;
@@ -2293,7 +2315,7 @@ const QR = (() => {
   }
   function merge(o) {
     PT.sync(); const st = MC.state(), c = st.pts[st.cur], m = cleanCard(o.m);
-    ['id', 'name', 'sex', 'dob', 'unit', 'country', 'allerg', 'dt', 't0', 'mechTxt', 'injTxt', 'sympt', 'evac', 'pos', 'tqT', 'txaT'].forEach(k => { if (!c[k] && m[k]) c[k] = String(m[k]); });
+    ['id', 'name', 'sex', 'dob', 'unit', 'country', 'allerg', 'dt', 't0', 'mechTxt', 'injTxt', 'sympt', 'abo', 'evac', 'pos', 'tqT', 'txaT'].forEach(k => { if (!c[k] && m[k]) c[k] = String(m[k]); });
     let tt = String(m.txTxt || ''); if (typeof VZ === 'undefined' && Array.isArray(o.z) && o.z.length) tt = [tt, 'Vaistai: ' + zText(o.z)].filter(Boolean).join('; ');
     if (tt && String(c.txTxt || '').indexOf(tt) < 0) c.txTxt = [String(c.txTxt || '').trim(), tt].filter(Boolean).join('; ');
     const uni = (a, b) => a.concat((Array.isArray(b) ? b : []).filter(x => typeof x === 'string' && a.indexOf(x) < 0));
