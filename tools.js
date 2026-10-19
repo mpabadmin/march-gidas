@@ -757,13 +757,35 @@ const MC = (() => {
     // S – būklė
     const V = s.vit.map((v, i) => ({ v, i })).slice(-3), more = s.vit.length - V.length;
     const R = [['av', 'AVPU'], ['rr', 'KD'], ['spo2', 'SpO₂'], ['hr', 'Pulsas'], ['bp', 'AKS'], ['pain', 'Skausmas'], ['gcs', 'GKS']].filter(([k]) => k !== 'gcs' || V.some(({ v }) => v.gcs));
+    // C – būklės juosta: visi parametrai paskutiniuose 9 matavimuose. Raudonai – ribose nenormali reikšmė (abn);
+    // spalva ir rodyklė – reikšmė blogesnė nei ankstesnis to paties parametro matavimas (AVPU žemiau, SpO₂ ir AKS žemiau, KD, pulsas, skausmas, GKS žemiau – blogiau)
+    const RB = s.vit.slice(-9), AVR = { A: 0, V: 1, P: 2, U: 3 };
+    const worseThan = (k, a, b) => {
+      if (a === '' || a == null || b === '' || b == null) return false;
+      if (k === 'av') return AVR[b] !== undefined && AVR[a] !== undefined && AVR[b] > AVR[a];
+      const x = k === 'bp' ? sys(a) : +a, y = k === 'bp' ? sys(b) : +b;
+      if (isNaN(x) || isNaN(y)) return false;
+      if (k === 'spo2' || k === 'gcs' || k === 'bp') return y < x;
+      return y > x;
+    };
+    const RRW = [['av', 'AVPU'], ['rr', 'KD'], ['spo2', 'SpO₂ %'], ['hr', 'Pulsas'], ['bp', 'AKS'], ['pain', 'Skausmas'], ['gcs', 'GKS']].filter(([k]) => RB.some(v => v[k] !== '' && v[k] != null));
+    const rbCells = k => { let prev = null; return RB.map(v => { const x = v[k], w = prev !== null && worseThan(k, prev, x); if (x !== '' && x != null) prev = x; return { x, w }; }); };
+    const rbCell = (k, c) => {
+      if (c.x === '' || c.x == null) return '<span class="vrc nil">·</span>';
+      const g = k === 'spo2' || k === 'gcs' || k === 'bp' || k === 'av' ? '▼' : '▲';
+      return `<span class="vrc${abn(k, c.x) ? ' ab' : ''}${c.w ? ' wr' : ''}"${c.w ? ' title="blogiau nei ankstesnis matavimas"' : ''}>${esc(c.x)}${c.w ? '<span class="vg" aria-hidden="true">' + g + '</span>' : ''}</span>`;
+    };
+    const rbRow = (lb, cells) => `<div class="vrow" style="grid-template-columns:76px repeat(${RB.length},minmax(58px,1fr))"><span class="vrl">${lb}</span>${cells}</div>`;
+    const RIB = RB.length > 1 ? '<div class="vrib" role="group" aria-label="Būklės juosta: paskutiniai matavimai">' +
+      rbRow('Laikas', RB.map(v => `<span class="vrh">${esc(v.ts || '—')}</span>`).join('')) +
+      RRW.map(([k, lb]) => rbRow(lb, rbCells(k).map(c => rbCell(k, c)).join(''))).join('') + '</div>' : '';
     h += '<section class="mcs sS" id="mcS" aria-label="S – būklė">' + secH('S', 'Būklė', 'Signs') +
       (V.length ? '<div class="vtw"><table class="vt"><thead><tr><th scope="col">Laikas</th>' + V.map(({ v }) => `<th scope="col">${esc(v.ts || '—')}</th>`).join('') + '</tr></thead><tbody>' +
         R.map(([k, lb]) => `<tr><th scope="row">${lb}</th>` + V.map(({ v }) => `<td class="${abn(k, v[k]) ? 'ab' : ''}">${esc(v[k] == null ? '' : v[k])}${k === 'spo2' && v[k] ? ' %' : ''}${k === 'gcs' && v.gcsD ? ' <small>' + esc(v.gcsD) + '</small>' : ''}</td>`).join('') + '</tr>').join('') +
         '<tr class="vdel"><th scope="row"><span class="vh">Ištrinti</span></th>' + V.map(({ v, i }) => `<td><button class="x" data-act="mc-vdel" data-k="${i}" aria-label="Ištrinti ${esc(v.ts)} matavimą">×</button></td>`).join('') + '</tr></tbody></table></div>' +
         (more > 0 ? `<p class="muted mqhint">Ir ${plural(more, ['ankstesnis matavimas', 'ankstesni matavimai', 'ankstesnių matavimų'])} – visi perduodami MIST tekste ir kortelėje.</p>` : '')
         : '<p class="muted mqhint">Matavimų dar nėra.</p>') +
-      '<button class="btn pri mqbig" data-act="mc-vit">+ Matavimas</button>' + pills(['sympt'], s) + '</section>';
+      RIB + '<button class="btn pri mqbig" data-act="mc-vit">+ Matavimas</button>' + pills(['sympt'], s) + '</section>';
     // T – teikta pagalba
     const tch = keys => keys.map(k => txT(k)).filter(x => txShown(x, s)).map(x => ch('mc-tx', x[0], s.tx.indexOf(x[0]) >= 0, esc(TXL[x[0]] || x[1]) + lvTag(x))).join('');
     const rws = s.rows.map((r, i) => ({ r, i })).filter(x => rowTxt(x.r) || x.r.time).sort((a, b) => (a.r.time || '99') < (b.r.time || '99') ? -1 : (a.r.time || '99') > (b.r.time || '99') ? 1 : 0);
