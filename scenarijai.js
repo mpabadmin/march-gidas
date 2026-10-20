@@ -224,7 +224,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "Po pakartotinio tamponavimo kraujavimas sustojo. Turite turniketą ir gertuvę.",
+    "sit": "Po pakartotinio tamponavimo kraujavimas sustojo. Komercinio jungties turniketo neturite.",
     "gp": {},
     "klaus": "Kaip CLS išlaiko spaudimą kirkšnyje?",
     "opt": [
@@ -354,7 +354,7 @@ window.ETC.scenarijai = [
     "klaus": "Ką darote?",
     "opt": [
      {
-      "t": "Tamponuojate žaizdą hemostatiniu tvarsčiu",
+      "t": "Tamponuojate žaizdą hemostatiniu tvarsčiu ir spaudžiate",
       "ok": false
      },
      {
@@ -362,7 +362,7 @@ window.ETC.scenarijai = [
       "ok": true
      },
      {
-      "t": "Klijuojate lipduką tiesiai ant kruvinos odos",
+      "t": "Klijuojate lipduką tiesiai ant kruvinos odos, kad nesugaištumėte",
       "ok": false
      }
     ],
@@ -413,7 +413,7 @@ window.ETC.scenarijai = [
       "ok": false
      },
      {
-      "t": "Ties spenelio linija, po šonkaulio apatiniu kraštu",
+      "t": "Mediališkiau spenelio linijos, po šonkaulio apatiniu kraštu",
       "ok": false
      },
      {
@@ -421,7 +421,7 @@ window.ETC.scenarijai = [
       "ok": true
      }
     ],
-    "why": "NDC – pažeistoje pusėje: 5-asis tarpšonkaulis priekinėje pažasties linijoje (arba 2-asis vidurinėje raktikaulio linijoje), statmenai, virš apatinio šonkaulio. Mediališkiau spenelio linijos – klaida.",
+    "why": "NDC – pažeistoje pusėje: 5-asis tarpšonkaulis priekinėje pažasties linijoje (arba 2-asis vidurinėje raktikaulio linijoje), statmenai, virš apatinio šonkaulio. Mediališkiau spenelio linijos ar po šonkaulio apatiniu kraštu – klaida.",
     "ref": [
      "#/igudis/16",
      "#/f/TFC?t=3"
@@ -499,7 +499,7 @@ window.ETC.scenarijai = [
     "klaus": "(CMC) Ką skiriate po pirmojo vieneto?",
     "opt": [
      {
-      "t": "Kalcis: 10 ml 10 % kalcio gliukonato",
+      "t": "Kalcis: 10 ml 10 % kalcio gliukonato IV / IO",
       "ok": false
      },
      {
@@ -993,7 +993,7 @@ window.ETC.scenarijai = [
       "ok": true
      },
      {
-      "t": "Žemiau kelio – ten blauzda labiau atvira skeveldroms",
+      "t": "Ant kelio sąnario – ten lengviausia užčiuopti ir užveržti",
       "ok": false
      },
      {
@@ -1384,7 +1384,7 @@ window.ETC.scenarijai = [
   "lygis": "CLS",
   "q": [
    {
-    "sit": "Valant pastatą gyvenvietėje, kambaryje sprogsta priešo granata. Karys guli koridoriuje, apšaudomame pro langą; šlaunis kraujuoja srove. Jis sąmoningas, rankos sveikos.",
+    "sit": "Valant pastatą gyvenvietėje, koridoriuje sprogsta priešo granata. Karys guli koridoriuje, apšaudomame pro langą; šlaunis kraujuoja srove. Jis sąmoningas, rankos sveikos.",
     "gp": {
      "AVPU": "A"
     },
@@ -1607,7 +1607,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "(CMC) Dronai neleidžia evakuoti. Urgent sužeistajam įvesta IO, perpilamas kraujas. Nuo sužeidimo praėjo 3 val. 20 min, TXA dar nesuleista.",
+    "sit": "(CMC) Dėl dronų pas Urgent sužeistąjį pavyko prieiti tik po 3 val., evakuoti kol kas neįmanoma. Įvedėte IO, perpilamas kraujas. Nuo sužeidimo praėjo 3 val. 20 min, TXA dar nesuleista.",
     "gp": {
      "AVPU": "V",
      "Radialinis pulsas": "silpnas"
@@ -1693,7 +1693,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "(CMC) Dėl šoko įvedėte IO, suleidote TXA ir perpylėte vieną šaltai laikyto mažo titro O pilno kraujo vienetą. Dabar radialinis pulsas čiuopiamas, sąmonė pagerėjo.",
+    "sit": "(CMC) Sutvarsčius sužeistasis tapo mieguistas, radialinis pulsas – silpnas (šokas). Įvedėte IO, suleidote TXA ir perpylėte vieną šaltai laikyto mažo titro O pilno kraujo vienetą. Dabar radialinis pulsas čiuopiamas, sąmonė pagerėjo.",
     "gp": {
      "AVPU": "A",
      "Radialinis pulsas": "čiuopiamas"
@@ -1972,7 +1972,7 @@ window.ETC.scenarijai = [
       "ok": false
      },
      {
-      "t": "„Atpučiate“ lipduką ir vertinate iš naujo",
+      "t": "„Atpučiate“ lipdukus ir vertinate iš naujo",
       "ok": true
      },
      {
@@ -1980,7 +1980,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Liemens trauma, didėjantis distresas, susilpnėję garsai vienoje pusėje ir SpO₂ < 90 % – įtampos pneumotoraksas. Pirma „atpūskite“ ar nuimkite lipduką ir įvertinkite iš naujo; vėlyvų požymių nelaukite. Vertinkite po kiekvieno perkėlimo.",
+    "why": "Liemens trauma, didėjantis distresas, susilpnėję garsai vienoje pusėje ir SpO₂ < 90 % – įtampos pneumotoraksas. Pirma „atpūskite“ ar nuimkite lipdukus (ypač neventiliuojamą nugaroje) ir įvertinkite iš naujo; vėlyvų požymių nelaukite. Vertinkite po kiekvieno perkėlimo.",
     "ref": [
      "#/igudis/14",
      "#/igudis/15",
@@ -2052,7 +2052,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "Po 20 min, vežant šarvuočiu, distresas vėl didėja, dešinėje kvėpavimo garsai vėl susilpnėję.",
+    "sit": "Po 20 min, laukiant evakuacijos, distresas vėl didėja, dešinėje kvėpavimo garsai vėl susilpnėję.",
     "gp": {
      "KD": "34",
      "SpO₂": "86 %"
@@ -2318,7 +2318,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "(CMC) Radialinis pulsas silpnas, dažnas. Atvyko kovos medikas – jūs.",
+    "sit": "(CMC) Radialinis pulsas silpnas, dažnas.",
     "gp": {
      "AVPU": "P",
      "Radialinis pulsas": "silpnas",
@@ -2355,7 +2355,7 @@ window.ETC.scenarijai = [
   "lygis": "CMC",
   "q": [
    {
-    "sit": "(CMC) 13:10 drono numesta granata sužeidė du karius apkase. Pirmajam – turniketas ant šlaunies, jis šoke. Dešinysis žastas subjaurotas skeveldrų, du IV bandymai nepavyko.",
+    "sit": "(CMC) 13:10 drono numesta granata sužeidė du karius apkase; dėl dronų grėsmės juos pasiekiate tik 15:30. Pirmajam – turniketas ant šlaunies, jis šoke. Dešinysis žastas subjaurotas skeveldrų, du IV bandymai nepavyko.",
     "gp": {
      "AVPU": "V",
      "Radialinis pulsas": "silpnas",
@@ -2677,7 +2677,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "Karys šildančiame apvalkale, bus vežamas atviru visureigiu. Atidarote aktyvaus šildymo antklodę.",
+    "sit": "Karys guli išskleisto šildančio apvalkalo viduryje, bus vežamas atviru visureigiu. Atidarote aktyvaus šildymo antklodę.",
     "gp": {
      "AVPU": "A"
     },
@@ -3031,7 +3031,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "Šarvuotyje buvo daug dūmų. Po 10 min karys užkimsta ir kosti, antakiai ir veidas apdegę.",
+    "sit": "Šarvuotyje buvo daug dūmų. Po 10 min karys užkimsta ir kosti, antakiai apsvilę, veidas paraudęs, nosyje ir burnoje – suodžiai.",
     "gp": {
      "AVPU": "A",
      "SpO₂": "91 %",
@@ -3067,7 +3067,7 @@ window.ETC.scenarijai = [
   "lygis": "CLS",
   "q": [
    {
-    "sit": "Po artilerijos apšaudymo karys poste turi skeveldros žaizdą dilbyje; ji sutvarstyta, MARCH sutvarkytas. Budrus, gali tęsti užduotį; iš kišenės traukia ibuprofeną.",
+    "sit": "Po artilerijos apšaudymo karys poste turi skeveldros žaizdą dilbyje; ji sutvarstyta, MARCH sutvarkytas. Budrus, gali tęsti užduotį; iš kišenės traukia ibuprofeną. Paklaustas apie alergijas, mini tik peniciliną.",
     "gp": {
      "AVPU": "A",
      "Skausmas": "5/10"
@@ -3094,7 +3094,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "Paklausus apie alergijas, karys sako, kad po penicilino jam buvo sutinęs veidas ir sunku kvėpuoti – vežė į ligoninę.",
+    "sit": "Patikslinus, karys sako, kad po penicilino jam buvo sutinęs veidas ir sunku kvėpuoti – vežė į ligoninę.",
     "gp": {
      "AVPU": "A"
     },
@@ -3155,7 +3155,7 @@ window.ETC.scenarijai = [
   "lygis": "CLS",
   "q": [
    {
-    "sit": "Artilerijos sviedinys sprogo apie 20 m nuo apkaso. Karys buvo netekęs sąmonės, dilbio skeveldros žaizda sutvarstyta. Draugas nori įdėti jam į burną CWMP ir cefadroksilį.",
+    "sit": "Artilerijos sviedinys sprogo apie 20 m nuo apkaso. Karys reaguoja tik į skausmą, dilbio skeveldros žaizda sutvarstyta. Draugas nori įdėti jam į burną CWMP ir cefadroksilį.",
     "gp": {
      "AVPU": "P",
      "Radialinis pulsas": "stiprus",
@@ -3258,7 +3258,7 @@ window.ETC.scenarijai = [
       "ok": true
      },
      {
-      "t": "100 mg IN – 2 ml",
+      "t": "100 mg IN – 1 ml",
       "ok": false
      },
      {
@@ -3674,7 +3674,7 @@ window.ETC.scenarijai = [
   "lygis": "CLS",
   "q": [
    {
-    "sit": "Sužeistąjį su turniketu ant šlaunies (uždėtas apšaudymo metu 1410L) vežate šarvuočiu duobėtu keliu. Po stipraus krestelėjimo tvarstis po turniketu greitai permirksta, pėdoje čiuopiamas pulsas.",
+    "sit": "Sužeistąjį su turniketu ant šlaunies (uždėtas apšaudymo metu 1410L) vežate šarvuočiu duobėtu keliu. Po stipraus krestelėjimo tvarstis ant žaizdos žemiau turniketo greitai permirksta, pėdoje čiuopiamas pulsas.",
     "gp": {
      "AVPU": "A",
      "Radialinis pulsas": "stiprus"
@@ -4273,7 +4273,7 @@ window.ETC.scenarijai = [
       "ok": true
      }
     ],
-    "why": "Pykinimas ar vėmimas – ondansetronas 4 mg (ODT / IV / IO / IM), vemiantį paguldykite į šoninę padėtį. Po ketamino sužeistasis gali būti sujaudintas – pritvirtinkite neštuvų diržais; benzodiazepinų neskirkite.",
+    "why": "Pykinimas ar vėmimas – ondansetronas 4 mg (ODT / IV / IO / IM), vemiantį paguldykite į šoninę padėtį. Po ketamino sužeistasis gali būti sujaudintas – pritvirtinkite neštuvų diržais; benzodiazepinų neskirkite. Ketamino nekartokite: praėjo tik 10 min (kartoti – ne dažniau kaip kas 30 min), skausmas jau 3/10.",
     "ref": [
      "#/vaistas/ondansetronas",
      "#/igudis/25"
@@ -4288,7 +4288,7 @@ window.ETC.scenarijai = [
   "lygis": "CMC",
   "q": [
    {
-    "sit": "Artilerijos sviedinys sprogo 20 m nuo kario. Praėjus 30 min jis vis dar nevykdo paprastų komandų, vyzdžiai simetriški. Skrendate sraigtasparniu; kvėpuoja savarankiškai.",
+    "sit": "Artilerijos sviedinys sprogo 20 m nuo kario; skeveldra sužeidė pilvą, išorinio kraujavimo nėra. Praėjus 30 min jis vis dar nevykdo paprastų komandų, vyzdžiai simetriški. Skrendate sraigtasparniu; kvėpuoja savarankiškai.",
     "gp": {
      "AVPU": "V",
      "KD": "16",
