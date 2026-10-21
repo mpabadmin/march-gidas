@@ -68,9 +68,9 @@ const V = {
     const st = m => { try { return m().status(); } catch (e) { return ''; } }; // tools.js gali būti neįkeltas
     const nl = st(() => NL), mc = st(() => MC), ts = st(() => TS), sr = st(() => SR), cr = st(() => CR), su = st(() => SU);
     return '<div class="tools">' +
-      `<a class="tool" href="#/9line" aria-label="9-Line MEDEVAC prašymas: ${esc(nl)}"><span class="ti">9</span><b>9-Line</b><small>${esc(nl)}</small></a>` +
-      `<a class="tool" href="#/pacientas?t=kortele" aria-label="MIST kortelė: ${esc(mc)}"><span class="ti">M</span><b>MIST</b><small>${esc(mc)}</small></a>` +
       `<a class="tool" href="#/tst" aria-label="10s triažas: ${esc(ts)}"><span class="ti">10s</span><b>10s triažas</b><small>${esc(ts)}</small></a>` +
+      `<a class="tool" href="#/pacientas?t=kortele" aria-label="MIST kortelė: ${esc(mc)}"><span class="ti">M</span><b>MIST</b><small>${esc(mc)}</small></a>` +
+      `<a class="tool" href="#/9line" aria-label="9-Line MEDEVAC prašymas: ${esc(nl)}"><span class="ti">9</span><b>9-Line</b><small>${esc(nl)}</small></a>` +
       `<a class="tool" href="#/sitrep" aria-label="SITREP padėties pranešimas: ${esc(sr)}"><span class="ti">S</span><b>SITREP</b><small>${esc(sr)}</small></a>` +
       `<a class="tool" href="#/contrep" aria-label="CONTREP kontakto pranešimas: ${esc(cr)}"><span class="ti">C</span><b>CONTREP</b><small>${esc(cr)}</small></a>` +
       `<a class="tool" href="#/salute" aria-label="SALUTE priešo stebėjimo pranešimas: ${esc(su)}"><span class="ti">SA</span><b>SALUTE</b><small>${esc(su)}</small></a></div>`;
