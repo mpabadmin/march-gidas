@@ -201,6 +201,7 @@ function buildIdx() {
   add('Įrankiai', 'Egzaminuotojo režimas', 'Kontrolinio sąrašo vertinimas su laiku ir kritiniais punktais', 'egzaminas egzaminuotojas vertinimas instruktorius laikmatis kritiniai punktai', '#/egzaminas');
   add('Įrankiai', 'Treniruočių scenarijai', 'Klinikiniai atvejai su klausimais ir paaiškinimais', 'scenarijai scenarijus treniruotė viktorina testas klausimai', '#/scenarijai');
   add('Įrankiai', 'SITREP – padėties pranešimas', 'Pranešimas vadui: vieta, priešas, padėtis, nuostoliai, logistika, prašymai', 'sitrep situacija padėtis pranešimas raportas vadui nuostoliai logistika dtg', '#/sitrep');
+  add('Įrankiai', 'CONTREP – kontakto pranešimas', 'Kontaktas su priešu: laikas, priešo ir sava vieta, kiekis, veiksmai, nuostoliai', 'contrep kontaktas kontakto pranešimas priešas susidūrimas ugnis raportas', '#/contrep');
   add('Įrankiai', '10s triažas', 'Ten Second Triage (TST) – rūšiavimas per 10 sekundžių', 'tst 10s 10 s 10 sekundžių ten second triage triažas rūšiavimas masinė nelaimė p1 p2 p3', '#/tst');
   return I;
 }
