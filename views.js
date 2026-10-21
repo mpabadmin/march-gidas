@@ -290,11 +290,19 @@ const V = {
       '<li>Pasirinkite <b>„Įdiegti programą“</b> arba <b>„Pridėti prie pradžios ekrano“</b> ir patvirtinkite.</li>' +
       '<li>Ženkliukas <b>„March gidas“</b> atsiras pradžios ekrane.</li></ol>' +
       '<p class="muted">Samsung naršyklėje: meniu ☰ → „Pridėti puslapį prie“ → „Pradžios ekranas“.</p>' +
-      '<h2>iPhone / iPad (Safari)</h2><ol class="steps">' +
-      '<li>Atidarykite <b>march.1040medkuopa.lt</b> naršyklėje <b>Safari</b>.</li>' +
-      '<li>Paspauskite <b>„Bendrinti“</b> – kvadratą su rodykle aukštyn (naujesnėse iOS – pirmiausia <b>⋯</b> šalia adreso juostos).</li>' +
-      '<li>Pasirinkite <b>„Įtraukti į pradžios ekraną“</b>.</li>' +
-      '<li>Paspauskite <b>„Įtraukti“</b> viršuje dešinėje.</li></ol>' +
+      '<h2>iPhone / iPad</h2>' +
+      '<p class="muted">iPhone neturi mygtuko „Įdiegti“ – programėlė pridedama per „Bendrinti“. Tinka Safari arba Chrome (iOS 16.4 ar naujesnė). Jei nuorodą atidarėte Messenger, Facebook ar kitoje programėlėje, pirmiausia atidarykite ją naršyklėje: <b>⋯</b> arba kompaso ženkliukas → <b>„Atidaryti Safari“</b> (angl. „Open in Safari“).</p>' +
+      '<p><b>Safari</b></p><ol class="steps">' +
+      '<li>Adreso juostoje įveskite <b>march.1040medkuopa.lt</b> ir palaukite, kol puslapis visiškai įsikels.</li>' +
+      '<li>Paspauskite <b>„Bendrinti“</b> – kvadratą su rodykle aukštyn. iOS 26: pirmiausia paspauskite <b>⋯</b> apačioje, tada <b>„Bendrinti“</b>. Senesnėse iOS mygtukas yra apačioje per vidurį.</li>' +
+      '<li>Sąraše slinkite žemyn ir pasirinkite <b>„Įtraukti į pradžios ekraną“</b> (angl. „Add to Home Screen“). Nematote – paspauskite <b>„Rodyti daugiau“</b> (angl. „View More“) arba sąrašo apačioje <b>„Redaguoti veiksmus…“</b> ir jį pridėkite.</li>' +
+      '<li>Pavadinimą palikite <b>„March gidas“</b>. Jei matote jungiklį <b>„Atidaryti kaip žiniatinklio programą“</b> (angl. „Open as Web App“) – jis turi būti įjungtas.</li>' +
+      '<li>Paspauskite <b>„Įtraukti“</b> (angl. „Add“) viršuje dešinėje – ženkliukas atsiras pradžios ekrane.</li></ol>' +
+      '<p><b>Chrome</b></p><ol class="steps">' +
+      '<li>Atidarykite <b>march.1040medkuopa.lt</b>.</li>' +
+      '<li>Adreso juostoje paspauskite <b>„Bendrinti“</b> (kvadratas su rodykle aukštyn) arba meniu <b>⋯</b> → <b>„Bendrinti…“</b>.</li>' +
+      '<li>Pasirinkite <b>„Įtraukti į pradžios ekraną“</b> (jei reikia – slinkite žemyn arba „Daugiau“), tada <b>„Įtraukti“</b>.</li></ol>' +
+      '<p class="muted">Toliau programėlę atidarykite iš pradžios ekrano ženkliuko, ne iš naršyklės – tada ji veikia visame ekrane ir be interneto. Įdiegtą programėlę ištrinti galima kaip įprastą: palaikykite ženkliuką → „Pašalinti“.</p>' +
       '<h2>Po įdiegimo</h2><ul><li>Pirmą kartą atidarykite su internetu – turinys išsisaugos telefone.</li><li>Programėlė atsinaujina pati, kai atidaroma su internetu.</li><li>Vaizdo įrašams reikia interneto; iliustracijos išsisaugo jas peržiūrėjus.</li></ul>' +
       '<h2>Pasidalinkite</h2><p class="muted">Nuskenuokite telefono kamera:</p><img class="qr" src="img/qr.svg" alt="QR kodas: march.1040medkuopa.lt"><p style="text-align:center"><b>march.1040medkuopa.lt</b></p>';
     return h;
