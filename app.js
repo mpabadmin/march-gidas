@@ -18,7 +18,7 @@ const limbPick = t => `<span class="muted">Turniketas ${esc(t)} – kuri galūn�
   MC.TQ.map(([k, lt]) => `<button class="btn" data-act="tm-limb" data-k="${k}">${esc(lt)}</button>`).join('') + '<button class="btn" data-act="tm-limbx">Vėliau</button></div>';
 const ckOn = ck => { if (!ck || !ck.classList.contains('ck') || ck.classList.contains('on')) return; ckToggle(ck.dataset.l, +ck.dataset.i); ck.classList.add('on'); ck.setAttribute('aria-checked', 'true'); const cl = ck.closest('.cl'); if (cl) updCount(cl); ckBtn(ck.dataset.l); };
 const PT_BAR = []; // įrankiai, virš kurių rodoma pacientų juosta
-const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'contrep', 'scenarijai', 'pacientas', 'qr', 'qr-priimti', 'egzaminas', 'korteles', 'skenuoti', 'vertinimas'];
+const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'contrep', 'salute', 'scenarijai', 'pacientas', 'qr', 'qr-priimti', 'egzaminas', 'korteles', 'skenuoti', 'vertinimas'];
 const fbLink = () => '<button class="btn fbrow" data-act="fb">Pastebėjote klaidą ar turite pasiūlymą? Praneškite</button>';
 
 // Visos vietinės iliustracijos (įgūdžiai + mokymosi puslapiai) – išsaugoti naudojimui be interneto
@@ -58,6 +58,7 @@ function view(p, q) {
     case 'mist': return MC.view();
     case 'sitrep': return SR.view();
     case 'contrep': return CR.view();
+    case 'salute': return SU.view();
     case 'tst': return TS.view();
     case 'scenarijai': return SC.view(p[1], q);
     case 'pacientas': return HUB.view(q);
@@ -89,7 +90,7 @@ function render() {
   document.getElementById('mL').setAttribute('aria-pressed', mode === 'learn');
   backBtn.style.display = p.length ? '' : 'none'; // pradžios ekrane vietoje „Atgal“ – atnaujinimo mygtukas dešinėje
   const ub = document.getElementById('upd'); if (ub) ub.style.display = p.length ? 'none' : '';
-  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'pacientas', tst: 'home', sitrep: 'home', contrep: 'home', scenarijai: 'igudziai', pacientas: 'pacientas', qr: 'pacientas', 'qr-priimti': 'pacientas', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai', egzaminas: 'home', korteles: 'vaistai', skenuoti: 'pacientas', vertinimas: 'home' }[p[0]] || (p.length ? '' : 'home');
+  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': '9line', mist: 'pacientas', tst: 'home', sitrep: 'home', contrep: 'home', salute: 'home', scenarijai: 'igudziai', pacientas: 'pacientas', qr: 'pacientas', 'qr-priimti': 'pacientas', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'igudziai', tema: 'igudziai', p: 'igudziai', egzaminas: 'home', korteles: 'vaistai', skenuoti: 'pacientas', vertinimas: 'home' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   try { PT.sync(); } catch (e) { console.error(e); }
   if (typeof DICT !== 'undefined') DICT.stop();
@@ -175,6 +176,7 @@ app.addEventListener('click', e => {
   if (/^mc-/.test(d.act)) { MC.act(el, e); return; }
   if (/^sr-/.test(d.act)) { SR.act(el); return; }
   if (/^cr-/.test(d.act)) { CR.act(el); return; }
+  if (/^su-/.test(d.act)) { SU.act(el); return; }
   if (/^sc-/.test(d.act)) { SC.act(el); return; }
   if (/^pt-/.test(d.act)) { PT.act(el); return; }
   if (/^hb-/.test(d.act)) { HUB.act(el); return; }
@@ -285,6 +287,7 @@ function toolInput(t) {
   if (d.mc || d.mcf || d.mcm != null || d.mctq || d.mcp != null || d.mcr || d.mcas) { MC.onInput(t); return true; }
   if (d.sr) { SR.onInput(t); return true; }
   if (d.cr) { CR.onInput(t); return true; }
+  if (d.su) { SU.onInput(t); return true; }
   if (d.sk != null) { SK.onInput(t); return true; }
   if (d.vl) { VL.onInput(t); return true; }
   return false;
