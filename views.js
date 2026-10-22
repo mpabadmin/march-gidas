@@ -37,7 +37,28 @@ function tocHtml(html) {
 const videos = a => (a || []).length ? '<h2>Vaizdo įrašai</h2>' + a.map(videoHtml).join('') : '';
 const brand = () => '<div class="brand"><img class="lg-d" src="img/badge-balt.png" alt="LŠS Vilniaus 1040 medicinos šaulių kuopa"><img class="lg-l" src="img/badge-juod.png" alt="LŠS Vilniaus 1040 medicinos šaulių kuopa"><span><b>March gidas</b><br>TCCC 2026 · CLS / CMC · MEDEVAC</span></div>';
 const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-const installRow = () => installed() ? '' : row('#/idiegimas', 'Įdiekite programėlę telefone', 'Android ir iPhone – 1 minutė, veikia be interneto');
+// Plytelių piktogramos ir plytelė: paantraštė rodoma tik kai yra būsena (užpildyta, skaičiai) – be pasikartojančių aprašymų
+const ic = d => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICO = {
+  mist: ic('<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M6 16c.6-1.4 1.5-2 2.5-2s1.9.6 2.5 2M14 10h4M14 14h3"/>'),
+  sitrep: ic('<path d="M9 3h6v3H9z"/><path d="M8 4.5H6a1 1 0 0 0-1 1V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5.5a1 1 0 0 0-1-1h-2M9 11h6M9 15h4"/>'),
+  contrep: ic('<circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/>'),
+  salute: ic('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
+  gks: ic('<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8M9 9.5h.01M15 9.5h.01"/>'),
+  mascal: ic('<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><path d="M3 20c0-3 2-5 4-5s4 2 4 5M13 20c0-3 2-5 4-5s4 2 4 5"/>'),
+  vz: ic('<path d="M10.5 4.5a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7z"/><path d="M8 8l8 8"/>'),
+  burn: ic('<path d="M12 3c2 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-8z"/>'),
+  drop: ic('<path d="M12 3c3 4 6 7 6 11a6 6 0 0 1-12 0c0-4 3-7 6-11z"/>'),
+  bag: ic('<path d="M7 3h10v9a5 5 0 0 1-10 0z"/><path d="M7 7h10M12 17v4"/>'),
+  syr: ic('<path d="M14 4l6 6M17 7l-9 9-3.5 1 1-3.5 9-9M4 20l1.5-1.5M10 9l2 2M8 11l2 2"/>'),
+  scen: ic('<path d="M8 5v14l11-7z"/>'),
+  cards: ic('<rect x="3" y="7" width="13" height="13" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v11"/>'),
+  exam: ic('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>'),
+  eval: ic('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4M9 12l2 2 4-4"/>')
+};
+const tile = (href, ti, b, sm, lb, cls) => `<a class="tool${cls ? ' ' + cls : ''}" href="${href}" aria-label="${esc((lb || b) + (sm ? ': ' + sm : ''))}"><span class="ti">${ti}</span><b>${esc(b)}</b>${sm ? '<small>' + esc(sm) + '</small>' : ''}</a>`;
+const stOf = m => { try { return m().status(); } catch (e) { return ''; } }; // tools.js gali būti neįkeltas
+const installRow = () => installed() ? '' : row('#/idiegimas', 'Įdiegti programėlę', 'Veikia be interneto');
 
 const GRUPES = [['K', 'Principai, apžiūra, ištraukimas'], ['M', 'M – masyvus kraujavimas'], ['A', 'A – kvėpavimo takai'], ['R', 'R – kvėpavimas'], ['C', 'C – kraujotaka ir šokas'], ['H', 'H – hipotermija, galva, akys'], ['P', 'P · A – skausmas ir antibiotikai'], ['W', 'W · S – žaizdos, nudegimai, įtvėrimas'], ['E', 'Evakuacija (MEDEVAC)']];
 const grupesPav = g => (GRUPES.find(x => x[0] === g) || ['', ''])[1];
@@ -65,27 +86,17 @@ const V = {
   },
 
   toolTiles() {
-    const st = m => { try { return m().status(); } catch (e) { return ''; } }; // tools.js gali būti neįkeltas
-    const nl = st(() => NL), mc = st(() => MC), ts = st(() => TS), sr = st(() => SR), cr = st(() => CR), su = st(() => SU);
     return '<div class="tools">' +
-      `<a class="tool" href="#/tst" aria-label="10s triažas: ${esc(ts)}"><span class="ti">10s</span><b>10s triažas</b><small>${esc(ts)}</small></a>` +
-      `<a class="tool" href="#/pacientas?t=kortele" aria-label="MIST kortelė: ${esc(mc)}"><span class="ti">M</span><b>MIST</b><small>${esc(mc)}</small></a>` +
-      `<a class="tool" href="#/9line" aria-label="9-Line MEDEVAC prašymas: ${esc(nl)}"><span class="ti">9</span><b>9-Line</b><small>${esc(nl)}</small></a>` +
-      `<a class="tool" href="#/sitrep" aria-label="SITREP padėties pranešimas: ${esc(sr)}"><span class="ti">S</span><b>SITREP</b><small>${esc(sr)}</small></a>` +
-      `<a class="tool" href="#/contrep" aria-label="CONTREP kontakto pranešimas: ${esc(cr)}"><span class="ti">C</span><b>CONTREP</b><small>${esc(cr)}</small></a>` +
-      `<a class="tool" href="#/salute" aria-label="SALUTE priešo stebėjimo pranešimas: ${esc(su)}"><span class="ti">SA</span><b>SALUTE</b><small>${esc(su)}</small></a></div>`;
+      tile('#/tst', '10s', '10s triažas', stOf(() => TS)) + tile('#/pacientas?t=kortele', ICO.mist, 'MIST', stOf(() => MC), 'MIST kortelė') +
+      tile('#/9line', '9', '9-Line', stOf(() => NL), '9-Line MEDEVAC') + tile('#/sitrep', ICO.sitrep, 'SITREP', stOf(() => SR)) +
+      tile('#/contrep', ICO.contrep, 'CONTREP', stOf(() => CR), 'CONTREP – kontakto pranešimas') + tile('#/salute', ICO.salute, 'SALUTE', stOf(() => SU), 'SALUTE – priešo stebėjimas') + '</div>';
   },
 
   // Mokymosi pradžia: įrankiai plytelėmis (kaip MEDEVAC plytelės) – dvi grupės
   learnTools() {
-    const st = m => { try { return m().status(); } catch (e) { return ''; } };
-    const ic = d => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
-    const t = (href, ti, b, sm, lb) => `<a class="tool" href="${href}" aria-label="${esc(lb)}: ${esc(sm)}"><span class="ti">${ti}</span><b>${b}</b><small>${esc(sm)}</small></a>`;
     return '<h2>MEDEVAC įrankiai</h2>' + V.toolTiles() + '<h2>Treniruotė ir vertinimas</h2><div class="tools">' +
-      t('#/scenarijai', ic('<path d="M8 5v14l11-7z"/>'), 'Scenarijai', st(() => SC), 'Treniruočių scenarijai') +
-      t('#/vertinimas', ic('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4M9 12l2 2 4-4"/>'), 'CLS vertinimas', st(() => VL), 'CLS vertinimo lapas') +
-      t('#/korteles', ic('<rect x="3" y="7" width="13" height="13" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v11"/>'), 'Dozių kortelės', st(() => FC), 'Dozių kortelės') +
-      t('#/egzaminas', ic('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>'), 'Egzaminas', st(() => EX), 'Egzaminuotojo režimas') + '</div>';
+      tile('#/scenarijai', ICO.scen, 'Scenarijai', stOf(() => SC)) + tile('#/vertinimas', ICO.eval, 'CLS vertinimas', stOf(() => VL), 'CLS vertinimo lapas') +
+      tile('#/korteles', ICO.cards, 'Dozių kortelės', stOf(() => FC)) + tile('#/egzaminas', ICO.exam, 'Egzaminas', stOf(() => EX), 'Egzaminuotojo režimas') + '</div>';
   },
 
   // Taikymo pradžia: fazės, MEDEVAC plytelės, 3 dažniausiai naudojami sąrašai, dažniausi vaistai pagal dabartinio paciento svorį.
@@ -313,18 +324,20 @@ const V = {
     let h = '<h1>Nustatymai</h1>' + GL.settingRow();
     h += `<div class="ck${tikCLS() ? ' on' : ''}" data-act="tikcls" role="checkbox" aria-checked="${tikCLS()}" tabindex="0"><span class="bx">✓</span><div class="t">Rodyti tik CLS veiksmus<div class="muted">Paslepia kovos mediko (CMC) ir paramediko (CPP) veiksmus, vaistus ir įgūdžius.</div></div></div>`;
     h += '<h2>Sužeistasis</h2>' + (typeof MC !== 'undefined' && MC.profileView ? MC.profileView() : '') + row('#/pacientas', 'Paciento failas', 'Sužeistųjų sąrašas, įvykių eiga, perdavimas QR') + b('new-pt', '+ Kitas sužeistasis', 'Ankstesni lieka sąraše; naujam – švarūs laikai ir žymėjimai') + REM.settings() + OP.settings();
-    h += '<h2>Atsiliepimai</h2>' + b('fb', 'Pranešti apie klaidą ar pasiūlyti', 'Komentaras ir ekrano vaizdas – keliauja gido rengėjams');
+    h += '<h2>Atsiliepimai</h2>' + b('fb', 'Pranešti apie klaidą ar pasiūlyti', 'Komentaras ir ekrano vaizdas');
     const nOut = FB.pending();
     if (nOut) h += b('fb-flush', 'Neišsiųsti pranešimai: ' + nOut, 'Siųsti dabar (reikia interneto)');
     h += '<h2>Mokymasis</h2>' + row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/korteles', 'Dozių kortelės', FC.status()) + row('#/egzaminas', 'Egzaminuotojo režimas', EX.status()) + b('reset-ivert', 'Ištrinti įsivertinimus', 'Visi 1–4 balai bus pašalinti');
     h += '<h2>Programėlė</h2>';
     if (installed()) h += '<p class="muted">Programėlė įdiegta ir veikia be interneto (vaizdo įrašams reikia interneto).</p>';
-    else if (installEv) h += b('install', 'Įdiegti į telefoną', 'Atsiras ženkliukas pradžios ekrane');
-    else h += row('#/idiegimas', 'Kaip įsidiegti telefone', 'Android ir iPhone instrukcija, QR kodas');
+    else if (installEv) h += b('install', 'Įdiegti į telefoną', '');
+    else h += row('#/idiegimas', 'Kaip įsidiegti telefone', 'Android, iPhone, QR');
     const nImg = allImgs().length, have = LS.get('mg-img', 0);
     h += b('img-dl', have >= nImg ? 'Iliustracijos išsaugotos telefone ✓' : 'Išsaugoti iliustracijas naudojimui be interneto', have >= nImg ? lt(nImg, ['vaizdas', 'vaizdai', 'vaizdų']) + ' · paspauskite, jei norite atnaujinti' : lt(nImg, ['vaizdas', 'vaizdai', 'vaizdų']) + ', apie 5 MB · rekomenduojama per Wi-Fi');
     h += b('upd', 'Atnaujinti turinį', 'Reikia interneto ryšio');
-    h += '<h2>Apie</h2><p class="muted">Turinio versija: ' + esc(E.versija || '—') + '. Parengė LŠS Vilniaus 1040 medicinos šaulių kuopa pagal TCCC gaires 2026, JTS CLS / CMC kursus ir M. Grinevičiaus TCCC kursą. Tai atminties priemonė, ne oficialus vadovas.</p>';
+    const verM = String(E.versija || '').match(/^(\S+)\s+(v\d+)\s*\((.*)\)$/);
+    h += '<h2>Apie</h2><p class="muted">' + (verM ? 'Versija ' + esc(verM[2]) + ' · ' + esc(verM[1]) : 'Versija ' + esc(E.versija || '—')) + '. Parengė LŠS Vilniaus 1040 medicinos šaulių kuopa pagal TCCC 2026, JTS CLS / CMC kursus ir M. Grinevičiaus TCCC kursą. Atminties priemonė, ne oficialus vadovas.</p>' +
+      (verM ? '<details class="alt"><summary>Kas naujo</summary><p class="muted">' + esc(verM[3]) + '</p></details>' : '');
     h += '<a class="row" href="https://tccc.org.ua/en/collection/tccc-cls" target="_blank" rel="noopener"><div>TCCC CLS kursas (JTS)<small>tccc.org.ua</small></div><span class="ar">↗</span></a>';
     h += '<a class="row" href="https://deployedmedicine.allogy.net/learner/collections/11" target="_blank" rel="noopener"><div>TCCC gairės<small>Deployed Medicine</small></div><span class="ar">↗</span></a>';
     h += '<a class="row" href="https://mindaugas-grinevicius-s-school.teachable.com/p/tactical-combat-casualty-care-tccc" target="_blank" rel="noopener"><div>TCCC kursas lietuviškai (nemokamas)<small>M. Grinevičius · Stop The Bleed Lietuva</small></div><span class="ar">↗</span></a>';

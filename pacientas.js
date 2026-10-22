@@ -178,14 +178,14 @@ const HUB = (() => {
   // ── paciento ekrano skiltys ──
   function sTable(c) {
     const V = (c.vit || []).slice(-3);
-    if (!V.length) return '<section class="card hbsec"><div class="hbsech"><b>S – būklė</b></div><p class="muted mt0">Matavimų dar nėra.</p><button class="btn sm" data-act="hb-go" data-k="vit">+ Požymiai</button></section>';
+    if (!V.length) return ''; // tuščia – pridedama mygtuku „+ Požymiai“ viršuje
     const R = [['av', 'AVPU'], ['rr', 'KD'], ['spo2', 'SpO₂'], ['hr', 'Pulsas'], ['bp', 'AKS'], ['pain', 'Skausmas'], ['gcs', 'GKS']].filter(([k]) => V.some(v => v[k] !== '' && v[k] != null));
     return `<section class="card hbsec"><div class="hbsech"><b>S – būklė</b><small>${plural((c.vit || []).length, ['matavimas', 'matavimai', 'matavimų'])}</small></div><div class="vtw"><table class="hbtab"><thead><tr><th scope="col">Laikas</th>` +
       V.map(v => `<th scope="col">${esc(v.ts || '—')}</th>`).join('') + '</tr></thead><tbody>' +
       R.map(([k, lb]) => `<tr><th scope="row">${lb}</th>` + V.map(v => `<td class="${MC.abn(k, v[k]) ? 'ab' : ''}">${esc(v[k] == null ? '' : v[k])}${k === 'spo2' && v[k] ? ' %' : ''}</td>`).join('') + '</tr>').join('') + '</tbody></table></div></section>';
   }
   function iBox(c) {
-    const t = MC.injText(c);
+    const t = MC.injText(c); if (!t) return '';
     return `<section class="card hbsec"><div class="hbsech"><b>I – sužalojimai</b><button class="lnk" data-act="hb-go" data-k="kortele">Kortelė ›</button></div>` +
       (t ? '<ul class="hbul">' + t.split('; ').map(s => `<li>${esc(s)}</li>`).join('') + '</ul>' : '<p class="muted mt0">Žymių ir turniketų dar nėra.</p>') + '</section>';
   }
@@ -195,15 +195,15 @@ const HUB = (() => {
     (x.c.rows || []).forEach(r => { if (/^vz:/.test(String(r.src || ''))) return; const t = [r.name, r.dose, r.route].map(v => String(v || '').trim()).filter(Boolean).join(' '); if (t) ev.push([PT.hmTs(r.time) || 0, t, r.time]); });
     ev.sort((a, b) => a[0] - b[0]);
     const T = MC.txText ? MC.txText(x.c) : ''; // be C lentelės – ji jau išvardyta aukščiau
+    if (!ev.length && !T) return ''; // tuščia – „+ Vaistas“ viršuje
     return `<section class="card hbsec"><div class="hbsech"><b>T – suleista ir pagalba</b>${wOn() ? `<small>${wSet() ? 'dozės pagal ' + wSet() + ' kg' : 'svoris nenurodytas'}</small>` : ''}</div>` +
-      (ev.length ? '<div class="ptev">' + ev.map(([t, s, raw]) => `<div><b>${t ? hm(t) : esc(raw || '—')}</b><span>${esc(s)}</span></div>`).join('') + '</div>' : '<p class="muted mt0">Vaistų dar nepažymėta.</p>') +
-      (T ? `<p class="hbtx"><small>Pagalba:</small> ${esc(T)}</p>` : '') + '<button class="btn sm" data-act="hb-go" data-k="vz">+ Vaistas</button></section>';
+      (ev.length ? '<div class="ptev">' + ev.map(([t, s, raw]) => `<div><b>${t ? hm(t) : esc(raw || '—')}</b><span>${esc(s)}</span></div>`).join('') + '</div>' : '') +
+      (T ? `<p class="hbtx"><small>Pagalba:</small> ${esc(T)}</p>` : '') + '</section>';
   }
   const SEC = {
     apz(x) {
       let h = '';
       try { h += REM.banners(x.p.pid); } catch (e) {}
-      if (!x.has) h += '<p class="muted">Kortelė dar tuščia: pažymėkite laikus, požymius, žymes schemoje ar suleistus vaistus.</p>';
       const ov = HCFG().overview;
       return h + (typeof ov === 'function' ? ov(x, H) : quick(false) + sTable(x.c) + iBox(x.c) + tBox(x));
     },
@@ -217,8 +217,7 @@ const HUB = (() => {
     eiga(x) {
       const ev = PT.events(x.p.pid);
       return (ev.length ? '<div class="ptev">' + ev.map(([t, s]) => `<div><b>${hm(t)}</b><span>${esc(s)}</span></div>`).join('') + '</div>'
-        : '<p class="muted">Įvykių dar nėra: pažymėkite laikus, požymius, suleistus vaistus.</p>') +
-        (mode === 'learn' ? '<p class="muted">Eiga sudaroma automatiškai iš laikų, MIST kortelės (požymiai, turniketai, C lentelė), vaistų žymėjimo ir kraujo transfuzijos įrašų.</p>' : '');
+        : '<p class="muted">Įvykių dar nėra – eiga sudaroma automatiškai.</p>');
     },
     perduoti() {
       return MC.outView() + // MIST (LT / EN), šis / visi, priedai (vaistai, nudegimai, kraujas), kortelė, QR – vienas blokas
@@ -236,7 +235,6 @@ const HUB = (() => {
     const x = cur(); if (!x) return notFound();
     const t = tab();
     let h = ptTabs() + head(x, true);
-    if (mode === 'learn') h += '<p class="muted">Viskas apie pasirinktą sužeistąjį vienoje vietoje. Juosta ekrano apačioje rodo jį ir kituose puslapiuose.</p>';
     h += '<div id="tm">' + HCFG().timers() + '</div>';
     h += '<div class="seg2 hbt" role="tablist" aria-label="Paciento skiltys">' + TABS.map(([k, l]) => `<button role="tab" id="hbt-${k}" aria-controls="hbpane" aria-selected="${k === t}" tabindex="${k === t ? 0 : -1}" class="${k === t ? 'on' : ''}" data-act="hb-tab" data-k="${k}">${l}</button>`).join('') + '</div>';
     const own = HCFG().sections || {}, fn = typeof own[t] === 'function' ? own[t] : SEC[t];

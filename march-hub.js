@@ -62,8 +62,8 @@ const MPAWS = (() => {
     const S = status(x), dn = S.filter(s => s.st === 'done').length, at = S.filter(s => s.st === 'attn').length;
     return '<section class="card hbsec mpw" aria-label="MARCH PAWS apžvalga"><div class="hbsech"><b>MARCH PAWS</b><small>' + dn + ' / 9 atlikta' + (at ? ' · dėmesio: ' + at : '') + '</small></div>' +
       S.map(s => `<a class="mpr ${s.st}" href="${esc(s.href)}" aria-label="${esc(s.l + ' – ' + s.nm + ': ' + (s.st === 'done' ? 'atlikta' : s.st === 'attn' ? 'dėmesio' : 'dar nežymėta'))}">` +
-        `<span class="mpl" aria-hidden="true">${s.l}</span><span class="mpt"><b>${esc(s.nm)}</b><small>${esc(s.t || 'dar nežymėta')}</small></span>` +
-        (s.st === 'none' ? '<span class="mpa">+ žymėti</span>' : `<span class="mps" aria-hidden="true">${ICON[s.st]}</span>`) + '</a>').join('') +
+        `<span class="mpl" aria-hidden="true">${s.l}</span><span class="mpt"><b>${esc(s.nm)}</b>${s.t ? '<small>' + esc(s.t) + '</small>' : ''}</span>` +
+        (s.st === 'none' ? '<span class="mpa" aria-hidden="true">+</span>' : `<span class="mps" aria-hidden="true">${ICON[s.st]}</span>`) + '</a>').join('') +
       (mode === 'learn' ? '<p class="muted mt0">Būsena – iš MIST kortelės (pagalba, požymiai, C lentelė) ir TFC sąrašų žymėjimų. „!“ – nukrypę požymiai ar nesustabdytas kraujavimas.</p>' : '') + '</section>';
   }
   const overview = (x, H) => H.quick(false) + section(x) + H.tBox(x);
@@ -73,7 +73,7 @@ const MPAWS = (() => {
     const D = (C.drugs || []).map(drugById).filter(v => v && C.drugOk(v));
     const cls = typeof tikCLS === 'function' && tikCLS();
     return H.tBox(x) + '<h2>Dažniausi vaistai</h2>' +
-      `<p class="muted mt0">Rodoma: ${cls ? 'tik CLS (CMC vaistai paslėpti)' : 'CLS ir CMC'} – keičiama nustatymuose.</p>` +
+      (cls ? '<p class="muted mt0">Rodomi tik CLS vaistai (nustatymai).</p>' : '') +
       D.map(v => row('#/vaistas/' + v.id, v.name, doseShort(v, w), C.drugTag(v))).join('') +
       row('#/vaistai', 'Visi vaistai', plural((E.vaistai || []).filter(v => ok(v.lygis) && !v.ne26).length, ['vaistas', 'vaistai', 'vaistų']) + ' pagal TCCC 2026');
   }

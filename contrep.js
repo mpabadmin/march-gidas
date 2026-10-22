@@ -48,7 +48,7 @@ const CR = (() => {
   const alertTxt = s => 'KONTAKTAS' + (s.dir ? ' ' + nm(DIR, s.dir).toUpperCase() : '') + ', LAUKITE';
   function status() {
     const n = lines(get()).filter(Boolean).length;
-    return n ? `Užpildyta ${n}/7 eilučių` : 'Kontakto su priešu pranešimas';
+    return n ? `Užpildyta ${n}/7 eilučių` : '';
   }
   function card(n, s, body, hint) {
     const v = lines(s)[n - 1], req = n === 1 || n === 2 || n === 4;

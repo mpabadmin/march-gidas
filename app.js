@@ -18,7 +18,6 @@ const limbPick = t => `<span class="muted">Turniketas ${esc(t)} – kuri galūn�
   MC.TQ.map(([k, lt]) => `<button class="btn" data-act="tm-limb" data-k="${k}">${esc(lt)}</button>`).join('') + '<button class="btn" data-act="tm-limbx">Vėliau</button></div>';
 const ckOn = ck => { if (!ck || !ck.classList.contains('ck') || ck.classList.contains('on')) return; ckToggle(ck.dataset.l, +ck.dataset.i); ck.classList.add('on'); ck.setAttribute('aria-checked', 'true'); const cl = ck.closest('.cl'); if (cl) updCount(cl); ckBtn(ck.dataset.l); };
 const PT_BAR = []; // įrankiai, virš kurių rodoma pacientų juosta
-const FB_PAGES = ['f', 's', 'vaistai', 'vaistas', 'igudis', 'tema', 'p', '9line', 'mist', 'tst', 'sitrep', 'contrep', 'salute', 'scenarijai', 'pacientas', 'qr', 'qr-priimti', 'egzaminas', 'korteles', 'skenuoti', 'vertinimas'];
 const fbLink = () => '<button class="btn fbrow" data-act="fb">Pastebėjote klaidą ar turite pasiūlymą? Praneškite</button>';
 
 // Visos vietinės iliustracijos (įgūdžiai + mokymosi puslapiai) – išsaugoti naudojimui be interneto
@@ -97,7 +96,7 @@ function render() {
   let pb = ''; try { pb = HUB.bar(p[0]); } catch (e) { console.error(e); } // sužeistojo juosta virš apatinės navigacijos (ir atvertas langas)
   if (pb) document.body.classList.add('hasbar');
   if (pb && HUB.isOpen()) document.body.classList.add('hbopen');
-  try { app.innerHTML = (PT_BAR.indexOf(p[0]) >= 0 ? PT.bar() : '') + view(p, q) + (FB_PAGES.indexOf(p[0]) >= 0 ? fbLink() : '') + pb; if (p[0] === 'nustatymai') imgStatus(); }
+  try { app.innerHTML = (PT_BAR.indexOf(p[0]) >= 0 ? PT.bar() : '') + view(p, q) + pb; if (p[0] === 'nustatymai') imgStatus(); }
   catch (err) { console.error(err); app.innerHTML = '<h1>Klaida</h1><p class="muted">Nepavyko atidaryti puslapio. Grįžkite į pradžią arba praneškite apie klaidą.</p>' + fbLink(); }
   try { HUB.nav(); } catch (e) { console.error(e); }
   app.querySelectorAll('.tabs, .ptabs').forEach(sc => { const b = sc.querySelector('button.on'), add = sc.querySelector('.add'); if (b && sc.scrollWidth > sc.clientWidth) { const av = sc.clientWidth - (add ? add.offsetWidth + 12 : 0); sc.scrollLeft = Math.max(0, b.offsetLeft - (av - b.offsetWidth) / 2); } });

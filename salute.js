@@ -41,7 +41,7 @@ const SU = (() => {
   const text = s => 'SALUTE' + '\n' + lines(s).map((x, i) => L6[i][0] + ' – ' + (x || '—')).join('\n');
   function status() {
     const n = lines(get()).filter(Boolean).length;
-    return n ? `Užpildyta ${n}/6 eilučių` : 'Priešo stebėjimo pranešimas';
+    return n ? `Užpildyta ${n}/6 eilučių` : '';
   }
   function card(i, s, body, hint) {
     const v = lines(s)[i], [l, t, en] = L6[i];

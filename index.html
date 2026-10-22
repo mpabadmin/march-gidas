@@ -448,8 +448,13 @@ header .seg{min-width:0}header .seg button{min-width:0;white-space:nowrap;overfl
 /* v24 – perdavimo kalba, TCCC kortelė, egzaminuotojo režimas, dozių kortelės, pirštinių režimas */
 .seg2.lang{margin:4px 0 6px}
 .cardimg{display:block;width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+.tool>b:last-child{grid-row:1/3;align-self:center}
+.acts4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.btn.ibx{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;margin:0;padding:8px 2px;font-size:13px;line-height:1.1}
+.btn.ibread{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:10px 0 0}
+.cardpg{border-radius:2px;margin:12px 0;box-shadow:0 2px 12px rgba(0,0,0,.28);aspect-ratio:1000/1414}
+.rdl:has(.cardpg){font-size:15px;font-weight:400}
 #prt{display:none}
-@media print{html.prt body>*:not(#prt){display:none!important}html.prt #prt{display:block!important}html.prt #prt img{display:block;width:100%;max-width:190mm;margin:0 auto}html.prt body{background:#fff}html.prt body::after{display:none!important}}
+@media print{html.prt body>*:not(#prt){display:none!important}html.prt #prt{display:block!important}html.prt #prt img{display:block;width:268mm;max-width:100%;height:auto;margin:0 auto}html.prt body{background:#fff}html.prt body::after{display:none!important}}
 .exbar{position:sticky;top:calc(60px + env(safe-area-inset-top));z-index:3;display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;margin:8px 0;border-radius:12px;background:var(--tx);color:var(--bg)}
 #ex-clock{font:800 26px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:1px}
 .exbar .exn{flex:1;min-width:0;font-size:14px;opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

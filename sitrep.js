@@ -55,7 +55,7 @@ const SR = (() => {
   const text = s => 'SITREP' + (s.at ? ' ' + dtg(s.at, s.zulu) : '') + '\n' + lines(s).map((x, i) => (i + 1) + '. ' + (x || '—')).join('\n');
   function status() {
     const L = lines(get()), n = L.filter(Boolean).length;
-    return n ? `Užpildyta ${n}/10 eilučių` : 'Padėties pranešimas vadui';
+    return n ? `Užpildyta ${n}/10 eilučių` : '';
   }
   function card(n, s, body, hint) {
     const v = lines(s)[n - 1], req = n <= 3;

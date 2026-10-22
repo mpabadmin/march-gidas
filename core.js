@@ -122,13 +122,13 @@ function timersHtml() {
   const card = (k, lb, val, sub, cls) => `<button class="tmc ${cls || ''}" data-act="tm" data-k="${k}" aria-label="${lb}: ${T[k] ? 'keisti laiką' : 'pažymėti laiką'}"><span class="muted">${lb}</span><b>${val}</b>${sub ? '<small>' + sub + '</small>' : ''}</button>`;
   const txa = T.trauma ? T.trauma + 3 * 3600e3 : 0, conv = T.turn ? T.turn + 2 * 3600e3 : 0, six = T.turn ? T.turn + 6 * 3600e3 : 0;
   let h = '<div class="tmrow">';
-  h += card('trauma', 'Trauma', T.trauma ? hm(T.trauma) : 'Žymėti', T.trauma ? tmAgo(T.trauma, now) : 'spauskite, kai sužeista', '');
+  h += card('trauma', 'Trauma', T.trauma ? hm(T.trauma) : 'Žymėti', T.trauma ? tmAgo(T.trauma, now) : '', '');
   h += card('turn', 'Turniketas', T.turn ? hm(T.turn) : 'Žymėti',
-    T.turn ? tmAgo(T.turn, now) + '<br>' + (now > six ? 'praėjo 6 val. – nenuimti, palikti iki ligoninės' : now > conv ? 'praėjo 2 val. – CLS konversija tik mediko (CMC / CPP) nurodymu' : 'konversija iki ' + hm(conv)) : 'pirmojo uždėjimo laikas',
+    T.turn ? tmAgo(T.turn, now) + '<br>' + (now > six ? 'praėjo 6 val. – nenuimti, palikti iki ligoninės' : now > conv ? 'praėjo 2 val. – CLS konversija tik mediko (CMC / CPP) nurodymu' : 'konversija iki ' + hm(conv)) : '',
     T.turn ? (now > conv ? 'bad' : 'warn') : '');
   const left = txa ? Math.ceil((txa - now) / 60000) : 0;
   if (txaT) h += `<div class="tmc ok"><span class="muted">TXA</span><b>Suleista</b><small>${txaT > 0 ? hm(txaT) : 'pažymėta kortelėje'}</small></div>`;
-  else if (ok('CMC')) h += `<div class="tmc ${txa ? (now > txa ? 'bad' : left <= 60 ? 'warn' : '') : 'dim'}"><span class="muted">TXA iki</span><b>${txa ? (now > txa ? 'Praėjo' : hm(txa)) : '—'}</b><small>${txa ? (now > txa ? 'po 3 val. neskirti' : 'liko ' + tmDur(left)) : 'pažymėkite traumos laiką'}</small></div>`;
+  else if (ok('CMC')) h += `<div class="tmc ${txa ? (now > txa ? 'bad' : left <= 60 ? 'warn' : '') : 'dim'}"><span class="muted">TXA iki</span><b>${txa ? (now > txa ? 'Praėjo' : hm(txa)) : '—'}</b><small>${txa ? (now > txa ? 'po 3 val. neskirti' : 'liko ' + tmDur(left)) : ''}</small></div>`;
   h += '</div>';
   return h; // keičiama bakstelėjus kortelę – laiko langas (MC.sheet 'time'), kartu su MIST kortele
 }

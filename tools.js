@@ -146,7 +146,7 @@ function readMode(title, lines, btns) {
   el.innerHTML = `<div class="rdp"><div class="rdh"><b>${esc(title)}</b><button class="ib" data-rd="x" aria-label="Uždaryti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>` +
     lines.map(x => `<div class="rdl">${x}</div>`).join('') +
     (el.rdBtns.length ? '<div class="acts rdacts">' + el.rdBtns.map((b, i) => `<button class="btn" data-rd="${i}">${esc(b[0])}</button>`).join('') + '</div>' : '') +
-    '<p class="muted">Uždaryti – ✕ arba mygtukas „Atgal“.</p></div>';
+    '</div>';
   el.hidden = false; document.documentElement.classList.add('fbopen');
   try { history.pushState(Object.assign({}, history.state, { rd: 1 }), ''); } catch (e) {}
   const x = el.querySelector('[data-rd=x]'); if (x) x.focus();
@@ -252,7 +252,7 @@ const NL = (() => {
   const text = (s, en) => head(s, en) + '\n' + lines(s, en).map((x, i) => (i + 1) + '. ' + (x || '—')).join('\n');
   function status() {
     const L = lines(get()), n = L.slice(0, 5).filter(Boolean).length, all = L.filter(Boolean).length;
-    return all ? (n < 5 ? `Būtinos ${n}/5 · iš viso ${all}/9` : `Užpildyta ${all}/9 eilučių`) : 'Pildyti prašymą';
+    return all ? (n < 5 ? `Būtinos ${n}/5 · iš viso ${all}/9` : `Užpildyta ${all}/9 eilučių`) : '';
   }
 
   function card(n, s, body, hint) {
@@ -479,8 +479,8 @@ const MC = (() => {
     if (!(s.id.trim() || s.name.trim() || s.mech.length || s.nat.length || s.mk.length || s.vit.length || s.tx.length || s.rows.length || Object.keys(s.tq).length || s.t0)) return;
     const p = prof(), ps = profStr();
     if (!s.dt) s.dt = today(); if (!s.country) s.country = 'LTU';
-    if (!s.unit && p.unit.trim()) s.unit = p.unit.trim();
-    if (!s.resp[0] && ps) s.resp[0] = ps;
+    if (!s.unit && p.unit.trim()) { s.unit = p.unit.trim(); s.unitP = 1; }
+    if (!s.resp[0] && ps) { s.resp[0] = ps; s.respP = 1; }
     s.auto = 1;
   }
   const save = st => { autoFill(st.pts[st.cur]); st.pts.forEach(derive); LS.set(KEY, st); };
@@ -633,7 +633,7 @@ const MC = (() => {
     if (s.mk.length) a.push(plural(s.mk.length, ['žymė', 'žymės', 'žymių']));
     if (s.vit.length) a.push(plural(s.vit.length, ['matavimas', 'matavimai', 'matavimų']));
     if (!a.length && (s.mech.length || s.tx.length || s.t0 || Object.keys(s.tq).length)) a.push('Pildoma');
-    return a.length ? a.join(' · ') : 'Nukentėjusiojo kortelė';
+    return a.length ? a.join(' · ') : '';
   }
 
   // ── vaizdas: MIST kortelė pasirinkimais – spalvotos dalys M, I, S, T, E; visi LK kortelės klasifikatoriai ──
@@ -655,6 +655,16 @@ const MC = (() => {
   const PK = TCFG.pre + 'as';
   const prof = () => { const p = LS.get(PK, {}); return p && typeof p === 'object' && !Array.isArray(p) ? { name: str(p.name), id: str(p.id), unit: str(p.unit) } : { name: '', id: '', unit: '' }; };
   const profStr = () => { const p = prof(); return [p.name.trim(), p.id.trim()].filter(Boolean).join(', '); };
+  // Profilis pakeistas (nustatymuose ar kortelėje): pildomos visos pradėtos kortelės, kuriose teikėjas ar dalinys tuščias arba paimtas iš profilio
+  function profToCards() {
+    const st = load(), p = prof(), ps = profStr(); let ch = 0;
+    st.pts.forEach(s => {
+      if (!used(s)) return;
+      if (!s.resp[0].trim() || s.respP) { if (s.resp[0] !== ps) { s.resp[0] = ps; ch = 1; } s.respP = 1; }
+      if (!s.unit.trim() || s.unitP) { const u = p.unit.trim(); if (s.unit !== u) { s.unit = u; ch = 1; } s.unitP = 1; }
+    });
+    if (ch) LS.set(KEY, st);
+  }
   function profileView() {
     const p = prof();
     return '<div class="mqprof"><b>Aš – pagalbos teikėjas</b><p class="muted mt0">Įrašoma į naujas MIST korteles: pagalbos teikėjas ir dalinys.</p>' +
@@ -712,10 +722,17 @@ const MC = (() => {
     }).join('') + '<button class="add" data-act="mc-add" aria-label="Pridėti sužeistąjį" title="Pridėti sužeistąjį">+</button></div>';
   }
   const rowTxt = r => [r.name, r.dose, r.route].map(x => String(x || '').trim()).filter(Boolean).join(' ');
-  // Perdavimo mygtukai – kortelės viršuje (kompaktiški) ir apačioje (su MIST tekstu)
+  // Perdavimo mygtukai – vienoje vietoje (kortelės apačioje, su MIST tekstu)
   const scopeSeg = tot => tot > 1 ? `<div class="seg2 mqscope" role="group" aria-label="Ką perduoti">${chip('mc-scope', 'one', scope !== 'all', 'Šį sužeistąjį')}${chip('mc-scope', 'all', scope === 'all', 'Visus (' + tot + ')')}</div>` : '';
-  const expBar = tot => scopeSeg(tot) + '<div class="mqexp" role="group" aria-label="Perduoti ir eksportuoti"><button class="btn sm pri" data-act="mc-card">Kortelė (paveikslėlis)</button><button class="btn sm" data-act="mc-read">Skaityti</button><button class="btn sm" data-act="mc-copy">Kopijuoti</button>' +
-    '<button class="btn sm" data-act="go" data-r="#/qr">QR kodu</button></div>';
+  const bi = d => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const BI = {
+    read: bi('<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'),
+    copy: bi('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>'),
+    share: bi('<path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>'),
+    card: bi('<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h5"/>'),
+    qr: bi('<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M21 14v.01M14 21h3M21 17v4h-3"/>')
+  };
+  const ibtn = (act, ic, lb, extra) => `<button class="btn ibx" data-act="${act}"${extra || ''}>${ic}<span>${lb}</span></button>`;
   // March: CLS / CMC žymos ir „tik CLS“ (skysčiai ir kraujas – CMC); ETC – visada rodoma
   const lvOn = () => typeof tikCLS === 'function';
   const flOk = () => typeof ok !== 'function' || ok('CMC');
@@ -725,9 +742,8 @@ const MC = (() => {
     const emb = !!(o && o.embed);
     const st = load(), s = curOf(st), n = st.cur + 1, tot = st.pts.length, learn = mode === 'learn', T = timers();
     let h = emb ? '' : '<h1>MIST kortelė</h1>';
-    if (learn && !emb) h += '<p class="muted">Pildoma pasirinkimais: M – mechanizmas, I – sužalojimai ir turniketai, S – būklė, T – teikta pagalba, E – evakuacija. Požymiai, vaistai, skysčiai, turniketai įvedami apatiniuose languose; retai pildomi laukai – „+“ mygtukais. Sugeneruota kortelė – LK „Nukentėjusiojo kortelės“ išdėstymo. Per radiją perduodamas tik ID / šaukinys.</p>';
+    if (learn && !emb) h += '<p class="muted">M – mechanizmas, I – sužalojimai, S – būklė, T – pagalba, E – evakuacija. Retai pildomi laukai – „+“. Per radiją – tik ID / šaukinys.</p>';
     if (!emb) h += tabs(st);
-    h += expBar(tot);
     h += `<article class="mc mq" aria-label="MIST kortelė – sužeistasis ${n}">`;
     h += `<div class="mch"><b>MIST</b><span>Nukentėjusiojo kortelė · ${esc(s.dt || today())}${tot > 1 ? ' · ' + n + ' / ' + tot : ''}</span></div>`;
     // A – asmuo
@@ -816,9 +832,10 @@ const MC = (() => {
   // Perdavimo dalis (MIST tekstas, skaityti, kopijuoti, kortelės paveikslėlis) ir sužeistųjų tvarkymas
   function outInner(st) {
     const n = st.cur + 1, tot = st.pts.length, all = allOn(st);
-    return `<div class="nlh"><b>Perduoti (MIST)</b>${tot > 1 ? `<small class="muted">${all ? 'visi sužeistieji (' + tot + ')' : 'sužeistasis ' + n + ' iš ' + tot}</small>` : ''}</div>${langSeg('mc-lang')}${scopeSeg(tot)}<pre id="mc-out">${esc(outText(st, outEn()))}</pre>` +
-      '<div class="acts"><button class="btn pri" data-act="mc-read">Skaityti</button><button class="btn" data-act="mc-copy">Kopijuoti</button><button class="btn" data-act="mc-share">Bendrinti</button></div>' +
-      '<div class="acts"><button class="btn" data-act="mc-card">Kortelė (paveikslėlis, spausdinti)</button><button class="btn" data-act="go" data-r="#/qr">Perduoti QR kodu</button></div>';
+    return `<div class="nlh"><b>Perduoti</b>${tot > 1 ? `<small class="muted">${all ? 'visi sužeistieji (' + tot + ')' : 'sužeistasis ' + n + ' iš ' + tot}</small>` : ''}</div>${langSeg('mc-lang')}${scopeSeg(tot)}<pre id="mc-out">${esc(outText(st, outEn()))}</pre>` +
+      `<button class="btn pri ibread" data-act="mc-read">${BI.read}<span>Skaityti</span></button>` +
+      '<div class="acts4" role="group" aria-label="Perduoti">' + ibtn('mc-copy', BI.copy, 'Kopijuoti') + ibtn('mc-share', BI.share, 'Bendrinti') +
+      ibtn('mc-card', BI.card, 'Kortelė', ' aria-label="Kortelė – A5, spausdinti"') + ibtn('go', BI.qr, 'QR', ' data-r="#/qr" aria-label="Perduoti QR kodu"') + '</div>';
   }
   // Sužeistųjų tvarkymas: pridėti – matomas; išvalyti / ištrinti – „Daugiau…“ (su „Atšaukti“)
   function mgmtInner(st) {
@@ -893,7 +910,7 @@ const MC = (() => {
         else return;
         break;
       }
-      case 'mc-me': { const p = profStr(); if (!p) { openOpt = 'resp1'; break; } s.resp[0] = p; if (!s.unit.trim() && prof().unit.trim()) s.unit = prof().unit.trim(); if (openOpt === 'resp1') openOpt = ''; break; }
+      case 'mc-me': { const p = profStr(); if (!p) { openOpt = 'resp1'; break; } s.resp[0] = p; s.respP = 1; if (!s.unit.trim() && prof().unit.trim()) { s.unit = prof().unit.trim(); s.unitP = 1; } if (openOpt === 'resp1') openOpt = ''; break; }
       case 'mc-tool': {
         tool = TOOLS.indexOf(k) >= 0 ? k : 'X';
         app.querySelectorAll('.mqtools button').forEach(b => { const on = b.dataset.k === tool; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
@@ -946,10 +963,10 @@ const MC = (() => {
 
   function onInput(t) {
     const d = t.dataset;
-    if (d.mcas) { const p = prof(); p[d.mcas] = t.value; LS.set(PK, p); return; }
+    if (d.mcas) { const p = prof(); p[d.mcas] = t.value; LS.set(PK, p); profToCards(); return; }
     const st = load(), s = curOf(st);
-    if (d.mc) { s[d.mc] = t.value; if (d.mc === 'dt') trSync(s); }
-    else if (d.mcp != null) s.resp[+d.mcp] = t.value;
+    if (d.mc) { s[d.mc] = t.value; if (d.mc === 'dt') trSync(s); if (d.mc === 'unit') delete s.unitP; }
+    else if (d.mcp != null) { s.resp[+d.mcp] = t.value; if (+d.mcp === 0) delete s.respP; }
     else return;
     save(st);
     const o = document.getElementById('mc-out'); if (o) o.textContent = outText(load(), outEn());
@@ -1613,7 +1630,8 @@ const MC = (() => {
     lab('NUSISKUNDIMAI', 'Symptoms', P + 40, y); if (s.sympt.trim()) y = wrap(s.sympt.trim(), P + 230, y, IW - 200, 18, 24) - 24;
     y += 40;
     if (s.vit.length > 6) y = wrap('Ankstesni matavimai: ' + s.vit.slice(0, -6).map(v => vitLine(v)).join('; '), P + 40, y, IW - 40, 14, 19) + 6;
-    // lapo kraštas
+    // lapo kraštas (priekis / galas – atskiri puslapiai, žr. cardPages)
+    const brk0 = y;
     c.setLineDash([10, 8]); c.strokeStyle = '#999'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); c.setLineDash([]);
     y += 50;
     // ── GALAS: teikta pagalba ──
@@ -1667,10 +1685,31 @@ const MC = (() => {
     y += P;
     const out = document.createElement('canvas'); out.width = W; out.height = Math.min(H0, Math.ceil(y));
     out.getContext('2d').drawImage(cv, 0, 0);
+    out.brk = [brk0, brk0 + 50 - P];
     return out;
   }
+  // Popieriaus formatas: priekis ir galas – po A5 puslapį (1000 × 1414 px); A4 gulsčias lapas – abu puslapiai greta (perkirpti per vidurį)
+  const PGW = 1000, PGH = 1414;
+  function cardPages(cv) {
+    const [b0, b1] = cv.brk || [cv.height, cv.height];
+    return [[0, b0 - 3], [b1, cv.height]].map(([y0, y1], i) => {
+      const pg = document.createElement('canvas'); pg.width = PGW; pg.height = PGH;
+      const c = pg.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, PGW, PGH);
+      const h = Math.max(1, y1 - y0), k = Math.min(1, (PGH - 40) / h), w = cv.width * k;
+      const oy = k < 1 ? 0 : Math.min(24, PGH - 40 - h);
+      c.drawImage(cv, 0, y0, cv.width, h, (PGW - w) / 2, oy, w, h * k);
+      c.font = '400 13px ' + CFF; c.fillStyle = '#777'; c.textAlign = 'right'; c.fillText((i ? 'Galas' : 'Priekis') + ' · ' + (i + 1) + ' / 2 · A5', PGW - 34, PGH - 16);
+      return pg;
+    });
+  }
+  function cardSheet(pp) {
+    const sh = document.createElement('canvas'); sh.width = PGW * 2; sh.height = PGH;
+    const c = sh.getContext('2d'); pp.forEach((p, i) => c.drawImage(p, i * PGW, 0));
+    c.setLineDash([12, 10]); c.strokeStyle = '#999'; c.lineWidth = 2; c.beginPath(); c.moveTo(PGW, 0); c.lineTo(PGW, PGH); c.stroke();
+    return sh;
+  }
   async function cardShow(s, n, tot) {
-    let cv; try { cv = cardCanvas(s, n, tot, await loadLogo()); } catch (e) { console.error(e); toast('Nepavyko sukurti kortelės'); return; }
+    let pp, cv; try { pp = cardPages(cardCanvas(s, n, tot, await loadLogo())); cv = cardSheet(pp); } catch (e) { console.error(e); toast('Nepavyko sukurti kortelės'); return; }
     const url = cv.toDataURL('image/png');
     const nm = 'kortele-' + (s.id.trim() || ('suzeistasis-' + n)).replace(/[^\wąčęėįšųūžĄČĘĖĮŠŲŪŽ-]+/g, '_') + '-' + nowHM().replace(':', '') + '.png';
     const save = () => { const a = document.createElement('a'); a.href = url; a.download = nm; document.body.appendChild(a); a.click(); a.remove(); };
@@ -1681,10 +1720,13 @@ const MC = (() => {
     const print = () => {
       let p = document.getElementById('prt'); if (!p) { p = document.createElement('div'); p.id = 'prt'; document.body.appendChild(p); }
       p.innerHTML = '<img alt="" src="' + url + '">';
-      const de = document.documentElement, done = () => { de.classList.remove('prt'); removeEventListener('afterprint', done); };
+      let ps = document.getElementById('prtpg'); if (!ps) { ps = document.createElement('style'); ps.id = 'prtpg'; document.head.appendChild(ps); }
+      ps.textContent = '@page{size:A4 landscape;margin:10mm}';
+      const de = document.documentElement, done = () => { de.classList.remove('prt'); ps.textContent = ''; removeEventListener('afterprint', done); };
       de.classList.add('prt'); addEventListener('afterprint', done); setTimeout(() => window.print(), 60);
     };
-    readMode('Nukentėjusiojo kortelė', ['<img class="cardimg" alt="Nukentėjusiojo kortelė" src="' + url + '">'], [['Bendrinti', share], ['Išsaugoti', save], ['Spausdinti', print]]);
+    readMode('Nukentėjusiojo kortelė', ['<p class="muted mt0">A5: priekis ir galas. Spausdinama A4 lape – perkirpkite per vidurį.</p>' +
+      pp.map((p, i) => `<img class="cardimg cardpg" alt="Kortelė – ${i ? 'galas' : 'priekis'}" src="${p.toDataURL('image/png')}">`).join('')], [['Bendrinti', share], ['Išsaugoti', save], ['Spausdinti', print]]);
   }
   // Paciento failui: visa būsena ir dabartinės kortelės tekstas
   return { view, act, onInput, status, text, addGcs, addRows, addInj, current, region, state: load, curText: en => curText(load(), en), cardCanvas, loadLogo, vitLine, tqName, outView, parts: (s, n, tot, en) => parts(s, n || 1, tot || 1, en), injText, abn,
@@ -1725,7 +1767,7 @@ const GK = (() => {
   const histLine = x => { const c = calc(x); return x.ts + ' – ' + label(c) + (c.gp != null ? ' · GKS-P ' + c.gp : ''); };
   function status() {
     const s = get(), x = s.h[0];
-    return x ? 'Paskutinė: ' + histLine(x) : 'Glasgow komos skalė, GKS-P';
+    return x ? 'Paskutinė: ' + histLine(x) : '';
   }
   function resBox(s) {
     const c = calc(s);
@@ -1821,7 +1863,7 @@ const TS = (() => {
   const total = s => KS.reduce((a, k) => a + s.n[k], 0);
   function status() {
     const s = get(), t = total(s);
-    return t ? 'Iš viso ' + t + ' · ' + KS.filter(k => s.n[k]).map(k => (k === 'nb' ? 'Nekv.' : CAT[k][0]) + ' ' + s.n[k]).join(' · ') : 'Ten Second Triage – rūšiavimas per 10\u00a0s';
+    return t ? 'Iš viso ' + t + ' · ' + KS.filter(k => s.n[k]).map(k => (k === 'nb' ? 'Nekv.' : CAT[k][0]) + ' ' + s.n[k]).join(' · ') : '';
   }
   const why = s => s.path.map(p => p.a === 2 ? 'vaikas iki 2 metų' : p.a ? Q[p.q].y : Q[p.q].nn).join(' → ');
 
@@ -1926,7 +1968,7 @@ const SC = (() => {
   }
   function status() {
     const S = all(), B = best(), n = S.filter(s => B[s.id] != null).length;
-    return n ? `Išspręsta ${n} iš ${S.length}` : plural(S.length, ['scenarijus', 'scenarijai', 'scenarijų']) + ' – pasitikrinkite žinias';
+    return n ? `Išspręsta ${n} iš ${S.length}` : plural(S.length, ['scenarijus', 'scenarijai', 'scenarijų']);
   }
   function list(q) {
     const S = all(), B = best(), temos = [...new Set(S.map(s => s.tema).filter(Boolean))], f = q.t || '';
