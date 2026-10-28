@@ -256,7 +256,7 @@ window.ETC.scenarijai = [
   "lygis": "CLS",
   "q": [
    {
-    "sit": "Skeveldra pataikė į šlaunį, masyvaus kraujavimo nėra. Sužeistasis be sąmonės guli ant nugaros ir knarkia. Krito ne iš aukščio, kaklo trauma neįtariama.",
+    "sit": "Už kelių metrų sprogo minosvaidžio mina: skeveldra pataikė į šlaunį, masyvaus kraujavimo nėra. Sprogimo banga parbloškė karį – jis be sąmonės (uždara galvos trauma), guli ant nugaros ir knarkia. Kaklo trauma neįtariama.",
     "gp": {
      "AVPU": "U",
      "KD": "10"
@@ -309,7 +309,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "Po 10 min kvėpavimas suretėjo ir tapo paviršinis, SpO₂ nekyla. Galvos traumos požymių nėra.",
+    "sit": "Po 10 min kvėpavimas suretėjo ir tapo paviršinis, SpO₂ nekyla. Kaukolės pamato lūžio požymių nėra.",
     "gp": {
      "KD": "6",
      "SpO₂": "84 %",
@@ -760,7 +760,7 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "(CMC) IV / IO prieigos dar nėra. Skiriate ketaminą į raumenis.",
+    "sit": "(CMC) Antrasis CMC dar įvedinėja IO ir ruošia TXA, skausmas nemažėja. Kad nelauktumėte prieigos, ketaminą skiriate į raumenis.",
     "gp": {},
     "klaus": "(CMC) Dozė ir kartojimas?",
     "opt": [
