@@ -254,6 +254,7 @@ app.addEventListener('click', e => {
       toastAct('Žymėjimai išvalyti', 'Atšaukti', () => { const a = ckAll(); a[d.l] = prev; LS.set('mg-ck', a); const y = scrollY; render(); scrollTo(0, y); });
       break;
     }
+    case 'lvl': { const k = d.k, c = k === 'CLS'; if (c !== tikCLS()) { LS.set('mg-tikcls', c); IDX = null; render(); } const f = app.querySelector('[data-act=lvl][data-k="' + k + '"]'); if (f) f.focus({ preventScroll: true }); toast(c ? 'Mano lygis: CLS – rodomi tik CLS veiksmai' : 'Mano lygis: CMC – rodoma viskas, CMC pažymėta geltonai'); break; }
     case 'tikcls': { LS.set('mg-tikcls', !tikCLS()); IDX = null; render(); const f = app.querySelector('[data-act=tikcls]'); if (f) f.focus(); toast(tikCLS() ? 'Rodomi tik CLS veiksmai' : 'Rodomi visi veiksmai'); break; }
     case 'reset-ivert': if (confirm('Ištrinti visus įsivertinimus?')) { LS.set('mg-ivert', {}); render(); } break;
     case 'fb': FB.open(); break;

@@ -14,6 +14,10 @@ const fmt = x => String(x >= 100 ? Math.round(x) : x >= 1 ? Math.round(x * 10) /
 const isAdv = g => /^(CMC|CPP)/.test(g || '');
 const tikCLS = () => LS.get('mg-tikcls', false);
 const ok = g => !(tikCLS() && isAdv(g));
+// „Mano lygis“: CLS – tik kovos gelbėtojo veiksmai; CMC – viskas, kovos mediko veiksmai pažymėti geltona juosta
+const lvCls = g => g === 'CPP' ? 'lv-cpp' : isAdv(g) ? 'lv-cmc' : 'lv-cls';
+const lvlPick = () => { const c = tikCLS(); return `<div class="lvp" role="group" aria-label="Mano lygis"><span class="lvpl">Mano lygis</span><button class="lvb cls${c ? ' on' : ''}" data-act="lvl" data-k="CLS" aria-pressed="${c}"><b>CLS</b><small>kovos gelbėtojas</small></button><button class="lvb cmc${c ? '' : ' on'}" data-act="lvl" data-k="CMC" aria-pressed="${!c}"><b>CMC</b><small>kovos medikas</small></button></div>` +
+  `<p class="lvh">${c ? 'Rodomi tik <b>CLS</b> veiksmai ir vaistai. Kovos mediko (CMC) veiksmai paslėpti – juos atlieka medikas.' : 'Rodoma viskas: <span class="lvk cls">CLS</span> – kovos gelbėtojo, <span class="lvk cmc">CMC</span> – kovos mediko, <span class="lvk cpp">CPP</span> – paramediko / gydytojo veiksmai.'}</p>`; };
 const tag = g => isAdv(g) ? `<span class="tag ${g === 'CPP' ? 'red' : 'amb'}" title="${g === 'CPP' ? 'Kovos paramedikas / gydytojas' : 'Kovos medikas'}">${esc(g)}</span>` : '';
 const row = (href, title, small, extra) => `<a class="row" href="${href}"><div>${esc(title)}${small ? '<small>' + esc(small) + '</small>' : ''}</div>${extra || ''}<span class="ar">›</span></a>`;
 const notFound = () => '<h1>Nerasta</h1><p class="muted">Šio puslapio nėra. Grįžkite į pradžią.</p>';
@@ -88,10 +92,11 @@ function renderList(id) {
   const L = (E.sarasai || {})[id];
   if (!L) return '<p class="muted">Sąrašas nerastas.</p>';
   const done = ckAll()[id] || [];
-  let n = 0, tot = 0, h = '';
+  let n = 0, tot = 0, h = '', hid = 0, adv = 0;
   (L.items || []).forEach((it, i) => {
     if (it.h) { h += '<h3 class="clh">' + esc(it.h) + '</h3>'; return; }
-    if (!ok(it.g)) return;
+    if (isAdv(it.g)) adv++;
+    if (!ok(it.g)) { hid++; return; }
     tot++;
     const on = done.indexOf(i) >= 0; if (on) n++;
     const sub = (it.s || []).length ? '<ul>' + it.s.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '';
@@ -99,10 +104,13 @@ function renderList(id) {
     const T = it.tm ? (LS.get('mg-laikai', {}) || {}) : null;
     const links = (it.tm ? `<button class="sk tmk" data-act="tm-mark" data-k="${it.tm}">⏱ ${T[it.tm] ? hm(T[it.tm]) : 'Dabar'}</button>` : '') + (it.sk ? `<a class="sk" href="#/igudis/${it.sk}" data-act="go" data-r="#/igudis/${it.sk}" aria-label="Įgūdis ${it.sk}">#${it.sk}</a>` : '') +
       (it.r ? `<a class="sk" href="${esc(it.r)}" data-act="go" data-r="${esc(it.r)}">${/9line/.test(it.r) ? '9-Line' : /mist/.test(it.r) ? 'MIST' : /tst/.test(it.r) ? '10s' : 'Dozė'}</a>` : '');
-    h += `<div class="ck${on ? ' on' : ''}${it.k ? ' key' : ''}" data-act="ck" data-l="${esc(id)}" data-i="${i}" role="checkbox" aria-checked="${on}" tabindex="0"><span class="bx">✓</span><div class="t"><span class="tt">${esc(it.t)}</span> ${tag(it.g)}${sub}${info}</div>${links ? '<div class="lk">' + links + '</div>' : ''}</div>`;
+    h += `<div class="ck ${lvCls(it.g)}${on ? ' on' : ''}${it.k ? ' key' : ''}" data-act="ck" data-l="${esc(id)}" data-i="${i}" role="checkbox" aria-checked="${on}" tabindex="0"><span class="bx">✓</span><div class="t"><span class="tt">${esc(it.t)}</span> ${tag(it.g)}${sub}${info}</div>${links ? '<div class="lk">' + links + '</div>' : ''}</div>`;
   });
   const pct = tot ? Math.round(n / tot * 100) : 0;
-  return `<div class="cl"><div class="muted cnt">${n} / ${tot}</div><div class="prog"><i style="width:${pct}%"></i></div>${h}</div>`;
+  // lygio juosta: kas rodoma ir kas paslėpta
+  const lv = !adv ? '' : tikCLS() ? `<div class="lvbar cls"><span><b>CLS</b> – rodomi tik jūsų veiksmai. Kovos mediko (CMC) veiksmų paslėpta: ${hid}</span><button class="lvsw" data-act="lvl" data-k="CMC">Rodyti CMC</button></div>`
+    : `<div class="lvbar"><span><i class="lvk cls">CLS</i> kovos gelbėtojas <i class="lvk cmc">CMC</i> kovos medikas</span><button class="lvsw" data-act="lvl" data-k="CLS">Tik CLS</button></div>`;
+  return `<div class="cl">${lv}<div class="muted cnt">${n} / ${tot}</div><div class="prog"><i style="width:${pct}%"></i></div>${h}</div>`;
 }
 
 function updCount(box) {
