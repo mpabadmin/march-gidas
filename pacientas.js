@@ -121,7 +121,6 @@ const HUB = (() => {
     queueMicrotask(a11y);
     if (HCFG().noBar.indexOf(r) >= 0) { sheet = false; return ''; }
     const x = cur(); if (!x) return '';
-    if (mode === 'learn' && !x.has && x.tot < 2) return '';
     return `<button class="hbar" data-act="hb-open" aria-haspopup="dialog" aria-expanded="${sheet}" aria-label="${esc(barLabel(x))}">${barInner(x)}</button>` + (sheet ? sheetHtml(x) : '');
   }
 
@@ -243,7 +242,8 @@ const HUB = (() => {
   const strip = h => { const i = h.indexOf('?'); if (i < 0) return h; const q = h.slice(i + 1).split('&').filter(kv => kv && !/^(f|sh|d|fl)=/.test(kv)); return h.slice(0, i) + (q.length ? '?' + q.join('&') : ''); };
   function after() {
     a11y();
-    if (/[?&](f|sh|d|fl)=/.test(location.hash)) { fDone = true; try { history.replaceState(history.state, '', strip(location.hash)); } catch (e) {} }
+    // tik paciento ekrane: kituose maršrutuose (sąrašų skirtukai, filtrai ?f=) adresas nekeičiamas
+    if (route().p[0] === 'pacientas' && /[?&](f|sh|d|fl)=/.test(location.hash)) { fDone = true; try { history.replaceState(history.state, '', strip(location.hash)); } catch (e) {} }
     if (pend && typeof MC !== 'undefined' && MC.sheet && route().p[0] === 'pacientas') { const p = pend; pend = null; MC.sheet(p.sh, { drug: p.d, field: p.f }); return; }
     pend = null;
     if (!focus) return;

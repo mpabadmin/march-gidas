@@ -208,13 +208,14 @@ function buildIdx() {
   Object.keys(E.puslapiai || {}).forEach(id => { const p = E.puslapiai[id]; add('Mokymosi temos', p.title, p.sub, strip(p.html), '#/p/' + id); });
   add('Įrankiai', '9 eilučių MEDEVAC prašymas', '9-Line forma su kodais', 'medevac evakuacija koordinatės skubumas urgent priority routine radijas', '#/9line');
   add('Įrankiai', 'Nukentėjusiojo kortelė (DD1380)', 'Vizuali sužeistojo kortelė: mechanizmas, sužalojimai kūno schemoje, požymiai, gydymas', 'mist handover perdavimas sužeistasis keli sužeistieji kortelė kūno schema žaizda turniketas', '#/mist');
-  add('Įrankiai', 'Nuskaityti popierinę kortelę', 'DD 1380 nuotrauka → MIST: langeliai, žymės, iškarpos', 'skenuoti nuskaityti nuotrauka fotografuoti popierinė kortelė dd1380 tccc card ocr atpažinimas', '#/skenuoti');
+  add('Įrankiai', 'Nuskaityti popierinę kortelę', 'DD1380 nuotrauka → MIST: langeliai, žymės, iškarpos', 'skenuoti nuskaityti nuotrauka fotografuoti popierinė kortelė dd1380 tccc card ocr atpažinimas', '#/skenuoti');
   add('Įrankiai', 'CLS vertinimo lapas', 'Instruktoriui: T / N kiekvienam punktui, K punktai, pastabos, įskaityta / neįskaityta', 'cls vertinimo lapas vertinimas egzaminas instruktorius tccc-cls-02-12 įskaita k punktai', '#/vertinimas');
   add('Įrankiai', 'Dozių kortelės', 'Kasdien 5 kortelės: vaistas ir kelias – prisiminkite dozę', 'dozių kortelės korteles flashcards kartojimas dozės atmintis testas', '#/korteles');
   add('Įrankiai', 'Treniruočių scenarijai', 'Klinikiniai atvejai su klausimais ir paaiškinimais', 'scenarijai scenarijus treniruotė viktorina testas klausimai', '#/scenarijai');
   add('Įrankiai', 'SITREP – padėties pranešimas', 'Pranešimas vadui: vieta, priešas, padėtis, nuostoliai, logistika, prašymai', 'sitrep situacija padėtis pranešimas raportas vadui nuostoliai logistika dtg', '#/sitrep');
   add('Įrankiai', 'CONTREP – kontakto pranešimas', 'Kontaktas su priešu: laikas, priešo ir sava vieta, kiekis, veiksmai, nuostoliai', 'contrep kontaktas kontakto pranešimas priešas susidūrimas ugnis raportas', '#/contrep');
   add('Įrankiai', 'SALUTE – priešo stebėjimo pranešimas', 'Dydis, veikla, vieta, dalinys / uniforma, laikas, įranga', 'salute spotrep priešas stebėjimas pastebėjau pranešimas dydis veikla vieta uniforma įranga', '#/salute');
+  add('Įrankiai', 'GKS skaičiuoklė', 'Glasgow komos skalė (GCS at 40), GKS-P', 'gks glasgow gcs koma sąmonė akys kalba motorika vyzdžiai', '#/gks');
   add('Įrankiai', '10s triažas', 'Ten Second Triage (TST) – rūšiavimas per 10 sekundžių', 'tst 10s 10 s 10 sekundžių ten second triage triažas rūšiavimas masinė nelaimė p1 p2 p3', '#/tst');
   return I;
 }

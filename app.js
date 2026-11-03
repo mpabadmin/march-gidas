@@ -59,6 +59,7 @@ function view(p, q) {
     case 'contrep': return CR.view();
     case 'salute': return SU.view();
     case 'tst': return TS.view();
+    case 'gks': return GK.view();
     case 'scenarijai': return SC.view(p[1], q);
     case 'pacientas': return HUB.view(q);
     case 'qr': case 'qr-priimti': return QR.view(p[0]);
@@ -86,7 +87,7 @@ function render() {
   { const c = tikCLS(), bC = document.getElementById('lvC'), bM = document.getElementById('lvM');
     bC.classList.toggle('on', c); bM.classList.toggle('on', !c); bC.setAttribute('aria-pressed', c); bM.setAttribute('aria-pressed', !c); }
   backBtn.style.display = p.length ? '' : 'none'; // pradžios ekrane vietoje „Atgal“ – atnaujinimo mygtukas dešinėje
-  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': 'home', mist: 'pacientas', tst: 'home', sitrep: 'home', contrep: 'home', salute: 'home', scenarijai: 'treniruote', treniruote: 'treniruote', pacientas: 'pacientas', qr: 'pacientas', 'qr-priimti': 'pacientas', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'treniruote', tema: 'treniruote', p: 'igudziai', korteles: 'treniruote', skenuoti: 'pacientas', vertinimas: 'vertinimas' }[p[0]] || (p.length ? '' : 'home');
+  const sec = { f: 'home', s: 'home', sarasai: 'home', '9line': 'home', mist: 'pacientas', tst: 'home', gks: 'home', sitrep: 'home', contrep: 'home', salute: 'home', scenarijai: 'treniruote', treniruote: 'treniruote', pacientas: 'pacientas', qr: 'pacientas', 'qr-priimti': 'pacientas', vaistai: 'vaistai', vaistas: 'vaistai', igudziai: 'igudziai', igudis: 'igudziai', temos: 'treniruote', tema: 'treniruote', p: 'igudziai', korteles: 'treniruote', skenuoti: 'pacientas', vertinimas: 'vertinimas' }[p[0]] || (p.length ? '' : 'home');
   document.querySelectorAll('#nav a').forEach(a => { const on = a.dataset.s === sec; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   try { PT.sync(); } catch (e) { console.error(e); }
   if (typeof DICT !== 'undefined') DICT.stop();
@@ -181,6 +182,7 @@ app.addEventListener('click', e => {
   if (/^rem-/.test(d.act)) { REM.act(el); return; }
   if (/^qr-/.test(d.act)) { QR.act(el); return; }
   if (/^ts-/.test(d.act)) { TS.act(el); return; }
+  if (/^gk-/.test(d.act)) { GK.act(el); return; }
   if (/^ex-/.test(d.act)) { EX.act(el); return; }
   if (/^vl-/.test(d.act)) { VL.act(el); return; }
   if (/^sk-/.test(d.act)) { SK.act(el); return; }

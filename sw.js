@@ -1,4 +1,4 @@
-const VERSION = 'march-gidas-v32';
+const VERSION = 'march-gidas-v33';
 const IMG = 'march-img-1';
 const EXT = 'march-ext-1';
 const FILES = ['./', './index.html', './core.js', './views.js', './tools.js', './sitrep.js', './contrep.js', './salute.js', './priedai.js', './skenas.js', './pacientas.js', './march-hub.js', './img/skenas/dd1380-f.png', './img/skenas/dd1380-b.png', './fb.js', './vendor/html2canvas.min.js', './vendor/qrcode.min.js', './vendor/jsqr.min.js', './app.js', './guide.js', './sarasai.js', './vaistai.js', './igudziai.js', './scenarijai.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png', './favicon-64.png', './apple-touch-icon.png', './img/badge-balt.png', './img/badge-juod.png', './img/logo-juod.png', './img/qr.svg'];
@@ -34,10 +34,11 @@ self.addEventListener('fetch', e => {
   if (url.origin !== self.location.origin) return;
   // Vietinės iliustracijos (img/tccc) – atskira talpykla, išlieka atnaujinant versiją
   if (url.pathname.indexOf('/img/tccc/') >= 0) {
-    e.respondWith(caches.open(IMG).then(c => c.match(req, { ignoreSearch: true }).then(hit => hit || fetch(req).then(res => {
+    // pirmiausia – bet kuri talpykla (dalis vaizdų įrašoma diegiant į VERSION talpyklą), tada IMG, tada tinklas
+    e.respondWith(caches.match(req, { ignoreSearch: true }).then(any => any || caches.open(IMG).then(c => c.match(req, { ignoreSearch: true }).then(hit => hit || fetch(req).then(res => {
       if (res && res.ok) c.put(req, res.clone());
       return res;
-    }))));
+    })))));
     return;
   }
   const net = (req.mode === 'navigate' ? fetch(req) : fetch(req, { cache: 'no-cache' })).then(res => {

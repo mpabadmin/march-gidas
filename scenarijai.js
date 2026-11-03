@@ -66,7 +66,7 @@ window.ETC.scenarijai = [
     "klaus": "Ką darote toliau?",
     "opt": [
      {
-      "t": "Pildote kortelę (DD 1380) čia pat, ugnies zonoje",
+      "t": "Pildote kortelę (DD1380) čia pat, ugnies zonoje",
       "ok": false
      },
      {
@@ -88,14 +88,14 @@ window.ETC.scenarijai = [
  },
  {
   "id": "m2",
-  "pav": "Sprogimas prie posto: TST",
+  "pav": "Sprogimas prie posto: 10s triažas",
   "tema": "Rūšiavimas",
   "lygis": "CLS",
   "q": [
    {
     "sit": "Po sprogimo – 5 sužeistieji, jūs vienintelis CLS. Pirmasis vaikšto ir rodo nubrozdintą ranką.",
     "gp": {},
-    "klaus": "Kaip jį surūšiuojate pagal TST?",
+    "klaus": "Kaip jį surūšiuojate pagal 10s triažą?",
     "opt": [
      {
       "t": "P1 – sužeistas, todėl gydomas pirmas",
@@ -110,7 +110,7 @@ window.ETC.scenarijai = [
       "ok": true
      }
     ],
-    "why": "TST: vaikšto – P3 (gali palaukti). Vaikščiojančius nukreipkite į nurodytą vietą ir duokite nurodymus, bet vėliau įvertinkite ir juos.",
+    "why": "10s triažas: vaikšto – P3 (gali palaukti). Vaikščiojančius nukreipkite į nurodytą vietą ir duokite nurodymus, bet vėliau įvertinkite ir juos.",
     "ref": [
      "#/tst",
      "#/igudis/36"
@@ -143,7 +143,7 @@ window.ETC.scenarijai = [
    {
     "sit": "Trečiasis nevaikšto, masyvaus kraujavimo nėra, kalba aiškiai. Blauzda deformuota, penetruojančių sužalojimų nuo kaklo iki sėdmenų nėra.",
     "gp": {},
-    "klaus": "Kokia TST kategorija?",
+    "klaus": "Kokia 10s triažo kategorija?",
     "opt": [
      {
       "t": "P1 – nevaikšto, todėl neatidėliotina",
@@ -158,7 +158,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "TST: nevaikšto → masyvaus kraujavimo nėra → kalba → penetruojančio sužalojimo nėra – P2. Rūšiavimą kartokite – būklė keičiasi.",
+    "why": "10s triažas: nevaikšto → masyvaus kraujavimo nėra → kalba → penetruojančio sužalojimo nėra – P2. Rūšiavimą kartokite – būklė keičiasi.",
     "ref": [
      "#/tst"
     ]
@@ -744,7 +744,7 @@ window.ETC.scenarijai = [
       "ok": false
      },
      {
-      "t": "Nuginkluoti ir AVPU įrašyti į kortelę (DD 1380)",
+      "t": "Nuginkluoti ir AVPU įrašyti į kortelę (DD1380)",
       "ok": true
      },
      {
@@ -861,11 +861,11 @@ window.ETC.scenarijai = [
       "ok": false
      },
      {
-      "t": "Akis į akį: MIST, pokyčiai, kas tęstina, kortelė (DD 1380)",
+      "t": "Akis į akį: MIST, pokyčiai, kas tęstina, kortelė (DD1380)",
       "ok": true
      }
     ],
-    "why": "Perduokite tiesiogiai priimančiam medikui: MIST, pokyčiai kelionės metu, kas tęstina (turniketo laikas, paskutinė vaistų dozė, alergijos) ir kortelė (DD 1380).",
+    "why": "Perduokite tiesiogiai priimančiam medikui: MIST, pokyčiai kelionės metu, kas tęstina (turniketo laikas, paskutinė vaistų dozė, alergijos) ir kortelė (DD1380).",
     "ref": [
      "#/mist",
      "#/igudis/34",
@@ -1199,7 +1199,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Atlaisvinti turniketą, „kad galūnė pakvėpuotų“, ir nepažymėti laiko – klaidos. Laiką užrašykite ant turniketo nenuplaunamu žymekliu ir DD 1380 kortelėje; 2 ir 6 val. skaičiuojamos nuo pirmojo uždėjimo.",
+    "why": "Atlaisvinti turniketą, „kad galūnė pakvėpuotų“, ir nepažymėti laiko – klaidos. Laiką užrašykite ant turniketo nenuplaunamu žymekliu ir DD1380 kortelėje; 2 ir 6 val. skaičiuojamos nuo pirmojo uždėjimo.",
     "ref": [
      "#/igudis/5",
      "#/igudis/8",
@@ -1443,7 +1443,7 @@ window.ETC.scenarijai = [
     "klaus": "Ką pirmiausia darote su sužeistuoju?",
     "opt": [
      {
-      "t": "Pildote kortelę (DD 1380) ir per radiją kviečiate MEDEVAC",
+      "t": "Pildote kortelę (DD1380) ir per radiją kviečiate MEDEVAC",
       "ok": false
      },
      {
@@ -1484,7 +1484,7 @@ window.ETC.scenarijai = [
       "ok": true
      },
      {
-      "t": "Pirmiausia surašote visų duomenis į korteles (DD 1380)",
+      "t": "Pirmiausia surašote visų duomenis į korteles (DD1380)",
       "ok": false
      }
     ],
@@ -2607,7 +2607,7 @@ window.ETC.scenarijai = [
       "ok": true
      }
     ],
-    "why": "Sąmonė ir radialinis pulsas negrįžta – TFC metu pagalba nutraukiama, rūpinkitės kitais sužeistaisiais. Sprendimą, laikus ir veiksmus įrašykite į kortelę (DD 1380), praneškite vadui.",
+    "why": "Sąmonė ir radialinis pulsas negrįžta – TFC metu pagalba nutraukiama, rūpinkitės kitais sužeistaisiais. Sprendimą, laikus ir veiksmus įrašykite į kortelę (DD1380), praneškite vadui.",
     "ref": [
      "#/igudis/35",
      "#/igudis/31"
@@ -2696,7 +2696,7 @@ window.ETC.scenarijai = [
       "ok": true
      }
     ],
-    "why": "Aktyvaus šildymo antklodė – ant priekinio liemens ir pažasčių, ne tiesiai ant odos ir neapvyniojant liemens (nudegimai). Apvyniokite visą kūną su galva, veidą palikite atidengtą; atviroje transporto priemonėje saugokite nuo vėjo, prevenciją pažymėkite kortelėje (DD 1380).",
+    "why": "Aktyvaus šildymo antklodė – ant priekinio liemens ir pažasčių, ne tiesiai ant odos ir neapvyniojant liemens (nudegimai). Apvyniokite visą kūną su galva, veidą palikite atidengtą; atviroje transporto priemonėje saugokite nuo vėjo, prevenciją pažymėkite kortelėje (DD1380).",
     "ref": [
      "#/igudis/21",
      "#/s/tfc-h"
@@ -2874,7 +2874,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Po kiekvieno perkėlimo patikrinkite tvarsčius, kraujavimą, kraujotaką ir šoko požymius, įrašykite į kortelę (DD 1380). Iškritusius organus saugokite nuo šalčio; uždėtas ir pamirštas tvarstis – dažna klaida.",
+    "why": "Po kiekvieno perkėlimo patikrinkite tvarsčius, kraujavimą, kraujotaką ir šoko požymius, įrašykite į kortelę (DD1380). Iškritusius organus saugokite nuo šalčio; uždėtas ir pamirštas tvarstis – dažna klaida.",
     "ref": [
      "#/igudis/27",
      "#/igudis/21"
@@ -3140,7 +3140,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Kartojama pagal grafiką: paracetamolis kas 8 val., suzetriginas 50 mg kas 12 val., meloksikamas – kartą per parą. Laiką užrašykite į kortelę (DD 1380), kitaip dozės viršijamos.",
+    "why": "Kartojama pagal grafiką: paracetamolis kas 8 val., suzetriginas 50 mg kas 12 val., meloksikamas – kartą per parą. Laiką užrašykite į kortelę (DD1380), kitaip dozės viršijamos.",
     "ref": [
      "#/igudis/24",
      "#/p/vaistai26"
@@ -3382,7 +3382,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Į vieną vietą IM – ne daugiau kaip 1 g, todėl 2 g dalijami į dvi vietas. Kita dozė – po 24 val.; laiką įrašykite į kortelę (DD 1380).",
+    "why": "Į vieną vietą IM – ne daugiau kaip 1 g, todėl 2 g dalijami į dvi vietas. Kita dozė – po 24 val.; laiką įrašykite į kortelę (DD1380).",
     "ref": [
      "#/vaistas/ceftriaksonas",
      "#/igudis/26"
@@ -3721,7 +3721,7 @@ window.ETC.scenarijai = [
       "ok": true
      }
     ],
-    "why": "Turniketo laikus nenuplaunamu žymekliu rašykite ant turniketo ir tos galūnės langelyje kortelėje (DD 1380). 2 ir 6 val. skaičiuojami nuo pirmojo turniketo – jo laiką palikite.",
+    "why": "Turniketo laikus nenuplaunamu žymekliu rašykite ant turniketo ir tos galūnės langelyje kortelėje (DD1380). 2 ir 6 val. skaičiuojami nuo pirmojo turniketo – jo laiką palikite.",
     "ref": [
      "#/igudis/31",
      "#/igudis/8"
@@ -3928,7 +3928,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Kortelę (DD 1380) pildykite iškart ir atnaujinkite po kiekvieno vertinimo – iš atminties pamirštami laikai ir dozės. Ji tvirtinama matomoje vietoje (riešas, kelnių diržo kilpa) ir keliauja su sužeistuoju; kišenėje ar kuprinėje atsiskiria.",
+    "why": "Kortelę (DD1380) pildykite iškart ir atnaujinkite po kiekvieno vertinimo – iš atminties pamirštami laikai ir dozės. Ji tvirtinama matomoje vietoje (riešas, kelnių diržo kilpa) ir keliauja su sužeistuoju; kišenėje ar kuprinėje atsiskiria.",
     "ref": [
      "#/igudis/31",
      "#/mist"

@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-11-03 v32 (MIST plytelė pervadinta „Nukentėjusiojo kortelė“ (DD1380); pradžioje – atskira plytelė „Nuskaityti kortelę“ (popierinė DD1380))';
+E.versija = '2026-11-03 v33 (QR kode nebėra vardo, gimimo datos ir teikėjų; QR iš PCC gido – su programėlės pavadinimu; traumos laikas – ir vakar / užvakar, −1…−6 val.; ištrinant duomenis – ir CONTREP bei SALUTE; „Atgal“ grąžina į tą patį sąrašo skirtuką; kortelės nuskaitymas be interneto; paaiškinimai – po „Paaiškinimas“; CMC scenarijai CLS lygyje rodomi su pastaba; 9-Line DTG su zona, mėnesiu ir metais; GKS skaičiuoklė pradžioje; vaisto puslapyje – „Lietuvoje: preparatai ir pakuotės“; Nustatymuose – „Kitos programėlės“; didesni ⓘ ir skirtukai pirštinėms)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
@@ -147,7 +147,7 @@ E.sarasai = {
     items: [
       { t: 'Praneškite vadui: sužeistųjų būklė ir evakuacijos poreikis', k: true },
       { t: '9 eilučių MEDEVAC prašymas', k: true, sk: 32, r: '#/9line' },
-      { t: 'Užpildykite nukentėjusiojo kortelę (DD 1380)', k: true, sk: 31 },
+      { t: 'Užpildykite nukentėjusiojo kortelę (DD1380)', k: true, sk: 31 },
       { t: 'Paruoškite MIST evakuacijos medikui', sk: 32, r: '#/mist' },
       { t: 'Pasiruošimas evakuacijai', k: true, sk: 33, s: ['Kortelė pritvirtinta prie sužeistojo', 'Tvarsčių galai, hipotermijos apvalkalas ir diržai pritvirtinti', 'Neštuvų diržai; ilgai evakuacijai – paminkštinimas', 'Ginklas iškrautas ir saugus; sprogmenų su sužeistuoju nesiųskite'] },
       { t: 'Nurodymai vaikštantiems sužeistiesiems' },
@@ -162,7 +162,7 @@ E.sarasai = {
     items: [
       { t: 'Evakuacijos taškas saugus', k: true },
       { t: 'Išklausykite perdavimą: stabilus ar nestabilus, sužalojimai, suteiktas gydymas (MIST)', k: true, sk: 34 },
-      { t: 'Gaukite nukentėjusiojo kortelę (DD 1380) ir sutikrinkite su MIST' },
+      { t: 'Gaukite nukentėjusiojo kortelę (DD1380) ir sutikrinkite su MIST' },
       { t: 'Ginklai iškrauti, sprogmenų nėra; sutrikusios sąmonės sužeistasis nuginkluotas' },
       { t: 'Pakraukite ir pritvirtinkite pagal platformos konfigūraciją ir saugos reikalavimus', k: true }
     ]
@@ -199,7 +199,7 @@ E.sarasai = {
       { t: 'Perduokite tiesiogiai priimančiam medikui', k: true, sk: 34 },
       { t: 'MIST: mechanizmas ir laikas, sužalojimai, simptomai ir rodikliai (su pokyčiais), gydymas', k: true, r: '#/mist' },
       { t: 'Kas tęstina: turniketo laikas, paskutinė vaistų dozė, alergijos' },
-      { t: 'Perduokite nukentėjusiojo kortelę (DD 1380)' },
+      { t: 'Perduokite nukentėjusiojo kortelę (DD1380)' },
       { t: 'Atsakykite į klausimus prieš išvykdami' },
       { t: 'Po užduoties – aptarimas (AAR) ir įrangos papildymas' }
     ]
@@ -257,7 +257,7 @@ E.puslapiai = {
       '<li><b>C</b> – dubens diržas, turniketų peržiūra ir konversija, IV / IO, TXA, kraujas ir kalcis.</li>' +
       '<li><b>H</b> – hipotermijos prevencija.</li><li>Galvos smegenų trauma.</li><li>Penetruojanti akies trauma.</li><li>Stebėjimas.</li>' +
       '<li><b>P</b> – skausmo malšinimas.</li><li><b>A</b> – antibiotikai.</li><li><b>W</b> – žaizdos.</li><li>Papildomų žaizdų paieška.</li><li>Nudegimai.</li>' +
-      '<li><b>S</b> – įtvėrimas ir pulso patikra.</li><li>Gaivinimas.</li><li>Ryšys: sužeistasis, vadas, evakuacijos sistema.</li><li>Dokumentavimas (DD 1380).</li><li>Pasiruošimas evakuacijai.</li></ol>' +
+      '<li><b>S</b> – įtvėrimas ir pulso patikra.</li><li>Gaivinimas.</li><li>Ryšys: sužeistasis, vadas, evakuacijos sistema.</li><li>Dokumentavimas (DD1380).</li><li>Pasiruošimas evakuacijai.</li></ol>' +
       '<h3>Keli sužeistieji</h3><p>Pirmiausia gydomi tie, kurių būklė labiausiai kelia grėsmę gyvybei: masyvus kraujavimas, penetruojanti liemens trauma, kvėpavimo takų sutrikimas, kvėpavimo distresas, sutrikusi sąmonė.</p>' +
       fig('CLS5__module-5-tactical-trauma-assessment-en-09', 'Kraujo apčiuopa: greitas patikrinimas nuo galvos iki kojų – kaklas, pažastys, kirkšnys, galūnės, liemuo ir nugara'),
     saltinis: 'TCCC gairės 2026-05-01 (TFC 1–20); JTS CLS kursas (4 ir 5 moduliai)'
@@ -299,11 +299,11 @@ E.puslapiai = {
       '<tr><td><b>C – skubūs</b> (Priority)</td><td>Išgelbėjimui reikalinga evakuacija per 4 valandas (būklė gali pablogėti iki neatidėliotinos)</td><td>Lūžis su išnykusiu distaliniu pulsu, II laipsnio nudegimai dideliame pilvo ar galūnių plote</td></tr>' +
       '<tr><td><b>D – įprastinė evakuacija</b> (Routine)</td><td>&lt; 24 val.</td><td>Nubrozdinimai, smulkūs lūžiai, nušalimai</td></tr>' +
       '<tr><td><b>E – evakuojami pagal galimybes</b> (Convenience)</td><td>Mediciniškai nebūtina</td><td>Administracinis perkėlimas</td></tr></table></div>' +
-      '<p class="muted">MIST kortelės evakuacija atitinka 3 eilutę: neatidėliotina – A (chirurginė – B), skubi – C, įprastinė – D.</p>' +
+      '<p class="muted">Nukentėjusiojo kortelės evakuacija atitinka 3 eilutę: neatidėliotina – A (chirurginė – B), skubi – C, įprastinė – D.</p>' +
       '<p class="muted">Terminai priklauso nuo doktrinos ir SOP: JTS CLS (2020) nurodo &lt; 2 val., kai kurios JAV ir NATO procedūros skubiai kategorijai numato 1 val. ar 90 min. Vadovaukitės savo vieneto SOP.</p>' +
       '<p><b>Pervertinimas</b> – polinkis priskirti per aukštą kategoriją. Tai atima priemones iš labiausiai jų reikalingų sužeistųjų; kategoriją tikslinkite keičiantis būklei.</p>' +
       '<h3>MIST</h3><ul><li><b>M</b> – mechanizmas ir sužeidimo laikas (jei žinomas)</li><li><b>I</b> – sužalojimai (sunkiausi pirmiausia)</li><li><b>S</b> – simptomai ir gyvybiniai rodikliai</li><li><b>T</b> – suteiktas gydymas</li></ul>' +
-      '<p>MIST sudaromas iš nukentėjusiojo kortelės (DD 1380) ir perduodamas evakuacijos medikams ar priimančiai grandžiai. <a href="#/mist">Atidaryti MIST formą</a>.</p>',
+      '<p>MIST sudaromas iš nukentėjusiojo kortelės (DD1380) ir perduodamas evakuacijos medikams ar priimančiai grandžiai. <a href="#/mist">Atidaryti nukentėjusiojo kortelę</a>.</p>',
     saltinis: 'LK 9-liner/MIST forma (kuopos Q priedas, priedėlis Nr. 2); JTS CLS kursas (19 modulis, įgūdžio kortelė 19.2, 2020); TCCC gairės 2026-05-01 (TFC 18)'
   },
   nestuvai: {

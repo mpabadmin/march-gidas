@@ -58,9 +58,9 @@ const CR = (() => {
   const inp = (k, v, ph, lb, extra) => `<input class="inp" data-cr="${k}" value="${esc(v)}" placeholder="${esc(ph)}" autocomplete="off" aria-label="${esc(lb)}"${extra || ''}>`;
   const mist = () => { try { return MC.state().pts.filter(MC.used).length; } catch (e) { return 0; } };
   function view() {
-    const s = get(), learn = mode === 'learn', nm2 = mist();
+    const s = get(), nm2 = mist();
     let h = '<h1>CONTREP – kontakto pranešimas</h1>';
-    if (learn) h += '<p class="muted">CONTREP siunčiamas iškart po susidūrimo su priešu. Pirmiausia – priedanga ir ugnies pranašumas; vadui iškart trumpai: „Kontaktas, laukite“ (su kryptimi). Kai įmanoma – pilnas pranešimas: kada, kur priešas, kur esate, kiek ir kas, ką priešas daro, ką darote jūs ir ar yra sužeistųjų. Formatas priklauso nuo vieneto SOP – čia bendrasis formatas (pagal NATO šalių praktiką). Sužeistiesiems – MIST ir 9-Line, vėliau – SITREP. Priešą tik stebite, bet kontakto nėra – SALUTE.</p>';
+    h += '<details class="alt"><summary>Paaiškinimas</summary><p class="muted">CONTREP siunčiamas iškart po susidūrimo su priešu. Pirmiausia – priedanga ir ugnies pranašumas; vadui iškart trumpai: „Kontaktas, laukite“ (su kryptimi). Kai įmanoma – pilnas pranešimas: kada, kur priešas, kur esate, kiek ir kas, ką priešas daro, ką darote jūs ir ar yra sužeistųjų. Formatas priklauso nuo vieneto SOP – čia bendrasis formatas (pagal NATO šalių praktiką). Sužeistiesiems – MIST ir 9-Line, vėliau – SITREP. Priešą tik stebite, bet kontakto nėra – SALUTE.</p></details>';
     h += `<section class="nl req"><div class="nlh"><b>Pirminis pranešimas</b></div><p class="muted">Kryptis nuo savęs (pagal judėjimo kryptį).</p><div class="opts">` + DIR.map(([k, t]) => chip('cr-dir', k, s.dir === k, t)).join('') +
       `</div><p class="srdtg" id="cr-alert">${esc(alertTxt(s))}</p><button class="btn pri" data-act="cr-alert">⏱ Kontaktas dabar</button></section>`;
     h += card(1, s, `<div class="srt"><button class="btn sm pri" data-act="cr-now">⏱ ${s.at ? 'Atnaujinti' : 'Dabar'}</button><span class="srdtg">${s.at ? esc(SR.dtg(s.at, s.zulu)) : '—'}</span></div><div class="seg2" role="group" aria-label="Laiko zona">${chip('cr-zulu', '0', !s.zulu, 'Vietinis (L)')}${chip('cr-zulu', '1', s.zulu, 'Zulu (Z, UTC)')}</div>`, 'Kada užmegztas kontaktas – DDHHMM, zona, mėnuo, metai.');
@@ -71,7 +71,7 @@ const CR = (() => {
     h += card(5, s, '<div class="opts">' + EACT.map(([k, t]) => chip('cr-eact', k, s.eact.indexOf(k) >= 0, t)).join('') + '</div>' + inp('eactTxt', s.eactTxt, 'Patikslinimas, pvz. juda į šiaurę', 'Priešo veiksmų patikslinimas'));
     h += card(6, s, '<div class="opts">' + OACT.map(([k, t]) => chip('cr-oact', k, s.oact.indexOf(k) >= 0, t)).join('') + '</div>' + ta('oactTxt', s.oactTxt, 'Ką darysite toliau, ko reikia', 'Savų veiksmų patikslinimas'));
     h += card(7, s, stepper('cr-n', 'wia', s.wia, 'Sužeisti', 'WIA') + stepper('cr-n', 'kia', s.kia, 'Žuvę', 'KIA') +
-      (nm2 ? `<p class="muted">MIST kortelėse: ${plural(nm2, ['sužeistasis', 'sužeistieji', 'sužeistųjų'])}</p><button class="btn sm" data-act="cr-fill">Įrašyti iš MIST</button>` : '') +
+      (nm2 ? `<p class="muted">Nukentėjusiųjų kortelėse: ${plural(nm2, ['sužeistasis', 'sužeistieji', 'sužeistųjų'])}</p><button class="btn sm" data-act="cr-fill">Įrašyti iš MIST</button>` : '') +
       inp('casTxt', s.casTxt, 'Patikslinimas, pvz. 1 skubus, reikia MEDEVAC', 'Nuostolių patikslinimas') +
       (s.wia || s.kia ? row('#/9line', '9-Line MEDEVAC prašymas', NL.status()) + row('#/mist', 'Nukentėjusiojo kortelė (DD1380)', MC.status()) : ''), 'Jei sužeistųjų nėra – palikite tuščią.');
     h += `<section class="outp"><div class="nlh"><b>Perduoti</b></div><pre id="cr-out">${esc(text(s))}</pre>` +

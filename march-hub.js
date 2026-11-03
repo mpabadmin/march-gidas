@@ -64,7 +64,7 @@ const MPAWS = (() => {
       S.map(s => `<a class="mpr ${s.st}" href="${esc(s.href)}" aria-label="${esc(s.l + ' – ' + s.nm + ': ' + (s.st === 'done' ? 'atlikta' : s.st === 'attn' ? 'dėmesio' : 'dar nežymėta'))}">` +
         `<span class="mpl" aria-hidden="true">${s.l}</span><span class="mpt"><b>${esc(s.nm)}</b>${s.t ? '<small>' + esc(s.t) + '</small>' : ''}</span>` +
         (s.st === 'none' ? '<span class="mpa" aria-hidden="true">+</span>' : `<span class="mps" aria-hidden="true">${ICON[s.st]}</span>`) + '</a>').join('') +
-      (mode === 'learn' ? '<p class="muted mt0">Būsena – iš MIST kortelės (pagalba, požymiai, C lentelė) ir TFC sąrašų žymėjimų. „!“ – nukrypę požymiai ar nesustabdytas kraujavimas.</p>' : '') + '</section>';
+      '<details class="alt"><summary>Paaiškinimas</summary><p class="muted mt0">Būsena – iš nukentėjusiojo kortelės (pagalba, požymiai, C lentelė) ir TFC sąrašų žymėjimų. „!“ – nukrypę požymiai ar nesustabdytas kraujavimas.</p></details>' + '</section>';
   }
   const overview = (x, H) => H.quick(false) + section(x) + H.tBox(x);
   // Skiltis „Vaistai“: suleista (C lentelė) ir dažniausi vaistai su dozėmis (March dozės nepriklauso nuo svorio), CLS / CMC žymos

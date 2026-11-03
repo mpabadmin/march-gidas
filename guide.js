@@ -18,7 +18,7 @@ const GUIDE = (() => {
     x: () => { const c = typeof tikCLS === 'function' && tikCLS(); return `<div class="gdopt"><button data-g="lvl" data-k="CLS" class="${c ? 'on' : ''}" aria-pressed="${c}"><b>CLS</b><small>kovos gelbėtojas – tik CLS veiksmai</small></button><button data-g="lvl" data-k="CMC" class="${c ? '' : 'on'}" aria-pressed="${!c}"><b>CMC</b><small>kovos medikas – viskas, CMC pažymėta geltonai</small></button></div>`; },
     on: (g, b) => { if (g !== 'lvl') return; try { localStorage.setItem('mg-tikcls', JSON.stringify(b.dataset.k === 'CLS')); } catch (e) {} try { IDX = null; } catch (e) {} if (typeof render === 'function') render(); } },
   { ic: 'M9 3h6v6h6v6h-6v6H9v-6H3V9h6z', t: 'Fazės', p: 'Pradžioje – trys fazės. Atidarykite ir žymėkite atliktus punktus. Mygtukas <b>ⓘ</b> prie punkto parodo paaiškinimą.', x: () => '<ul><li><b>CUF</b> – pagalba apšaudymo metu.</li><li><b>TFC</b> – taktinė lauko pagalba pagal MARCH PAWS.</li><li><b>TACEVAC</b> – evakuacija ir perdavimas.</li></ul>' },
-  { ic: 'M3 4h18|M12 4v4|M6 12a6 4 0 0 1 6-4h3a4 4 0 0 1 4 4v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z|M8 19h12|M10 15v4|M16 15v4', t: 'MEDEVAC įrankiai', p: '<b>10 s triažas, Nukentėjusiojo kortelė (DD1380), 9-Line, SITREP, CONTREP, SALUTE</b> – formos pildomos telefone; perduokite balsu arba tekstu. <b>Nuskaityti kortelę</b> – popierinės DD1380 nuotrauka perkeliama į programėlę. Apačioje juosta <b>„#1 Sužeistasis“</b> – laikai, kortelė ir priminimai.' },
+  { ic: 'M3 4h18|M12 4v4|M6 12a6 4 0 0 1 6-4h3a4 4 0 0 1 4 4v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z|M8 19h12|M10 15v4|M16 15v4', t: 'MEDEVAC įrankiai', p: '<b>10s triažas, Nukentėjusiojo kortelė (DD1380), 9-Line, SITREP, CONTREP, SALUTE</b> – formos pildomos telefone; perduokite balsu arba tekstu. <b>Nuskaityti kortelę</b> – popierinės DD1380 nuotrauka perkeliama į programėlę. Apačioje juosta <b>„#1 Sužeistasis“</b> – laikai, kortelė ir priminimai.' },
   { ic: 'M4 8h12v12H4z|M8 4h12v12|M7 13h6|M7 16h4', t: 'Apatinė juosta', p: '<b>Pacientas</b> – sužeistųjų kortelės. <b>Vaistai</b> ir <b>Įgūdžiai</b> – žinynas su video. <b>Vertinimas</b> – CLS vertinimo lapas instruktoriui. <b>Treniruotė</b> – situacijos ir dozių patikra.' },
   { ic: 'help', t: 'Mygtukai viršuje', p: '{search} – paieška, {moon} – raudonas naktinis režimas, {chat} – pranešti apie klaidą, <svg class="gdii" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg> – nustatymai. Instrukciją vėl atidarysite mygtuku <b>„Kaip naudotis“</b> pradžioje.' }
 ];
@@ -46,7 +46,7 @@ const GUIDE = (() => {
   }
   const go = d => { i = Math.max(0, Math.min(STEPS.length - 1, i + d)); draw(); };
   document.addEventListener('click', e => {
-    const b = e.target.closest && e.target.closest('[data-g]'); if (!b) { if (el && e.target === el) close(); return; }
+    const b = e.target.closest && e.target.closest('[data-g]:not([data-act])'); if (!b) { if (el && e.target === el) close(); return; }
     e.preventDefault(); e.stopPropagation();
     const g = b.dataset.g;
     if (g === 'open') return open();

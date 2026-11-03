@@ -7,14 +7,15 @@ LŠS Vilniaus 1040 medicinos šaulių kuopa · https://march.1040medkuopa.lt
 
 - **Fazės:** CUF (pagalba apšaudymo metu), TFC (taktinė lauko pagalba, MARCH PAWS), TACEVAC (taktinė evakuacijos pagalba). Kiekviena fazė turi kontrolinius sąrašus.
 - **9-Line MEDEVAC prašymas:** karo ir taikos meto versijos, GPS → MGRS, skaitymas per radiją, kopijavimas.
-- **MIST kortelė:** kaip ETC gide – kūno schema su žymėmis (žaizda, kraujavimas, lūžis, nudegimas, amputacija, turniketas su laiku), požymių lentelė, gydymas (su „Rodyti tik CLS“ – be CMC veiksmų), skaitymo režimas; keli sužeistieji (skirtukai 1, 2, … ir „+“, „Kopijuoti visus“). Laikmačių laikai – pirmajam sužeistajam. Seni MIST formos duomenys perkeliami automatiškai (originalas – `mg-mist-v1`).
-- **GKS skaičiuoklė:** Glasgow komos skalė, GKS-P, perkėlimas į dabartinio sužeistojo MIST kortelę.
-- **TST rūšiavimas:** NHS Ten Second Triage, skaičiavimas.
+- **Nukentėjusiojo kortelė (DD1380):** kaip ETC gide – kūno schema su žymėmis (žaizda, kraujavimas, lūžis, nudegimas, amputacija, turniketas su laiku), požymiai, gydymas, MIST perdavimo tekstas ir skaitymo režimas; keli sužeistieji. Popierinės kortelės nuskaitymas (be interneto), perdavimas QR kodu tarp ETC, March ir PCC gidų (vardo, gimimo datos ir teikėjų kode nėra). Seni MIST formos duomenys perkeliami automatiškai (originalas – `mg-mist-v1`).
+- **GKS skaičiuoklė:** Glasgow komos skalė, GKS-P, perkėlimas į dabartinio sužeistojo kortelę.
+- **10s triažas:** NHS Ten Second Triage, skaičiavimas.
+- **SITREP, CONTREP, SALUTE:** pranešimų formos su DTG (DDHHMM, zona, mėnuo, metai).
 - **Laikmačiai:** sužeidimo laikas (TXA ≤ 3 val.) ir turniketo laikas (konversija ≤ 2 val.).
 - **Įgūdžiai (36):** JTS CLS / CMC kortelės, iliustracijos ir vaizdo įrašai iš tccc.org.ua (Deployed Medicine).
-- **Vaistai:** pagal TCCC 2026 gaires. Žyma CMC reiškia, kad vaistą skiria kovos medikas.
-- **Režimai:** *Taikymas* (tamsus, trumpi sąrašai) ir *Mokymasis* (paaiškinimai, temos, įsivertinimas).
-- **Nustatymas „Rodyti tik CLS“:** paslepia CMC / CPP veiksmus.
+- **Vaistai:** pagal TCCC 2026 gaires. Žyma CMC reiškia, kad vaistą skiria kovos medikas. Vaisto puslapyje – „Lietuvoje: preparatai ir pakuotės“ (VVKT).
+- **Sąsaja:** vienas režimas. Pradžia – piktogramos (fazės CUF / TFC / TACEVAC ir MEDEVAC įrankiai), apačioje – Pradžia, Pacientas, Vaistai, Įgūdžiai, Vertinimas, Treniruotė. Antraštėje – lygis CLS / CMC (CLS lygyje CMC veiksmai paslėpti), naktinis režimas, pranešimas apie klaidą, paieška, nustatymai. Paaiškinimai ir šaltiniai – po ⓘ arba „Paaiškinimas“. Juosta „Tik pagalbinė priemonė“ su TCCC kurso nuoroda.
+- **Nustatymai:** lygis, sužeistųjų duomenų trynimas (ir automatinis), priminimai, iliustracijos be interneto, „Kitos programėlės“ (SIM, ETC, PCC, apps.1040medkuopa.lt).
 - **Pranešimai apie klaidas:** komentaras ir ekrano vaizdas keliauja į tą pačią Google lentelę kaip ETC gido pranešimai (`etc-gidas/tools/atsiliepimai.gs`). Pranešimai žymimi „[March]“.
 
 ## Šaltiniai (pirmenybės tvarka)
@@ -31,7 +32,10 @@ LŠS Vilniaus 1040 medicinos šaulių kuopa · https://march.1040medkuopa.lt
 | `vaistai.js` | Vaistai |
 | `igudziai.js` | Įgūdžiai (generuojama) |
 | `core.js`, `views.js` | Bendros funkcijos ir puslapių vaizdai |
-| `tools.js` | 9-Line, MIST kortelė, GKS, TST, MGRS (9-Line, MIST ir GKS kodas toks pat kaip ETC gide – skiriasi tik `TCFG`) |
+| `tools.js` | 9-Line, nukentėjusiojo kortelė, GKS, 10s triažas, scenarijai, pacientas, QR, MGRS (didžioji dalis kodo – kaip ETC ir PCC giduose, skiriasi `TCFG`) |
+| `sitrep.js`, `contrep.js`, `salute.js` | SITREP, CONTREP, SALUTE |
+| `pacientas.js`, `march-hub.js` | Paciento ekranas ir MARCH PAWS apžvalga |
+| `priedai.js`, `skenas.js`, `guide.js` | Vertinimas, dozių kortelės, duomenų apsauga; kortelės nuskaitymas; instrukcija |
 | `fb.js` | Pranešimai apie klaidas |
 | `app.js` | Maršrutai ir veiksmai |
 | `sw.js` | Darbas be interneto |

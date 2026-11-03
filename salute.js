@@ -51,9 +51,9 @@ const SU = (() => {
   const inp = (k, v, ph, lb, extra) => `<input class="inp" data-su="${k}" value="${esc(v)}" placeholder="${esc(ph)}" autocomplete="off" aria-label="${esc(lb)}"${extra || ''}>`;
   const opts = (act, L, a) => '<div class="opts">' + L.map(([k, t]) => chip(act, k, a.indexOf(k) >= 0, t)).join('') + '</div>';
   function view() {
-    const s = get(), learn = mode === 'learn';
+    const s = get();
     let h = '<h1>SALUTE – priešo stebėjimo pranešimas</h1>';
-    if (learn) h += '<p class="muted">SALUTE – trumpas pranešimas apie pastebėtą priešą: kiek jų (S), ką daro (A), kur yra (L), koks dalinys ar uniforma (U), kada pastebėta (T) ir kokia įranga (E). Praneškite tik tai, ką matėte patys; spėjimus pažymėkite. Jei priešas jau šaudo į jus – pirmiausia CONTREP. Formatas – pagal JAV ir NATO šalių praktiką; detalės – pagal vieneto SOP.</p>';
+    h += '<details class="alt"><summary>Paaiškinimas</summary><p class="muted">SALUTE – trumpas pranešimas apie pastebėtą priešą: kiek jų (S), ką daro (A), kur yra (L), koks dalinys ar uniforma (U), kada pastebėta (T) ir kokia įranga (E). Praneškite tik tai, ką matėte patys; spėjimus pažymėkite. Jei priešas jau šaudo į jus – pirmiausia CONTREP. Formatas – pagal JAV ir NATO šalių praktiką; detalės – pagal vieneto SOP.</p></details>';
     h += card(0, s, stepper('su-n', 'cnt', s.cnt, 'Asmenų', 'apytiksliai') + stepper('su-n', 'veh', s.veh, 'Technikos vienetų', 'transporto priemonės') + inp('sizeTxt', s.sizeTxt, 'pvz. skyrius, 2 grupės', 'Dydžio patikslinimas'));
     h += card(1, s, opts('su-act', ACT, s.act) + inp('actTxt', s.actTxt, 'Kryptis, greitis, pvz. juda į pietus keliu', 'Veiklos patikslinimas'));
     h += card(2, s, inp('eloc', s.eloc, 'pvz. 35U LA 1290 5710', 'Priešo vieta (MGRS)', ' autocapitalize="characters" spellcheck="false"') +
