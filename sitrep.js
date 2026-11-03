@@ -96,7 +96,7 @@ const SR = (() => {
     h += card(10, s, '<div class="opts">' + REQ.map(([k, t]) => chip('sr-req', k, s.req.indexOf(k) >= 0, t)).join('') + '</div>' + inp('reqTxt', s.reqTxt, 'Patikslinimas, pvz. 6 turniketai, 1 neštuvai', 'Prašymų patikslinimas') + (s.req.indexOf('medevac') >= 0 ? row('#/9line', '9-Line MEDEVAC prašymas', NL.status()) : ''));
     h += `<section class="outp"><div class="nlh"><b>Perduoti</b></div><pre id="sr-out">${esc(text(s))}</pre>` +
       '<div class="acts"><button class="btn pri" data-act="sr-read">Skaityti per radiją</button><button class="btn" data-act="sr-copy">Kopijuoti</button><button class="btn" data-act="sr-share">Bendrinti</button><button class="btn" data-act="sr-clear">Išvalyti</button></div></section>';
-    h += row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status());
+    h += row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'Nukentėjusiojo kortelė (DD1380)', MC.status());
     return h;
   }
   function act(el) {

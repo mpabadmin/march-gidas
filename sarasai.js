@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-11-02 v31 (vienas režimas: lygis CLS / CMC antraštėje, nustatymų mygtukas; pradžia – tik piktogramos; apačioje Vertinimas ir Treniruotė (situacijos, dozių patikra); paaiškinimai – mygtukas ⓘ; egzaminuotojo režimas panaikintas; aiški nuoroda, kad gidas tik pagalbinė priemonė, ir TCCC kursas internetu)';
+E.versija = '2026-11-03 v32 (MIST plytelė pervadinta „Nukentėjusiojo kortelė“ (DD1380); pradžioje – atskira plytelė „Nuskaityti kortelę“ (popierinė DD1380))';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };

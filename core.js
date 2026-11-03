@@ -103,7 +103,7 @@ function renderList(id) {
     const ik = id + '-' + i, infoB = it.i ? infoBtn(ik) : '', info = it.i ? infoTxt(it.i, ik) : '';
     const T = it.tm ? (LS.get('mg-laikai', {}) || {}) : null;
     const links = (it.tm ? `<button class="sk tmk" data-act="tm-mark" data-k="${it.tm}">⏱ ${T[it.tm] ? hm(T[it.tm]) : 'Dabar'}</button>` : '') + (it.sk ? `<a class="sk" href="#/igudis/${it.sk}" data-act="go" data-r="#/igudis/${it.sk}" aria-label="Įgūdis ${it.sk}">#${it.sk}</a>` : '') +
-      (it.r ? `<a class="sk" href="${esc(it.r)}" data-act="go" data-r="${esc(it.r)}">${/9line/.test(it.r) ? '9-Line' : /mist/.test(it.r) ? 'MIST' : /tst/.test(it.r) ? '10s' : 'Dozė'}</a>` : '');
+      (it.r ? `<a class="sk" href="${esc(it.r)}" data-act="go" data-r="${esc(it.r)}">${/9line/.test(it.r) ? '9-Line' : /mist/.test(it.r) ? 'Kortelė' : /tst/.test(it.r) ? '10s' : 'Dozė'}</a>` : '');
     h += `<div class="ck ${lvCls(it.g)}${on ? ' on' : ''}${it.k ? ' key' : ''}" data-act="ck" data-l="${esc(id)}" data-i="${i}" role="checkbox" aria-checked="${on}" tabindex="0"><span class="bx">✓</span><div class="t"><span class="tt">${esc(it.t)}</span> ${tag(it.g)}${infoB}${sub}${info}</div>${links ? '<div class="lk">' + links + '</div>' : ''}</div>`;
   });
   const pct = tot ? Math.round(n / tot * 100) : 0;
@@ -207,7 +207,7 @@ function buildIdx() {
   });
   Object.keys(E.puslapiai || {}).forEach(id => { const p = E.puslapiai[id]; add('Mokymosi temos', p.title, p.sub, strip(p.html), '#/p/' + id); });
   add('Įrankiai', '9 eilučių MEDEVAC prašymas', '9-Line forma su kodais', 'medevac evakuacija koordinatės skubumas urgent priority routine radijas', '#/9line');
-  add('Įrankiai', 'MIST kortelė', 'Vizuali sužeistojo kortelė: mechanizmas, sužalojimai kūno schemoje, požymiai, gydymas', 'mist handover perdavimas sužeistasis keli sužeistieji kortelė kūno schema žaizda turniketas', '#/mist');
+  add('Įrankiai', 'Nukentėjusiojo kortelė (DD1380)', 'Vizuali sužeistojo kortelė: mechanizmas, sužalojimai kūno schemoje, požymiai, gydymas', 'mist handover perdavimas sužeistasis keli sužeistieji kortelė kūno schema žaizda turniketas', '#/mist');
   add('Įrankiai', 'Nuskaityti popierinę kortelę', 'DD 1380 nuotrauka → MIST: langeliai, žymės, iškarpos', 'skenuoti nuskaityti nuotrauka fotografuoti popierinė kortelė dd1380 tccc card ocr atpažinimas', '#/skenuoti');
   add('Įrankiai', 'CLS vertinimo lapas', 'Instruktoriui: T / N kiekvienam punktui, K punktai, pastabos, įskaityta / neįskaityta', 'cls vertinimo lapas vertinimas egzaminas instruktorius tccc-cls-02-12 įskaita k punktai', '#/vertinimas');
   add('Įrankiai', 'Dozių kortelės', 'Kasdien 5 kortelės: vaistas ir kelias – prisiminkite dozę', 'dozių kortelės korteles flashcards kartojimas dozės atmintis testas', '#/korteles');

@@ -40,6 +40,7 @@ const installed = () => matchMedia('(display-mode: standalone)').matches || navi
 // Plytelių piktogramos ir plytelė: paantraštė rodoma tik kai yra būsena (užpildyta, skaičiai) – be pasikartojančių aprašymų
 const ic = d => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const ICO = {
+  scan: ic('<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M8 9h8M8 12h8M8 15h5"/>'),
   mist: ic('<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M6 16c.6-1.4 1.5-2 2.5-2s1.9.6 2.5 2M14 10h4M14 14h3"/>'),
   sitrep: ic('<path d="M9 3h6v3H9z"/><path d="M8 4.5H6a1 1 0 0 0-1 1V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5.5a1 1 0 0 0-1-1h-2M9 11h6M9 15h4"/>'),
   contrep: ic('<circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/>'),
@@ -56,6 +57,9 @@ const ICO = {
   exam: ic('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>'),
   eval: ic('<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4M9 12l2 2 4-4"/>')
 };
+// Nukentėjusiojo kortelė (DD1380) ir popierinės kortelės nuskaitymas – atskiros plytelės
+const cardTile = (href, cls) => { const st = stOf(() => MC); return tile(href, ICO.mist, 'Nukentėju\u00adsiojo kortelė', 'DD1380' + (st ? ' · ' + st : ''), 'Nukentėjusiojo kortelė DD1380', cls || 'wr'); };
+const scanTile = cls => tile('#/skenuoti', ICO.scan, 'Nuskaityti kortelę', 'popierinė DD1380', 'Nuskaityti popierinę kortelę DD1380', cls || 'wr');
 const tile = (href, ti, b, sm, lb, cls) => `<a class="tool${cls ? ' ' + cls : ''}" href="${href}" aria-label="${esc((lb || b) + (sm ? ': ' + sm : ''))}"><span class="ti">${ti}</span><b>${esc(b)}</b>${sm ? '<small>' + esc(sm) + '</small>' : ''}</a>`;
 const stOf = m => { try { return m().status(); } catch (e) { return ''; } }; // tools.js gali būti neįkeltas
 const installRow = () => installed() ? '' : row('#/idiegimas', 'Įdiegti programėlę', 'Veikia be interneto');
@@ -68,12 +72,12 @@ const figHtml = f => `<figure class="fig"><a href="${esc(f.src)}" target="_blank
 const skRefs = t => esc(t).replace(/#(\d{1,2})(?![\d])/g, (m, n) => { const k = skillById(+n); return k && ok(k.lygis) ? `<a href="#/igudis/${n}">#${n}</a>` : m; });
 // Susiję įrankiai įgūdžio puslapyje
 const SKILL_TOOLS = {
-  31: [['#/mist', 'MIST kortelė', 'Kūno schema, požymiai, gydymas – užpildykite ir perskaitykite']], 32: [['#/9line', '9-Line MEDEVAC forma', 'Užpildykite ir perskaitykite per radiją'], ['#/mist', 'MIST kortelė', 'Kūno schema, požymiai, gydymas']],
-  34: [['#/mist', 'MIST kortelė', 'Perduokite perskaitydami kortelę']], 36: [['#/tst', '10s triažas', 'Ten Second Triage – masinei nelaimei']]
+  31: [['#/mist', 'Nukentėjusiojo kortelė (DD1380)', 'Kūno schema, požymiai, gydymas – užpildykite ir perskaitykite']], 32: [['#/9line', '9-Line MEDEVAC forma', 'Užpildykite ir perskaitykite per radiją'], ['#/mist', 'Nukentėjusiojo kortelė (DD1380)', 'Kūno schema, požymiai, gydymas']],
+  34: [['#/mist', 'Nukentėjusiojo kortelė (DD1380)', 'Perduokite perskaitydami kortelę']], 36: [['#/tst', '10s triažas', 'Ten Second Triage – masinei nelaimei']]
 };
 // Įrankiai (tools.js): būsena rodoma po pavadinimu
 const toolRows = () => typeof MC === 'undefined' ? '' :
-  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) + row('#/tst', '10s triažas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status()) +
+  row('#/9line', '9-Line MEDEVAC', NL.status()) + row('#/mist', 'Nukentėjusiojo kortelė (DD1380)', MC.status()) + row('#/tst', '10s triažas', TS.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/scenarijai', 'Treniruočių scenarijai', SC.status()) +
   row('#/vertinimas', 'CLS vertinimo lapas', VL.status()) + row('#/korteles', 'Dozių kortelės', FC.status());
 const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="tag grn">CLS</span>';
 
@@ -97,7 +101,7 @@ const V = {
 
   toolTiles() {
     return '<div class="tools">' +
-      tile('#/tst', '10s', '10s triažas', stOf(() => TS)) + tile('#/pacientas?t=kortele', ICO.mist, 'MIST', stOf(() => MC), 'MIST kortelė') +
+      tile('#/tst', '10s', '10s triažas', stOf(() => TS)) + cardTile('#/pacientas?t=kortele') + scanTile() +
       tile('#/9line', '9', '9-Line', stOf(() => NL), '9-Line MEDEVAC') + tile('#/sitrep', ICO.sitrep, 'SITREP', stOf(() => SR)) +
       tile('#/contrep', ICO.contrep, 'CONTREP', stOf(() => CR), 'CONTREP – kontakto pranešimas') + tile('#/salute', ICO.salute, 'SALUTE', stOf(() => SU), 'SALUTE – priešo stebėjimas') + '</div>';
   },
@@ -176,7 +180,7 @@ const V = {
       const i = (E.fazes || []).indexOf(f), nf = (E.fazes || [])[i + 1];
       if (nf) h += `<button class="row nxt" data-act="go" data-r="#/f/${nf.id}">Kita fazė: ${esc(nf.id)} – ${esc(nf.pav)}<span class="ar">›</span></button>`;
     }
-    if (id !== 'CUF') h += '<div class="tools sm">' + `<a class="tool" href="#/9line"><span class="ti">9</span><b>9-Line</b></a><a class="tool" href="#/mist"><span class="ti">M</span><b>MIST</b></a>` + '</div>';
+    if (id !== 'CUF') h += '<div class="tools sm">' + `<a class="tool" href="#/9line"><span class="ti">9</span><b>9-Line</b></a>` + cardTile('#/mist') + `` + '</div>';
     return h;
   },
 

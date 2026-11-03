@@ -73,7 +73,7 @@ const CR = (() => {
     h += card(7, s, stepper('cr-n', 'wia', s.wia, 'Sužeisti', 'WIA') + stepper('cr-n', 'kia', s.kia, 'Žuvę', 'KIA') +
       (nm2 ? `<p class="muted">MIST kortelėse: ${plural(nm2, ['sužeistasis', 'sužeistieji', 'sužeistųjų'])}</p><button class="btn sm" data-act="cr-fill">Įrašyti iš MIST</button>` : '') +
       inp('casTxt', s.casTxt, 'Patikslinimas, pvz. 1 skubus, reikia MEDEVAC', 'Nuostolių patikslinimas') +
-      (s.wia || s.kia ? row('#/9line', '9-Line MEDEVAC prašymas', NL.status()) + row('#/mist', 'MIST kortelė', MC.status()) : ''), 'Jei sužeistųjų nėra – palikite tuščią.');
+      (s.wia || s.kia ? row('#/9line', '9-Line MEDEVAC prašymas', NL.status()) + row('#/mist', 'Nukentėjusiojo kortelė (DD1380)', MC.status()) : ''), 'Jei sužeistųjų nėra – palikite tuščią.');
     h += `<section class="outp"><div class="nlh"><b>Perduoti</b></div><pre id="cr-out">${esc(text(s))}</pre>` +
       '<div class="acts"><button class="btn pri" data-act="cr-read">Skaityti per radiją</button><button class="btn" data-act="cr-copy">Kopijuoti</button><button class="btn" data-act="cr-share">Bendrinti</button><button class="btn" data-act="cr-clear">Išvalyti</button></div></section>';
     h += row('#/salute', 'SALUTE – priešo stebėjimo pranešimas', SU.status()) + row('#/sitrep', 'SITREP – padėties pranešimas', SR.status()) + row('#/9line', '9-Line MEDEVAC', NL.status());
