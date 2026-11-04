@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-11-03 v33 (QR kode nebėra vardo, gimimo datos ir teikėjų; QR iš PCC gido – su programėlės pavadinimu; traumos laikas – ir vakar / užvakar, −1…−6 val.; ištrinant duomenis – ir CONTREP bei SALUTE; „Atgal“ grąžina į tą patį sąrašo skirtuką; kortelės nuskaitymas be interneto; paaiškinimai – po „Paaiškinimas“; CMC scenarijai CLS lygyje rodomi su pastaba; 9-Line DTG su zona, mėnesiu ir metais; GKS skaičiuoklė pradžioje; vaisto puslapyje – „Lietuvoje: preparatai ir pakuotės“; Nustatymuose – „Kitos programėlės“; didesni ⓘ ir skirtukai pirštinėms)';
+E.versija = '2026-11-04 v34 (numatytas lygis CLS, pradžioje „Pasirinkite lygį“; naloksonas – IV 40 mcg titruoti, IM 0,4 mg, IN Nyxoid 1,8 mg (JTS PFC); galvos trauma – sAKS > 100 mm Hg, Role 1 ir PCC – ≥ 110; nudegimai – TCCC 10 taisyklė, diurezė 30–50 ml/val.)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
@@ -105,7 +105,7 @@ E.sarasai = {
       { t: 'Konversija – kuo anksčiau (siekti < 2 val.), jei: nėra šoko, žaizdą galima stebėti, ne amputacija', k: true, sk: 8, s: ['CLS po 2 val. – tik CMC ar aukštesnio lygio mediko nurodymu', 'Uždėto > 6 val. nenuimkite (tik esant stebėsenai ir laboratorijai)'] },
       { t: 'IV / IO prieiga (šokas ar jo rizika; vaistai, kurių negalima per burną) – 18 G IV, nepavyksta – IO', g: 'CMC', sk: 19 },
       { t: 'TXA 2 g lėtai IV / IO – kuo anksčiau, ne vėliau kaip per 3 val. nuo sužeidimo', g: 'CMC', k: true, sk: 20, r: '#/vaistas/txa', s: ['Tikėtina transfuzija (šokas, didelė amputacija, penetruojanti liemens trauma, stiprus kraujavimas) arba reikšminga galvos smegenų trauma ar sutrikusi sąmonė po sprogimo ar bukos traumos'] },
-      { t: 'Hemoraginis šokas – kraujas, kol: čiuopiamas radialinis pulsas, gerėja sąmonė ar sAKS 100 mm Hg', g: 'CMC', sk: 20, s: ['Šaltai laikytas mažo titro O pilnas kraujas → iš anksto ištirtų donorų šviežias mažo titro O pilnas kraujas → plazma : eritrocitai : trombocitai 1 : 1 : 1 → 1 : 1 → plazma ar eritrocitai', 'Neištirtas šviežias kraujas – tik mediko nurodymu, apmokyto personalo'] },
+      { t: 'Hemoraginis šokas – kraujas, kol: čiuopiamas radialinis pulsas, pagerėjusi sąmonė arba sAKS 100 mm Hg (TCCC 2026)', g: 'CMC', sk: 20, s: ['Šaltai laikytas mažo titro O pilnas kraujas → iš anksto ištirtų donorų šviežias mažo titro O pilnas kraujas → plazma : eritrocitai : trombocitai 1 : 1 : 1 → 1 : 1 → plazma ar eritrocitai', 'Neištirtas šviežias kraujas – tik mediko nurodymu, apmokyto personalo'] },
       { t: 'Po pirmo kraujo vieneto – kalcis: 30 ml 10 % kalcio gliukonato (arba 10 ml 10 % kalcio chlorido)', g: 'CMC', sk: 20, r: '#/vaistas/kalcis' },
       { t: 'Nėra šoko – IV skysčių nereikia; sąmoningas ir galintis nuryti gali gerti' },
       { t: 'Gydant šoką – kartu pradėkite hipotermijos prevenciją' },
@@ -117,7 +117,7 @@ E.sarasai = {
     items: [
       { t: 'Hipotermijos prevencija – kuo anksčiau', k: true, sk: 21, s: ['Izoliacija nuo žemės, šlapius drabužius keiskite sausais', 'Aktyvus šildymas ant krūtinės ir pažasčių – ne tiesiai ant odos', 'Apvyniokite nepralaidžiu apvalkalu visą kūną ir galvą, veido neuždenkite'] },
       { t: 'Kraują ir IV / IO skysčius leiskite per šildytuvą', g: 'CMC', sk: 21 },
-      { t: 'Galvos smegenų trauma: nevykdo paprastų komandų ilgiau nei 10 min po sužalojimo', k: true, sk: 22, s: ['Neaišku, ar sąmonė sutrikusi dėl galvos traumos, ar dėl šoko – gydykite šoką', 'SpO₂ ≥ 92 %; sAKS > 100 mm Hg (arba normalus radialinis pulsas)', 'Jei nėra šoko – galva ir liemuo pakelti > 30°', 'Neurologinė patikra kas 5–10 min', 'Evakuoti kuo skubiau – operacija geriausia per 5 val.'] },
+      { t: 'Galvos smegenų trauma: nevykdo paprastų komandų ilgiau nei 10 min po sužalojimo', k: true, sk: 22, s: ['Neaišku, ar sąmonė sutrikusi dėl galvos traumos, ar dėl šoko – gydykite šoką', 'SpO₂ ≥ 92 %; sAKS > 100 mm Hg (TCCC 2026; arba normalus radialinis pulsas). Role 1 ir PCC (JTS) – ≥ 110 mm Hg.', 'Jei nėra šoko – galva ir liemuo pakelti > 30°', 'Neurologinė patikra kas 5–10 min', 'Evakuoti kuo skubiau – operacija geriausia per 5 val.'] },
       { t: 'Išvaržos požymiai (asimetriški arba fiksuoti ir išsiplėtę vyzdžiai, patologinė laikysena) – hipertoninis NaCl', g: 'CMC', sk: 22, r: '#/vaistas/nacl-hipert' },
       { t: 'Penetruojanti akies trauma: greitas regėjimo testas, standus skydelis (ne spaudžiamasis tvarstis), antibiotikas', k: true, sk: 23 },
       { t: 'Elektroninis stebėjimas (SpO₂, EtCO₂, AKS), jei yra', g: 'CMC', sk: 30 }
@@ -134,7 +134,7 @@ E.sarasai = {
       { t: 'Atvira kovinė žaizda – antibiotikas', k: true, sk: 26, s: ['Gali nuryti – cefadroksilis 1 g per burną (alt. cefaleksinas 500 mg kas 6 val.)', 'Negali nuryti – ceftriaksonas 2 g IV / IO / IM (CMC)'] },
       { h: 'W – žaizdos ir nudegimai' },
       { t: 'Apžiūrėkite ir sutvarstykite visas žaizdas; ieškokite papildomų', sk: 27 },
-      { t: 'Nudegimai: plotas devynių taisykle, sausi sterilūs tvarsčiai, šildymas', sk: 28, s: ['Veido nudegimai (ypač uždaroje patalpoje) – įkvėpimo trauma: stebėkite kvėpavimo takus ir SpO₂', '> 20 % – skysčiai IV / IO (CMC)'] },
+      { t: 'Nudegimai: plotas devynių taisykle, sausi sterilūs tvarsčiai, šildymas', sk: 28, s: ['Veido nudegimai (ypač uždaroje patalpoje) – įkvėpimo trauma: stebėkite kvėpavimo takus ir SpO₂', '> 20 % – skysčiai IV / IO (CMC) pagal TCCC 10 taisyklę: %KPP × 10 ml/val. (40–80 kg), +100 ml/val. kas 10 kg virš 80 kg; diurezė 30–50 ml/val.'] },
       { h: 'S – įtvėrimas' },
       { t: 'Įtverkite lūžius ir patikrinkite distalinį pulsą', sk: 29 },
       { h: 'Gaivinimas' },
@@ -178,7 +178,7 @@ E.sarasai = {
       { t: 'Deguonis: žemas SpO₂, oksigenaciją bloginantys sužalojimai, be sąmonės, galvos trauma (SpO₂ ≥ 92 %), šokas, aukštis, dūmų įkvėpimas', g: 'CMC' },
       { t: 'C: radialinis pulsas ir sąmonė; šokas – kraujas pagal TFC (CMC)', k: true, sk: 17 },
       { t: 'H: hipotermijos apvalkalas sandarus ir sausas; saugokite nuo vėjo ir kritulių', k: true, sk: 21 },
-      { t: 'Galvos trauma: SpO₂ ≥ 92 %, sAKS > 100 mm Hg; operacija – per 5 val.', sk: 22 },
+      { t: 'Galvos trauma: SpO₂ ≥ 92 %, sAKS > 100 mm Hg (Role 1 ir PCC (JTS) – ≥ 110); operacija – per 5 val.', sk: 22 },
       { t: 'P · A · W · S: skausmas, antibiotikai, žaizdos, įtvarai – kaip TFC' }
     ]
   },

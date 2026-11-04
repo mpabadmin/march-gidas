@@ -226,31 +226,30 @@ E.vaistai = [
     dozes: [{ k: 'IV / IO (TCCC 2026)', d: '250 ml 3 % arba 5 % NaCl (arba 30 ml 23,4 %) per ≥ 10 min, po to praplauti', p: 'Nėra atsako – kartoti po 20 min (maks. 2 dozės).' }],
     ispejimai: ['Ekstravazacijos atveju – nutraukti (TCCC 2026).'],
     pakuote: 'Pagal vieneto rinkinį',
-    pastabos: ['Galvos smegenų trauma (TCCC 2026): SpO₂ ≥ 92 %, sAKS > 100 mm Hg (arba normalus radialinis pulsas), ventiliuojant EtCO₂ 35–45 mm Hg (be EtCO₂ – 10 įpūtimų/min), galva ir liemuo > 30° (jei nėra šoko), neurologinė patikra kas 5–10 min.'],
+    pastabos: ['Galvos smegenų trauma (TCCC 2026): SpO₂ ≥ 92 %, sAKS > 100 mm Hg (arba normalus radialinis pulsas; Role 1 ir PCC (JTS) – ≥ 110 mm Hg), ventiliuojant EtCO₂ 35–45 mm Hg (be EtCO₂ – 10 įpūtimų/min), galva ir liemuo > 30° (jei nėra šoko), neurologinė patikra kas 5–10 min.'],
     saltinis: 'TCCC gairės 2026-05-01 (TFC 8)',
     nuorodos: [TCCC]
   },
   {
     id: 'naloksonas', name: 'Naloksonas', klase: 'Opioidų antagonistas (ne TCCC 2026)', grupe: 'retai', lygis: 'CMC', ne26: true,
-    ind: 'Opioidų (fentanilio, morfino) sukeltas kvėpavimo slopinimas. TCCC 2024: turi būti po ranka, kai skiriami opioidai.',
+    ind: 'Opioidų (fentanilio, morfino) sukeltas kvėpavimo slopinimas.',
     kontra: 'Alergija.',
     dozes: [
-      { k: 'IV / IO / IM / IN (TCCC 2024)', d: '0,4 mg', p: '0,4 mg/ml – 1 ml.' },
-      { k: 'Kartoti (JTS)', d: 'kas 2–3 min pagal poreikį, iki 10 mg', p: 'JTS kortelė: 0,4–2 mg. Po 10 mg be atsako – peržiūrėti diagnozę (PCS).' }
+      { k: 'IV / IO – titruoti (JTS PFC)', d: 'po 40 mcg, kol KD > 10 k./min', p: '0,4 mg (1 ml) + 9 ml 0,9 % NaCl = 40 mcg/ml. Leisti po 1 ml lėtai kas 2–3 min – kvėpavimas atsistato, nuskausminimas išlieka.' },
+      { k: 'IM / IN – kai nėra IV (JTS PFC; PCS)', d: '0,4 mg IM · IN – Nyxoid 1,8 mg', p: 'Kartoti kas 2–3 min pagal poreikį; iš viso ne daugiau kaip 10 mg.' }
     ],
     ispejimai: [
       'Naloksonas gali nustoti veikti anksčiau nei opioidas – stebėti, ar kvėpavimo slopinimas neatsinaujina (JTS).',
       'Kvėpavimas neatsistato – „uostymo“ padėtis, toliau – ventiliacija (TCCC 2026).',
-      'Per greitas atstatymas – abstinencija, hipertenzija, aritmijos, plaučių edema (PCS).'
+      'Per greitas atstatymas – skausmas, ažitacija, abstinencija, hipertenzija, aritmijos, plaučių edema (PCS).'
     ],
     pakuote: 'Ampulės 0,4 mg/ml (1 ml)',
     pastabos: [
-      'TCCC 2026 naloksono nebemini, nes opioidų gairėse nebėra.',
-      'Norint išlaikyti nuskausminimą – IV po 0,1–0,2 mg kas 2–3 min, kol KD > 10 k./min (PCS).',
+      'TCCC 2026 naloksono nemini (fentanilis išimtas iš nuskausminimo); ankstesnės TCCC – 0,4 mg turi būti po ranka, kai skiriami opioidai.',
       'Lietuvoje (VVKT, tikrinta 2026-10-14): tiekiamas FORVEL 0,4 mg/ml; Nyxoid 1,8 mg nosies purškalas – registruotas, netiekiamas.'
     ],
     susije: ['fentanilis', 'morfinas'],
-    saltinis: 'TCCC gairės 2024-01-25 (TFC 11c); JTS CPP kortelė 45 „Analgesic Medications“ (2023); PCS (naloksonas 400 mcg/ml)',
+    saltinis: 'JTS CPG Analgesia and Sedation Management during PFC (2023); PCS (naloksonas 400 mcg/ml; Nyxoid 1,8 mg)',
     nuorodos: [TCCC24, ['JTS CPP kortelė 45 – Analgesic Medications (tccc.org.ua)', 'https://tccc.org.ua/files/downloads/tccc-cpp-skill-card-45-analgesic-medications-en.pdf'],
       ['PCS – naloksonas 400 mcg/ml (JK eMC)', 'https://www.medicines.org.uk/emc/product/6589/smpc']],
     lt: { p: [{ n: 'FORVEL', d: '0,4 mg/ml · ampulė 1 ml', r: 'Medochemie', s: 'T' }], ne: 'Nyxoid 1,8 mg nosies purškalas – registruotas, netiekiamas', pa: '' }

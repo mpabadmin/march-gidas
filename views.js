@@ -84,7 +84,7 @@ const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="t
 const V = {
   // v31: viena pradžia – tik piktogramos (fazės, MEDEVAC). Sąrašai, vaistai, nustatymai – apatinėje juostoje ir antraštėje.
   home() {
-    return brand() + disclaimer() + REM.banners() +
+    return brand() + disclaimer() + lvStrip() + REM.banners() +
       '<h2>Fazė</h2>' + V.phaseTiles() +
       '<h2>MEDEVAC</h2>' + V.toolTiles();
   },

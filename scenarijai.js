@@ -4339,7 +4339,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Galvos traumos atveju šoką gydykite pirmiau: tikslas – normalus radialinis pulsas (sAKS > 100 mm Hg). Kraujas – kaip TFC, per šildytuvą. Hipertoninis NaCl tūriui atkurti neskiriamas.",
+    "why": "Galvos traumos atveju šoką gydykite pirmiau: tikslas – normalus radialinis pulsas (sAKS > 100 mm Hg, TCCC 2026; Role 1 ir PCC (JTS) – ≥ 110 mm Hg). Kraujas – kaip TFC, per šildytuvą. Hipertoninis NaCl tūriui atkurti neskiriamas.",
     "ref": [
      "#/igudis/22",
      "#/igudis/20"

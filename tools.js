@@ -12,11 +12,11 @@ const TCFG = {
   mc: () => [['#/skenuoti', 'Nuskaityti popierinę kortelę', 'DD1380 nuotrauka → MIST, be interneto'], ['#/pacientas', 'Pacientas', 'Apžvalga, vaistai, eiga, perdavimas'], ['#/qr-priimti', 'Priimti pacientą QR kodu', 'Nuskaityti kito telefono kodą'], ['#/9line', '9-Line MEDEVAC', NL.status()], [listRoute('tac-perdavimas'), 'Perdavimas priimančiai grandžiai', 'Kontrolinis sąrašas'], ['#/igudis/34', 'Perdavimas ir perėmimas', 'Įgūdis #34'], ['#/sitrep', 'SITREP – padėties pranešimas', SR.status()]],
   gk: () => [['#/mist', 'Nukentėjusiojo kortelė (DD1380)', MC.status()], ['#/igudis/17', 'Šoko atpažinimas: pulsas ir sąmonė (AVPU)', 'Įgūdis #17'], ['#/igudis/22', 'Galvos smegenų trauma', 'Įgūdis #22']],
   occl: 'Krūtinės lipdukas (okliuzinis tvarstis)', // MIST gydymo lusto pavadinimas (TCCC CLS terminas)
-  // MIST kortelės vaisto langas: greitosios dozės [būdas, kiekis, vienetai] – tik tikslios reikšmės iš vaistai.js teksto (testas tikrina)
+  // MIST kortelės vaisto langas: greitosios dozės [būdas, kiekis, vienetai, (pastaba)] – tik tikslios reikšmės iš vaistai.js teksto (testas tikrina)
   qd: { paracetamolis: [['PO', '1000', 'mg'], ['PO', '1300', 'mg']], meloksikamas: [['PO', '15', 'mg']], suzetriginas: [['PO', '100', 'mg'], ['PO', '50', 'mg']],
     ketaminas: [['IV', '25', 'mg'], ['IM', '100', 'mg'], ['IN', '50', 'mg']], esketaminas: [['IN', '14', 'mg'], ['IN', '28', 'mg']], cefadroksilis: [['PO', '1', 'g']], cefaleksinas: [['PO', '500', 'mg']],
     ceftriaksonas: [['IV', '2', 'g'], ['IM', '2', 'g']], txa: [['IV', '2', 'g']], kalcis: [['IV', '30', 'ml']], ondansetronas: [['ODT', '4', 'mg'], ['IV', '4', 'mg']], 'nacl-hipert': [['IV', '250', 'ml']],
-    fentanilis: [['IV', '50', 'mcg'], ['IN', '100', 'mcg']], morfinas: [['IM', '10', 'mg']], naloksonas: [['IV', '0,4', 'mg'], ['IM', '0,4', 'mg'], ['IN', '0,4', 'mg']] },
+    fentanilis: [['IV', '50', 'mcg'], ['IN', '100', 'mcg']], morfinas: [['IM', '10', 'mg']], naloksonas: [['IV', '40', 'mcg', 'titruoti'], ['IM', '0,4', 'mg'], ['IN', '1,8', 'mg']] },
   opKeys: ['contrep', 'salute'], // ištrinami kartu su sužeistųjų duomenimis (MGRS, priešo duomenys)
   pt: ['laikai', 'ck', 'svoris'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele); svoris – kiekvienam pacientui savas
   migrate: o => migrateOldMist(o), // senos MIST formos duomenys (žr. žemiau)
@@ -1224,7 +1224,7 @@ const MC = (() => {
             h += `<div class="mqpan" id="mqpan"><div class="mqph"><b>${esc(dn(v))}</b><small>C lentelė: ${esc(gn)}</small></div>` +
               (ah ? `<p class="mqwarn" role="alert">Pažymėta alergija: ${esc(ah)} – patikrinkite prieš skiriant.</p>` : alg.length ? `<p class="muted mqhint">Alergijos: ${esc(alg.join(', '))}</p>` : '') +
               (lg ? `<p class="muted mqhint">Paskutinė dozė šiam sužeistajam: ${esc(lg)}</p>` : '') +
-              (q.length ? '<div class="mqlab">Dozė ir būdas (iš gido)</div><div class="mqrow">' + q.map(([r, a, u], i) => { const on = SH.dose && !SH.dose.c && SH.dose.i === i; return `<button class="mqc big${on ? ' on' : ''}" data-sa="qd" data-v="${i}" aria-pressed="${!!on}"><b>${esc(a)} ${esc(u)}</b><small>${esc(r)}</small></button>`; }).join('') + '</div>' : '<p class="muted mqhint">Greitųjų dozių gide nėra – įveskite dozę.</p>') +
+              (q.length ? '<div class="mqlab">Dozė ir būdas (iš gido)</div><div class="mqrow">' + q.map(([r, a, u, n], i) => { const on = SH.dose && !SH.dose.c && SH.dose.i === i; return `<button class="mqc big${on ? ' on' : ''}" data-sa="qd" data-v="${i}" aria-pressed="${!!on}"><b>${esc(a)} ${esc(u)}</b><small>${esc(r)}${n ? ' (' + esc(n) + ')' : ''}</small></button>`; }).join('') + '</div>' : '<p class="muted mqhint">Greitųjų dozių gide nėra – įveskite dozę.</p>') +
               `<div class="mqrow"><button class="mqc${SH.dose && SH.dose.c ? ' on' : ''}" data-sa="cdose">${SH.dose && SH.dose.c ? esc(SH.dose.a + ' ' + SH.dose.u + ' ' + SH.dose.r) + ' ✎' : 'Kita dozė / būdas…'}</button><a class="mqc" href="#/vaistas/${esc(v.id)}">Dozės gide ›</a></div>` +
               '<div class="mqlab">Laikas</div>' + tmRow() + noteIn() + '</div>';
             if (SH.dose) foot = `<button class="btn pri mqsave" data-sa="save">Įrašyti: ${esc(dn(v) + ' ' + SH.dose.a + ' ' + SH.dose.u + ' ' + SH.dose.r)} · ${shT()}</button>`;

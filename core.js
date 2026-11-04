@@ -12,12 +12,16 @@ const br = s => esc(s).replace(/\n/g, '<br>');
 const fmt = x => String(x >= 100 ? Math.round(x) : x >= 1 ? Math.round(x * 10) / 10 : Math.round(x * 100) / 100).replace('.', ',');
 // Lygiai: CLS – kovos gelbėtojas; CMC – kovos medikas; CPP – kovos paramedikas / gydytojas
 const isAdv = g => /^(CMC|CPP)/.test(g || '');
-const tikCLS = () => LS.get('mg-tikcls', false);
+const tikCLS = () => LS.get('mg-tikcls', true); // v34: be išsaugoto pasirinkimo – CLS
+// Lygis pasirinktas aiškiai (raktas išsaugotas: pradžios juosta, instrukcija, antraštė, Nustatymai); kol nepasirinktas – pradžioje juosta „Pasirinkite lygį“
+const lvChosen = () => { try { return localStorage.getItem('mg-tikcls') !== null; } catch (e) { return true; } };
 const ok = g => !(tikCLS() && isAdv(g));
 // „Mano lygis“: CLS – tik kovos gelbėtojo veiksmai; CMC – viskas, kovos mediko veiksmai pažymėti geltona juosta
 const lvCls = g => g === 'CPP' ? 'lv-cpp' : isAdv(g) ? 'lv-cmc' : 'lv-cls';
 const lvlPick = () => { const c = tikCLS(); return `<div class="lvp" role="group" aria-label="Mano lygis"><span class="lvpl">Mano lygis</span><button class="lvb cls${c ? ' on' : ''}" data-act="lvl" data-k="CLS" aria-pressed="${c}"><b>CLS</b><small>kovos gelbėtojas</small></button><button class="lvb cmc${c ? '' : ' on'}" data-act="lvl" data-k="CMC" aria-pressed="${!c}"><b>CMC</b><small>kovos medikas</small></button></div>` +
   `<p class="lvh">${c ? 'Rodomi tik <b>CLS</b> veiksmai ir vaistai. Kovos mediko (CMC) veiksmai paslėpti – juos atlieka medikas.' : 'Rodoma viskas: <span class="lvk cls">CLS</span> – kovos gelbėtojo, <span class="lvk cmc">CMC</span> – kovos mediko, <span class="lvk cpp">CPP</span> – paramediko / gydytojo veiksmai.'}</p>`; };
+const lvStrip = () => lvChosen() ? '' : '<div class="lvs" role="group" aria-label="Pasirinkite lygį"><div class="lvst"><b>Pasirinkite lygį</b><small>Kol nepasirinkote – rodoma CLS. Vėliau perjungsite viršuje.</small></div><div class="lvp">' +
+  '<button class="lvb cls" data-act="lvl" data-k="CLS"><b>CLS</b><small>kovos gelbėtojas</small></button><button class="lvb cmc" data-act="lvl" data-k="CMC"><b>CMC</b><small>kovos medikas</small></button></div></div>';
 const tag = g => isAdv(g) ? `<span class="tag ${g === 'CPP' ? 'red' : 'amb'}" title="${g === 'CPP' ? 'Kovos paramedikas / gydytojas' : 'Kovos medikas'}">${esc(g)}</span>` : '';
 const row = (href, title, small, extra) => `<a class="row" href="${href}"><div>${esc(title)}${small ? '<small>' + esc(small) + '</small>' : ''}</div>${extra || ''}<span class="ar">›</span></a>`;
 const notFound = () => '<h1>Nerasta</h1><p class="muted">Šio puslapio nėra. Grįžkite į pradžią.</p>';
