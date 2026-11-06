@@ -131,34 +131,149 @@ function toastAct(t, lb, fn) {
   el.appendChild(b); el.classList.add('act');
   clearTimeout(toast.tm); toast.tm = setTimeout(() => { el.className = ''; }, 6000);
 }
-// Skaitymo režimas per visą ekraną; btns – papildomi mygtukai apačioje: [[pavadinimas, funkcija], …]
-function readMode(title, lines, btns) {
+// ───────── Skaitymas balsu (skaitymo režimui) – Web Speech API; „Per radiją“: lėčiau, pauzė po eilutės, skaičiai po vieną ─────────
+const RDV = (() => {
+  const KEY = TCFG.pre + 'rd-radio';
+  const SS = typeof speechSynthesis !== 'undefined' && typeof SpeechSynthesisUtterance !== 'undefined' ? speechSynthesis : null;
+  let el = null, L = [], i = 0, on = false, once = false, done = false, tok = 0, tm = 0, wd = 0, cur = null;
+  const radio = () => !!LS.get(KEY, false);
+  // santrumpos → žodžiai (tik balsui, ne ekranui); vienintelė vieta
+  const AB = {
+    lt: [[/\bmcg\b|µg/g, 'mikrogramų'], [/\bmg\b/g, 'miligramų'], [/\bml\b/g, 'mililitrų'], [/(\d)\s*g\b/g, '$1 gramų'], [/\/kg\b/g, ' kilogramui'], [/\/val\.?/g, ' per valandą'], [/\/min\.?/g, ' per minutę'],
+      [/\bval\./g, 'valandos'], [/(\d)\s*min\b\.?/g, '$1 minutės'], [/\bIV\b/g, 'į veną'], [/\bIM\b/g, 'į raumenis'], [/\bIN\b/g, 'į nosį'], [/\bIO\b/g, 'į kaulą'], [/\bPO\b/g, 'per burną'], [/\bTQ\b/g, 'turniketas'],
+      [/\bSpO[₂2](?!\w)/g, 'saturacija'], [/\bmm\s?Hg\b/g, 'milimetrų gyvsidabrio']],
+    en: [[/\bmcg\b|µg/g, 'micrograms'], [/\bmg\b/g, 'milligrams'], [/\bml\b/g, 'millilitres'], [/\/kg\b/g, ' per kilogram'], [/\/(h|hr)\b/g, ' per hour'], [/\/min\b/g, ' per minute'], [/\bTQ\b/g, 'tourniquet'],
+      [/\bSpO[₂2](?!\w)/g, 'oxygen saturation'], [/\bmm\s?Hg\b/g, 'millimetres of mercury']]
+  };
+  const ICO = { prev: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h2.5v14H6zM19 5v14L9.5 12z"/></svg>', next: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.5 5H18v14h-2.5zM5 5v14l9.5-7z"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>', pause: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></svg>' };
+  const CSS = '#rd.rdv-on .rdp{padding-bottom:calc(190px + env(safe-area-inset-bottom))}html.gl #rd.rdv-on .rdp{padding-bottom:calc(220px + env(safe-area-inset-bottom))}' +
+    '.rdv{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--bg);border-top:2px solid var(--tx);padding:8px 16px calc(8px + env(safe-area-inset-bottom))}.rdvi{max-width:720px;margin:0 auto}' +
+    '.rdvm{display:flex;gap:8px}.rdvm .btn,.rdvs .btn{margin:0;min-width:0;touch-action:manipulation}.rdvb{flex:none;width:56px;min-height:56px;padding:0;display:flex;align-items:center;justify-content:center}.rdvb svg{width:26px;height:26px}' +
+    '.rdvp{flex:1;min-height:56px;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 8px;background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:700;font-size:16px;line-height:1.15;text-align:center}.rdvp svg{flex:none;width:22px;height:22px}' +
+    '.rdvp.on{background:var(--tx);border-color:var(--tx);color:var(--bg)}.rdv .btn:disabled{opacity:.45}' +
+    '.rdvs{display:flex;gap:8px;margin-top:8px}.rdvs .btn{flex:1 1 0;min-height:44px;padding:6px 4px;font-size:14px;line-height:1.15}' +
+    '.rdvt{display:flex;align-items:center;justify-content:center;gap:6px}.rdvt::before{content:"";flex:none;width:12px;height:12px;border-radius:50%;border:2px solid currentColor}.rdvt[aria-checked=true]{background:var(--tx);color:var(--bg);border-color:var(--tx)}.rdvt[aria-checked=true]::before{background:currentColor}' +
+    '.rdvn{margin:6px 0 0;font-size:13px;line-height:1.3;color:var(--tx2);text-align:center}.rdvn[hidden]{display:none}' +
+    '.rdl.on{background:var(--accbg);box-shadow:0 0 0 6px var(--accbg),-10px 0 0 var(--acc)}' +
+    'html.gl .rdvb,html.gl .rdvp{min-height:64px}html.gl .rdvp{font-size:18px}html.gl .rdvs .btn{min-height:52px;font-size:16px}@media(max-width:359px){.rdvp{font-size:15px;gap:6px}.rdvs .btn{font-size:13px;padding:6px 2px}}';
+  // eilutės tekstas balsui: be numerio (.rn) ir pavadinimo (<small> gale); <small> pradžioje – etiketė, skaitoma prieš tekstą
+  const txt = n => {
+    const c = n.cloneNode(true), f = c.firstElementChild, pre = f && f.tagName === 'SMALL' && !f.previousSibling ? f.textContent.replace(/\s+/g, ' ').trim() : '';
+    c.querySelectorAll('small,.rn,img,svg').forEach(x => x.remove());
+    const t = c.textContent.replace(/\n+/g, ', ').replace(/\s+/g, ' ').trim();
+    return t ? (pre ? pre + ', ' + t : t) : pre;
+  };
+  const say = (t, en, rd) => {
+    const no = en ? 'not specified' : 'nenurodyta';
+    t = t.replace(/(^|\s)—(?=[\s.,;:]|$)/g, '$1' + no).replace(/\s*[–—·•→]\s*/g, ', ').replace(/_{2,}/g, ''); // „—“ (neužpildyta) → „nenurodyta“, „–“ – pauzė
+    if (/^[,\s-]*$/.test(t)) return no;
+    (en ? AB.en : AB.lt).forEach(r => { t = t.replace(r[0], r[1]); });
+    t = t.replace(/(\d)\s*\/\s*(\d)/g, en ? '$1 over $2' : '$1 su $2'); // AKS 92/58 → „92 su 58“
+    if (rd) t = t.replace(/(\d)[.,](\d)/g, en ? '$1 point $2' : '$1 kablelis $2').replace(/(\d):(?=\d)/g, '$1 ').replace(/(\d)(?=[A-Za-z])|([A-Za-z])(?=\d)/g, '$1$2 ').replace(/\d+/g, m => m.split('').join(' ')); // 35U → „3 5 U“
+    return t.replace(/,\s*(?=[.,;:])/g, '').replace(/\s+/g, ' ').trim();
+  };
+  const voice = en => {
+    let vs = []; try { vs = SS ? SS.getVoices() : []; } catch (e) {}
+    const lg = en ? 'en' : 'lt', m = vs.filter(v => String(v.lang || '').toLowerCase().replace('_', '-').indexOf(lg) === 0), ex = en ? 'en-us' : 'lt-lt';
+    const is = v => String(v.lang || '').toLowerCase().replace('_', '-') === ex;
+    return m.find(v => v.localService && is(v)) || m.find(v => v.localService) || m.find(is) || m[0] || null;
+  };
+  const q = s => el ? el.querySelector(s) : null;
+  const mark = k => { L.forEach((n, j) => n.classList.toggle('on', j === k)); if (k >= 0 && L[k]) try { L[k].scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { L[k].scrollIntoView(); } };
+  const note = () => {
+    const n = q('.rdvn'); if (!n) return;
+    let t = ''; if (!SS) t = 'Balso skaitymas šiame įrenginyje nepalaikomas';
+    else { const en = typeof outEn === 'function' && outEn(); let vs = []; try { vs = SS.getVoices(); } catch (e) {} if (vs.length && !voice(en)) t = (en ? 'Angliško' : 'Lietuviško') + ' balso įrenginyje nėra – skaitoma numatytuoju balsu'; }
+    n.textContent = t; n.hidden = !t;
+  };
+  const ui = () => {
+    if (!el) return;
+    const p = q('.rdvp'), st = !!L.some(n => n.classList.contains('on'));
+    if (p) { p.innerHTML = (on ? ICO.pause : ICO.play) + '<span>' + (on ? 'Pauzė · skaitoma ' + (i + 1) : 'Skaityti balsu') + '</span>'; p.classList.toggle('on', on); p.setAttribute('aria-pressed', String(on)); p.disabled = !SS || !L.length; }
+    [['vprev', !SS || !st || i <= 0], ['vnext', !SS || i >= L.length - 1], ['vrep', !SS || !L.length], ['vstart', !SS || !L.length], ['vradio', !SS]].forEach(([k, d]) => { const b = q('[data-rd=' + k + ']'); if (b) b.disabled = d; });
+    const r = q('.rdvt'); if (r) r.setAttribute('aria-checked', String(radio()));
+    note();
+  };
+  const cancel = () => { tok++; clearTimeout(tm); clearTimeout(wd); cur = null; if (SS) try { SS.cancel(); } catch (e) {} };
+  const speak = () => {
+    if (!SS || !L[i]) { on = false; ui(); return; }
+    cancel(); const t = tok, rd = radio(), en = typeof outEn === 'function' && outEn();
+    mark(i); ui();
+    const u = new SpeechSynthesisUtterance(say(txt(L[i]), en, rd));
+    u.lang = en ? 'en-US' : 'lt-LT'; const v = voice(en); if (v) u.voice = v;
+    u.rate = rd ? 0.8 : 1; u.pitch = 1; u.volume = 1;
+    let started = false;
+    u.onstart = () => { if (t === tok) { started = true; clearTimeout(wd); } };
+    u.onend = () => { if (t !== tok) return; cur = null; after(rd); };
+    u.onerror = e => { if (t !== tok) return; const k = e && e.error; if (k === 'interrupted' || k === 'canceled') return; cur = null; on = false; ui(); toast(k === 'not-allowed' ? 'Balso skaitymas neleistas – bakstelėkite dar kartą' : 'Balso skaitymas nepavyko'); };
+    cur = u; // Chrome: nuoroda, kad utterance nebūtų išvalytas prieš onend
+    try { SS.speak(u); } catch (e) { on = false; ui(); return; }
+    wd = setTimeout(() => { if (t !== tok || started) return; cancel(); on = false; ui(); toast('Balsas neatsako – patikrinkite įrenginio balso sintezės nustatymus'); }, 8000);
+  };
+  const after = rd => {
+    if (once || i >= L.length - 1) { on = false; done = i >= L.length - 1 && !once; once = false; ui(); return; }
+    tm = setTimeout(() => { if (!on) return; i++; speak(); }, rd ? 900 : 200);
+  };
+  const play = () => { if (done) { i = 0; done = false; } on = true; once = false; speak(); };
+  const pause = () => { if (!on && !cur) return; on = false; cancel(); ui(); };
+  const go = d => { const st = L.some(n => n.classList.contains('on')), k = st ? i + d : i; if (k < 0 || k >= L.length) return; i = k; done = false; on = true; once = false; speak(); };
+  const act = k => {
+    if (!el) return;
+    if (k === 'play') return on ? pause() : play();
+    if (k === 'prev') return go(-1);
+    if (k === 'next') return go(1);
+    if (k === 'rep') { if (!L.length) return; done = false; on = true; once = true; speak(); return; }
+    if (k === 'start') { i = 0; done = false; on = true; once = false; speak(); return; }
+    if (k === 'radio') { LS.set(KEY, !radio()); ui(); }
+  };
+  const bar = () => `<div class="rdv" role="group" aria-label="Skaitymas balsu"><div class="rdvi"><div class="rdvm">` +
+    `<button class="btn rdvb" data-rd="vprev" aria-label="Ankstesnė eilutė">${ICO.prev}</button><button class="btn rdvp" data-rd="vplay" aria-pressed="false">${ICO.play}<span>Skaityti balsu</span></button><button class="btn rdvb" data-rd="vnext" aria-label="Kita eilutė">${ICO.next}</button></div>` +
+    `<div class="rdvs"><button class="btn" data-rd="vrep">Kartoti eilutę</button><button class="btn" data-rd="vstart">Nuo pradžios</button><button class="btn rdvt" data-rd="vradio" role="switch" aria-checked="false">Per radiją</button></div><div class="rdvn" hidden></div></div></div>`;
+  const init = root => {
+    if (!document.getElementById('rdcss')) { const s = document.createElement('style'); s.id = 'rdcss'; s.textContent = CSS; document.head.appendChild(s); }
+    cancel(); el = root; L = [].slice.call(root.querySelectorAll('.rdl')).filter(txt); i = 0; on = false; once = false; done = false; ui();
+    if (SS) try { SS.getVoices(); } catch (e) {}
+  };
+  const stop = () => { cancel(); on = false; once = false; done = false; i = 0; L.forEach(n => n.classList.remove('on')); L = []; el = null; };
+  if (SS && typeof SS.addEventListener === 'function') try { SS.addEventListener('voiceschanged', note); } catch (e) {}
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+  addEventListener('pagehide', () => pause());
+  return { bar, init, act, stop, pause, say, txt, voice, state: () => ({ i, on, n: L.length, radio: radio() }) };
+})();
+// Skaitymo režimas per visą ekraną; btns – papildomi mygtukai apačioje: [[pavadinimas, funkcija], …]; opts.voice === false – be skaitymo balsu
+function readMode(title, lines, btns, opts) {
   let el = document.getElementById('rd');
   if (!el) {
     el = document.createElement('div'); el.id = 'rd'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
     el.addEventListener('click', e => {
       const b = e.target.closest('[data-rd]'); if (!b) return;
-      if (b.dataset.rd === 'x') closeRead(); else { const f = (el.rdBtns || [])[+b.dataset.rd]; if (f) f[1](); }
+      const k = b.dataset.rd;
+      if (k === 'x') closeRead(); else if (k.charAt(0) === 'v') RDV.act(k.slice(1)); else { const f = (el.rdBtns || [])[+k]; if (f) f[1](); }
     });
     document.body.appendChild(el);
   }
+  RDV.stop();
   el.rdBtns = Array.isArray(btns) ? btns : [];
   el.setAttribute('aria-label', title);
+  const voice = !(opts && opts.voice === false);
   el.innerHTML = `<div class="rdp"><div class="rdh"><b>${esc(title)}</b><button class="ib" data-rd="x" aria-label="Uždaryti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>` +
     lines.map(x => `<div class="rdl">${x}</div>`).join('') +
     (el.rdBtns.length ? '<div class="acts rdacts">' + el.rdBtns.map((b, i) => `<button class="btn" data-rd="${i}">${esc(b[0])}</button>`).join('') + '</div>' : '') +
-    '</div>';
+    '</div>' + (voice ? RDV.bar() : '');
+  el.classList.toggle('rdv-on', voice);
   el.hidden = false; document.documentElement.classList.add('fbopen');
   try { history.pushState(Object.assign({}, history.state, { rd: 1 }), ''); } catch (e) {}
+  if (voice) RDV.init(el);
   const x = el.querySelector('[data-rd=x]'); if (x) x.focus();
 }
 function closeRead() {
   const el = document.getElementById('rd'); if (!el || el.hidden) return;
-  el.hidden = true; document.documentElement.classList.remove('fbopen');
+  RDV.stop(); el.hidden = true; document.documentElement.classList.remove('fbopen');
   if (history.state && history.state.rd) history.back();
 }
 addEventListener('keydown', e => { if (e.key === 'Escape') closeRead(); });
-addEventListener('popstate', () => { const el = document.getElementById('rd'); if (el && !el.hidden && !(history.state && history.state.rd)) { el.hidden = true; document.documentElement.classList.remove('fbopen'); } });
+addEventListener('popstate', () => { const el = document.getElementById('rd'); if (el && !el.hidden && !(history.state && history.state.rd)) { RDV.stop(); el.hidden = true; document.documentElement.classList.remove('fbopen'); } });
 const chip = (act, k, on, lb, extra) => `<button class="${on ? 'on' : ''}" data-act="${act}" data-k="${esc(k)}" aria-pressed="${!!on}"${extra || ''}>${lb}</button>`;
 const stepper = (act, k, v, lb, sub) => `<div class="stp"><div><b>${lb}</b>${sub ? '<small>' + sub + '</small>' : ''}</div><button data-act="${act}" data-k="${k}" data-d="-1" aria-label="Mažiau: ${esc(lb)}">−</button><span class="sv">${v}</span><button data-act="${act}" data-k="${k}" data-d="1" aria-label="Daugiau: ${esc(lb)}">+</button></div>`;
 const nowHM = () => hm(Date.now());
@@ -1733,7 +1848,7 @@ const MC = (() => {
       de.classList.add('prt'); addEventListener('afterprint', done); setTimeout(() => window.print(), 60);
     };
     readMode('Nukentėjusiojo kortelė', ['<p class="muted mt0">A5: priekis ir galas. Spausdinama A4 lape – perkirpkite per vidurį.</p>' +
-      pp.map((p, i) => `<img class="cardimg cardpg" alt="Kortelė – ${i ? 'galas' : 'priekis'}" src="${p.toDataURL('image/png')}">`).join('')], [['Bendrinti', share], ['Išsaugoti', save], ['Spausdinti', print]]);
+      pp.map((p, i) => `<img class="cardimg cardpg" alt="Kortelė – ${i ? 'galas' : 'priekis'}" src="${p.toDataURL('image/png')}">`).join('')], [['Bendrinti', share], ['Išsaugoti', save], ['Spausdinti', print]], { voice: false });
   }
   // Paciento failui: visa būsena ir dabartinės kortelės tekstas
   return { view, act, onInput, status, text, addGcs, addRows, addInj, current, region, state: load, curText: en => curText(load(), en), cardCanvas, loadLogo, vitLine, tqName, outView, parts: (s, n, tot, en) => parts(s, n || 1, tot || 1, en), injText, abn,
