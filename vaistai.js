@@ -121,17 +121,17 @@ E.vaistai = [
   },
   {
     id: 'morfinas', name: 'Morfinas', klase: 'Opioidas (ne TCCC 2026) · ⚑ be TCCC šaltinio', grupe: 'skausmas', lygis: 'CPP', ne26: true,
-    ind: 'Tik jei opioidą numato vieneto SOP – nei TCCC 2026, nei TCCC 2024 gairėse morfino nėra. Stiprus skausmas (PCS).',
+    ind: 'Tik jei opioidą numato vieneto SOP – nei TCCC 2026, nei TCCC 2024 gairėse morfino nėra. Stiprus skausmas (JTS PFC).',
     kontra: 'Alergija. PCS: ūminis kvėpavimo slopinimas, obstrukcinė kvėpavimo takų liga, galvos trauma, padidėjęs intrakranijinis spaudimas, smegenų edema, koma, traukulių ligos, MAO inhibitoriai (per 2 sav.), paralyžinis žarnų nepraeinamumas, feochromocitoma.',
     dozes: [
-      { k: 'IV (PCS)', d: '2,5–15 mg lėtai, titruojant pagal atsaką', p: 'Pradėti nuo mažesnės dozės; įprastai ne dažniau kaip kas 4 val., bet dozė ir intervalas titruojami, kol pasiekiamas nuskausminimas. Praskiedus iki 1 mg/ml: 10 mg/ml ampulė – 1 ml + 9 ml 0,9 % NaCl; tada 1 ml = 1 mg.' },
-      { k: 'IM (PCS)', d: '10 mg (5–20 mg) kas 4 val.', p: '10 mg/ml – 1 ml; 20 mg/ml (Maracex) – 0,5 ml.' }
+      { k: 'IV / IO (JTS PFC)', d: '5 mg (2,5–10 mg) lėtai; kartoti kas 5 min, kol skausmas sumažėja arba KD < 10', p: '10 mg (1 ml) + 9 ml 0,9 % NaCl = 1 mg/ml. Šoke ar hipovolemijai – pradėti nuo 2,5 mg.' },
+      { k: 'IM – tik jei nėra IV (JTS PFC)', d: '5–10 mg; kartoti pagal poreikį kas 1–6 val.', p: '10 mg/ml – 0,5–1 ml; 20 mg/ml (Maracex) – 0,25–0,5 ml.' }
     ],
     ispejimai: [
       'Prieš skiriant – AVPU įrašyti į kortelę; naloksonas turi būti po ranka (TCCC 2024).',
       'Stebėti kvėpavimo takus, kvėpavimą ir kraujotaką; kvėpavimui retėjant – „uostymo“ padėtis, toliau – ventiliacija (TCCC 2026).',
       'Benzodiazepinų (pvz., midazolamo) kartu neskirti (TCCC 2026).',
-      'Šokas, hipotenzija – mažesnės dozės (PCS); šoko ar kvėpavimo sutrikimo atveju – ketaminas (TCCC 2024).',
+      'Šokas, hipovolemija – pradėti nuo 2,5 mg (JTS PFC); šoko ar kvėpavimo sutrikimo atveju – ketaminas (TCCC 2024).',
       'Tikrinkite ampulės stiprumą (10 ar 20 mg/ml) – nuo jo priklauso ml.'
     ],
     pakuote: 'Ampulės 10 mg/ml (1 ml); Maracex – 20 mg/ml (1 ml)',
@@ -139,11 +139,13 @@ E.vaistai = [
       'Ketaminą paprastai saugu skirti ir po opioido (TCCC 2026).',
       '10 mg morfino ≈ 100 mcg fentanilio (NextGen Combat Medic).',
       'Pykinimui – ondansetronas.',
+      'Kiti šaltiniai – PCS: IV 2,5–15 mg lėtai, titruojant, įprastai ne dažniau kaip kas 4 val.; IM 10 mg (5–20 mg) kas 4 val. Gide naudojama JTS PFC schema.',
       'Lietuvoje (VVKT, tikrinta 2026-10-14): tiekiami Morphine hydrochloride Kalceks 10 mg/ml ir Maracex 20 mg/ml (Kalceks), 1 ml ampulės. Narkotinė medžiaga.'
     ],
     susije: ['ketaminas', 'naloksonas', 'fentanilis', 'ondansetronas'],
-    saltinis: 'PCS (morfino sulfatas 10 mg/ml); TCCC gairės 2026-05-01 ir 2024-01-25 – morfino nėra',
-    nuorodos: [['PCS – morfino sulfatas 10 mg/ml (JK eMC)', 'https://www.medicines.org.uk/emc/product/13178/smpc'], TCCC,
+    saltinis: 'JTS CPG Analgesia and Sedation Management during PFC (2023); PCS (morfino sulfatas 10 mg/ml) – kiti šaltiniai; TCCC gairės 2026-05-01 ir 2024-01-25 – morfino nėra',
+    nuorodos: [['JTS CPP kortelė 45 – Analgesic Medications (tccc.org.ua)', 'https://tccc.org.ua/files/downloads/tccc-cpp-skill-card-45-analgesic-medications-en.pdf'],
+      ['PCS – morfino sulfatas 10 mg/ml (JK eMC)', 'https://www.medicines.org.uk/emc/product/13178/smpc'], TCCC,
       ['NextGen Combat Medic – kai nėra ketamino', 'https://nextgencombatmedic.com/2024/11/18/what-if-you-didnt-have-ketamine-as-a-68w-combat-medic']],
     lt: { p: [
       { n: 'Morphine hydrochloride Kalceks', d: '10 mg/ml · ampulė 1 ml', r: 'Kalceks', s: 'T' },
