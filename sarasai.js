@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-11-07 v37 (peržiūros pataisos pagal TCCC 2026: esketaminas kas 30 min, NPA / i-gel A sąraše, m19, naktinis kontrastas, OPSEC, UX)';
+E.versija = '2026-11-07 v37 (peržiūros pataisos pagal TCCC 2026: esketaminas kas 30 min, NPA A sąraše, m19, naktinis kontrastas, OPSEC, UX)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
@@ -78,7 +78,6 @@ E.sarasai = {
       { t: 'Be sąmonės, be obstrukcijos – stabili šoninė padėtis: galva atlošta, smakras atitrauktas nuo krūtinės', k: true, sk: 10 }, // v37: TCCC 2026 – pirmiausia šoninė padėtis
       { t: 'Smakro pakėlimas / žandikaulio pastūmimas; NPA, jei kvėpavimo takai neišlieka praeinami (be sąmonės, be obstrukcijos)', sk: 9, i: sk(9, 'Kvėpavimo takų atvėrimas') + ', ' + sk(11, 'NPA') + '. TCCC 2026 NPA mini kvėpavimo (R) dalyje – kai ventiliacija sutrikusi ir hipoksija neištaisoma, kartu su ambu maišu; CLS vertinimo lapo 5b–5c punktai atitinka šį žingsnį.' }, // v37
       { t: 'Atsiurbimas, jei yra priemonių', g: 'CMC' },
-      { t: 'Ekstraglotinė priemonė (i-gel) – tik pagal vieneto SOP', g: 'CMC', i: 'TCCC 2026 TFC ekstraglotinės priemonės nebenumato (buvo TCCC 2024); JTS Airway CPG 2026 – išmokytam personalui. Nepadeda – krikotiroidotomija.' }, // v37: Kiti šaltiniai
       { t: 'Obstrukcija išlieka (veido trauma, kraujas, deformacija, nudegimai) – chirurginė krikotiroidotomija', g: 'CMC', sk: 13, i: 'TCCC 2026: atvira technika su bougie arba standartinė atvira; vietą patvirtinti kapnografija (EtCO₂).' },
       { t: 'Kaklo stabilizacija nereikalinga, jei trauma tik penetruojanti' },
       { t: 'Kvėpavimo takus dažnai vertinkite iš naujo' }
