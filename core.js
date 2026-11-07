@@ -153,7 +153,7 @@ function timersMini() {
   const a = [];
   if (T.trauma) { const txa = T.trauma + 3 * 3600e3; a.push(`<span>Trauma <b>${hm(T.trauma)}</b></span>`); if (ok('CMC')) a.push(`<span class="${now > txa ? 'x' : txa - now <= 3600e3 ? 'w' : ''}">TXA ${now > txa ? '<b>praėjo</b>' : 'iki <b>' + hm(txa) + '</b>'}</span>`); }
   if (T.turn) { const conv = T.turn + 2 * 3600e3; a.push(`<span class="${now > conv ? 'x' : 'w'}">Turniketas <b>${hm(T.turn)}</b> · ${tmAgo(T.turn, now)}</span>`); }
-  return `<a class="tmini" href="#/pacientas" aria-label="Laikai – atidaryti paciento faile">${a.join('')}</a>`;
+  return `<a class="tmini" href="#/pacientas" aria-label="Laikai – atidaryti sužeistojo ekraną „Pacientas“">${a.join('')}</a>`;
 }
 function updTimers() {
   const el = document.getElementById('tm'); if (el) el.innerHTML = timersHtml();
@@ -171,7 +171,7 @@ const COURSE = 'https://mindaugas-grinevicius-s-school.teachable.com/p/tactical-
 const ICO_SHIELD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6zM12 8v5M12 16h.01"/></svg>';
 // Visada matoma juosta: gidas – tik pagalbinė priemonė, nuoroda į TCCC kursą
 function disclaimer() {
-  return `<a class="dstrip" href="${COURSE}" target="_blank" rel="noopener">${ICO_SHIELD}<span><b>Tik pagalbinė priemonė</b> – neatstoja TCCC kursų</span><em>Kursas ↗</em></a>`;
+  return `<a class="dstrip" href="${COURSE}" target="_blank" rel="noopener">${ICO_SHIELD}<span><b>Pagalbinė priemonė</b> – neatstoja kursų</span><em><span class="dsk">Kursas</span> ↗</em></a>`;
 }
 // ⓘ paaiškinimas: mygtukas ir paslėptas tekstas (html – iš gido duomenų)
 const infoBtn = key => `<button class="cki" data-act="ckinfo" aria-expanded="false" aria-controls="ix-${esc(key)}" aria-label="Paaiškinimas">i</button>`;

@@ -117,7 +117,22 @@ function onNav(first) {
   HUB.after();
 }
 
-function setLvl(c) { if (c !== tikCLS() || !lvChosen()) { LS.set('mg-tikcls', c); IDX = null; tmEdit = null; render(); toast(c ? 'CLS – rodomi tik kovos gelbėtojo veiksmai' : 'CMC – rodomi ir kovos mediko veiksmai'); } }
+// v37: tuščios kortelės juosta nerodoma – įrašius pirmą duomenį (pvz. laiką sąraše) juosta įterpiama be perpiešimo
+function barRefresh() {
+  if (app.querySelector('.hbar')) return;
+  let pb = ''; try { pb = HUB.bar(route().p[0]); } catch (e) { console.error(e); }
+  if (pb) { app.insertAdjacentHTML('beforeend', pb); document.body.classList.add('hasbar'); }
+}
+function setLvl(c) {
+  if (c === tikCLS() && lvChosen()) return;
+  const had = lvChosen(), prev = tikCLS();
+  LS.set('mg-tikcls', c); IDX = null; tmEdit = null; render();
+  // v37: su „Atšaukti“ (kaip „Išvalyti žymėjimus“) – netyčia paspaudus antraštės jungiklį grįžtama į ankstesnį lygį
+  toastAct(c ? 'CLS – rodomi tik kovos gelbėtojo veiksmai' : 'CMC – rodomi ir kovos mediko veiksmai', 'Atšaukti', () => {
+    if (had) LS.set('mg-tikcls', prev); else { try { localStorage.removeItem('mg-tikcls'); } catch (e) {} }
+    IDX = null; tmEdit = null; render();
+  });
+}
 
 addEventListener('hashchange', () => onNav(false));
 backBtn.onclick = () => { if (depth > 0) history.back(); else location.replace('#/'); };
@@ -216,7 +231,7 @@ app.addEventListener('click', e => {
     case 'tm': MC.sheet('time', { field: d.k }); break; // laiko langas – tas pats visur (kartu su MIST kortele)
     case 'tm-q': { // sąrašo ⏱: laikas, punktas pažymimas; turniketui – dar galūnė
       const k = d.k, ts = Date.now() - (+d.m || 0) * 60000, lb = k === 'turn' ? 'Turniketas' : 'Trauma', box = el.closest('.tmq-ck');
-      setTm(ts, k);
+      setTm(ts, k); barRefresh();
       app.querySelectorAll('.tmk[data-k="' + k + '"]').forEach(x => { x.textContent = '⏱ ' + hm(ts); });
       if (box) ckOn(box.previousElementSibling);
       toast(lb + ': ' + hm(ts)); if (navigator.vibrate) navigator.vibrate(30);
@@ -236,7 +251,7 @@ app.addEventListener('click', e => {
       if (T[d.k]) {
         ckOn(ck);
         if (d.k === 'turn' && ck && !open && !limbsOn()) { ck.insertAdjacentHTML('afterend', `<div class="tmq-ck">${limbPick(hm(T.turn))}</div>`); showAboveNav(ck.nextElementSibling); }
-        else toast(lb + ' jau pažymėtas ' + hm(T[d.k]) + ' · keisti – paciento faile');
+        else toast(lb + ' jau pažymėtas ' + hm(T[d.k]) + ' · keisti – sužeistojo ekrane „Pacientas“');
         break;
       }
       if (ck && !open) { ck.insertAdjacentHTML('afterend', `<div class="tmq-ck"><span class="muted">${d.k === 'turn' ? 'Kada uždėtas turniketas?' : 'Kada sužeista?'}</span>${tmQuick(d.k)}</div>`); showAboveNav(ck.nextElementSibling); }

@@ -71,7 +71,7 @@ E.vaistai = [
       'Tikrinkite ampulės stiprumą (50 ar 100 mg/ml) – nuo jo priklauso ml.'
     ],
     pakuote: 'Ampulės 50 mg/ml arba 100 mg/ml',
-    pastabos: ['Ketaminą paprastai saugu skirti ir po opioido (TCCC 2026).', 'Procedūrinė sedacija (1–2 mg/kg IV / IO arba 300 mg IM) – tik kovos paramedikams (CPP), pasiruošusiems užtikrinti kvėpavimo takus.', 'Pykinimui – ondansetronas.'],
+    pastabos: ['Ketaminą paprastai saugu skirti ir po opioido (TCCC 2024).', 'Procedūrinė sedacija (1–2 mg/kg IV / IO arba 300 mg IM) – tik kovos paramedikams (CPP), pasiruošusiems užtikrinti kvėpavimo takus.', 'Pykinimui – ondansetronas.'],
     susije: ['esketaminas', 'ondansetronas', 'paracetamolis', 'fentanilis', 'morfinas'],
     saltinis: 'TCCC gairės 2026-05-01 (TFC 11); PCS (Ketalar)',
     nuorodos: [TCCC, ['PCS – Ketalar (ketaminas) (JK eMC)', 'https://www.medicines.org.uk/emc/product/5202/smpc']]
@@ -80,7 +80,7 @@ E.vaistai = [
     id: 'esketaminas', name: 'Esketaminas', klase: 'Nuskausminamasis (į nosį)', grupe: 'skausmas', lygis: 'CMC',
     ind: 'Alternatyva ketaminui, kai sužeistasis negali tęsti užduoties (TCCC 2026).',
     kontra: 'PCS (Spravato): padidėjęs jautrumas; aneurizminė kraujagyslių liga ar arterioveninė malformacija; intracerebrinis kraujavimas anamnezėje.',
-    dozes: [{ k: 'Į nosį (TCCC 2026)', d: '14 arba 28 mg vieną kartą', p: '28 mg prietaisas, 1 purškimas = 14 mg: 28 mg – po 1 purškimą į kiekvieną šnervę; 14 mg – 1 purškimas į vieną šnervę.' }],
+    dozes: [{ k: 'Į nosį (TCCC 2026)', d: '14 arba 28 mg į nosį; kartoti kas 30 min pagal poreikį', p: '28 mg prietaisas, 1 purškimas = 14 mg: 28 mg – po 1 purškimą į kiekvieną šnervę; 14 mg – 1 purškimas į vieną šnervę. Kartojama kas 30 min pagal poreikį, kol skausmas sumažės arba atsiras nistagmas (TCCC 2026).' }],
     ispejimai: ['Kaip ir ketaminui: nuginkluoti, AVPU įrašyti į kortelę, stebėti kvėpavimą; benzodiazepinų neskirti.'],
     pakuote: 'Nosies purškalas 28 mg (2 purškimai)',
     susije: ['ketaminas'],
@@ -107,7 +107,7 @@ E.vaistai = [
       'TCCC 2026 fentanilio nebėra (pakeitimas 25-03: nebeliko OTFC tiekimo); negalinčiam tęsti užduoties – ketaminas arba esketaminas.',
       'TCCC 2024 IV / IO ir IN fentanilį skyrė tik kovos paramedikai ir gydytojai (CPP).',
       'OTFC (TCCC 2024): 800 mcg tarp skruosto ir dantenų, nekramtyti; pakartoti galima vieną kartą po 15 min.',
-      'Ketaminą paprastai saugu skirti ir po opioido (TCCC 2026).',
+      'Ketaminą paprastai saugu skirti ir po opioido (TCCC 2024).',
       'Lietuvoje (VVKT, tikrinta 2026-10-14): tiekiamas Fentanyl Kalceks 50 mcg/ml, 2 ml ampulės; nosies purškalai Instanyl, PecFent – registruoti, netiekiami. Narkotinė medžiaga.'
     ],
     susije: ['ketaminas', 'naloksonas', 'morfinas', 'ondansetronas'],
@@ -136,7 +136,7 @@ E.vaistai = [
     ],
     pakuote: 'Ampulės 10 mg/ml (1 ml); Maracex – 20 mg/ml (1 ml)',
     pastabos: [
-      'Ketaminą paprastai saugu skirti ir po opioido (TCCC 2026).',
+      'Ketaminą paprastai saugu skirti ir po opioido (TCCC 2024).',
       '10 mg morfino ≈ 100 mcg fentanilio (NextGen Combat Medic).',
       'Pykinimui – ondansetronas.',
       'Kiti šaltiniai – PCS: IV 2,5–15 mg lėtai, titruojant, įprastai ne dažniau kaip kas 4 val.; IM 10 mg (5–20 mg) kas 4 val. Gide naudojama JTS PFC schema.',
@@ -192,7 +192,7 @@ E.vaistai = [
     ind: 'Kai tikėtina transfuzija (hemoraginis šokas, viena ar daugiau didelių amputacijų, penetruojanti liemens trauma, stiprus kraujavimas) arba reikšminga galvos smegenų trauma ar sutrikusi sąmonė po sprogimo ar bukos traumos (TCCC 2026).',
     kontra: 'PCS: padidėjęs jautrumas; ūminė trombozė; traukulių anamnezė.',
     dozes: [{ k: 'IV / IO (TCCC 2026)', d: '2 g lėtai – kuo anksčiau, ne vėliau kaip per 3 val. nuo sužalojimo', p: '4 ampulės po 500 mg / 5 ml = 20 ml.' }],
-    ispejimai: ['Po 3 val. nuo sužalojimo neskirti. Pažymėkite traumos laiką paciento faile – „TXA iki“ parodys terminą.', 'TCCC: lėta IV / IO injekcija. PCS nurodo ne greičiau kaip 1 ml/min – per greitai leidžiant gali kristi kraujospūdis.', 'Tik IV / IO.'],
+    ispejimai: ['Po 3 val. nuo sužalojimo neskirti. Pažymėkite traumos laiką sužeistojo ekrane „Pacientas“ – „TXA iki“ parodys terminą.', 'TCCC: lėta IV / IO injekcija. PCS nurodo ne greičiau kaip 1 ml/min – per greitai leidžiant gali kristi kraujospūdis.', 'Tik IV / IO.'],
     pakuote: 'Ampulės 500 mg / 5 ml (100 mg/ml)',
     pastabos: ['Įrašykite į kortelę dozę ir laiką.'],
     susije: ['kalcis'],

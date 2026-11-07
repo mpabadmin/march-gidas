@@ -330,7 +330,7 @@ window.ETC.scenarijai = [
       "ok": true
      }
     ],
-    "why": "Sutrikusi ventiliacija ir neištaisoma hipoksija (SpO₂ < 90 %) – NPA ir 1000 ml ambu maišas, kas 5–6 s. Per dažnai pučiant oras patenka į skrandį.",
+    "why": "Sutrikusi ventiliacija ir neištaisoma hipoksija (galvos trauma – SpO₂ < 92 %, be jos < 90 %; TCCC 2026) – NPA ir 1000 ml ambu maišas, kas 5–6 s. Per dažnai pučiant oras patenka į skrandį.",
     "ref": [
      "#/igudis/11",
      "#/igudis/12",
@@ -1583,8 +1583,12 @@ window.ETC.scenarijai = [
     ]
    },
    {
-    "sit": "Antrasis budrus, kalba, skeveldra įsmigo į akį, kitų sunkių sužalojimų nėra. Trečiasis vaikšto, dilbis nubrozdintas.",
-    "gp": {},
+    "sit": "Antrasis budrus, kalba, skundžiasi šlaunies skausmu: šlaunis deformuota, žaizdos nėra, pėdos pulsas čiuopiamas, oda šilta, kvėpuoja ramiai. Trečiasis vaikšto, dilbis nubrozdintas.",
+    "gp": {
+     "AVPU": "A",
+     "Radialinis pulsas": "normalus",
+     "KD": "16/min"
+    },
     "klaus": "Kaip juos skirstote?",
     "opt": [
      {
@@ -1592,18 +1596,18 @@ window.ETC.scenarijai = [
       "ok": false
      },
      {
-      "t": "Akies – Priority, dilbio – Routine",
+      "t": "Šlaunies lūžis – Priority, dilbio – Routine",
       "ok": true
      },
      {
-      "t": "Akies – Urgent, dilbio – Priority",
+      "t": "Šlaunies lūžis – Urgent, dilbio – Priority",
       "ok": false
      }
     ],
-    "why": "Priority – gydymas gali palaukti, bet gali grėsti galūnei ar regėjimui; Routine – lengvi sužalojimai. Venkite pervertinimo.",
+    "why": "Priority – gydymas gali palaukti iki evakuacijos, bet be jo gali grėsti galūnei: uždaras šlaunikaulio lūžis su čiuopiamu distaliniu pulsu ir stabilia būkle (nėra šoko požymių) – įtvėrimas, stebėjimas. Urgent būtų tik su šoku ar dingus pulsui. Dilbio nubrozdinimas – Routine. Venkite pervertinimo.",
     "ref": [
      "#/igudis/36",
-     "#/igudis/23"
+     "#/igudis/29"
     ]
    },
    {
@@ -3483,11 +3487,11 @@ window.ETC.scenarijai = [
     "klaus": "(CMC) Kaip skiriate esketaminą?",
     "opt": [
      {
-      "t": "28 mg į vieną šnervę, kartojate kas 30 min pagal poreikį",
+      "t": "28 mg į vieną šnervę (2 purškimai), kartojate kas 5 min, kol skausmas sumažės",
       "ok": false
      },
      {
-      "t": "28 mg: po 1 purškimą į kiekvieną šnervę, vieną kartą",
+      "t": "28 mg: po 1 purškimą į kiekvieną šnervę; po 30 min įvertinate skausmą ir kartojate pagal poreikį",
       "ok": true
      },
      {
@@ -3495,7 +3499,7 @@ window.ETC.scenarijai = [
       "ok": false
      }
     ],
-    "why": "Esketaminas – 14 arba 28 mg IN vieną kartą; 1 purškimas = 14 mg, tad 28 mg – po 1 purškimą į kiekvieną šnervę. Kaip ir ketaminui: nuginkluoti, AVPU įrašyti, stebėti kvėpavimą.",
+    "why": "Esketaminas – 14 arba 28 mg IN; 1 purškimas = 14 mg, tad 28 mg – po 1 purškimą į kiekvieną šnervę. Kartojama kas 30 min pagal poreikį (TCCC 2026), ne kas 5 min ir ne dviguba dozė iš karto. Kaip ir ketaminui: nuginkluoti, AVPU įrašyti, stebėti kvėpavimą.",
     "ref": [
      "#/vaistas/esketaminas",
      "#/igudis/25"

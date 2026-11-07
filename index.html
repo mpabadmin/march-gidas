@@ -102,7 +102,7 @@ textarea{display:block;width:100%;font:inherit;color:var(--tx);background:var(--
 .tabs button.done::before{content:"✓ ";color:var(--ok);font-weight:800}
 .tabs button.on.done::before{color:inherit}
 /* ── prekės ženklas ── */
-.brand{display:flex;align-items:center;gap:10px;margin:2px 0 8px}.brand img{height:44px;width:44px}.brand span{font-size:13px;color:var(--tx2);line-height:1.3}.brand b{font-size:17px;color:var(--tx)}
+.brand{display:flex;align-items:center;gap:10px;margin:2px 0 6px}.brand img{height:36px;width:36px}.brand span{flex:1;min-width:0;font-size:13px;color:var(--tx2);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand b{font-size:17px;color:var(--tx)} /* v37: viena eilutė */
 .lg-l{display:none}body.learn .lg-d{display:none}body.learn .lg-l{display:inline}
 @media(prefers-color-scheme:dark){body.learn .lg-d{display:inline}body.learn .lg-l{display:none}}
 /* ── fazės ── */
@@ -222,6 +222,18 @@ details.alt summary{cursor:pointer;font-weight:600}details.alt ul{margin:6px 0 0
 .seg2 button{flex:1;border:0;background:none;color:var(--tx2);font:inherit;font-size:15px;padding:9px 0;border-radius:9px;min-height:42px}
 .seg2 button.on{background:var(--tx);color:var(--bg);font-weight:600}
 .nlprog{margin:0 0 12px}
+/* v37: 9-Line prilipusi apatinė juosta (skaitiklis + „Skaityti per radiją“) */
+.nlbar{position:sticky;bottom:calc(66px + env(safe-area-inset-bottom));z-index:3;display:flex;align-items:center;gap:10px;margin:12px 0 4px;padding:8px 10px 8px 14px;border-radius:14px;background:var(--tx);color:var(--bg);box-shadow:0 4px 18px rgba(0,0,0,.28)}
+.nlbar .nlbc{flex:1;min-width:0;font-size:14px;line-height:1.25}.nlbar .nlbc b{font-size:18px}
+.nlbar .btn,.nlbar .btn.pri{flex:none;width:auto;display:inline-block;font-size:15px;margin:0;background:var(--bg);color:var(--tx);border-color:var(--bg);font-weight:700;min-height:44px;padding:8px 14px}
+html.gl .nlbar .btn{min-height:52px}
+html.gl .nlbar,html.gl .gres{margin-right:66px} /* pirštinių „Atgal“ (#glback) dešinėje apačioje – juosta jo neuždengia */
+@media(max-width:400px){html.gl .nlbar .nlbw{display:none}html.gl .nlbar .btn{padding:8px 10px}html.gl .nlbar{padding-left:10px}}
+html.gl body.hasbar .nlbar,html.gl body.hasbar .gres{margin-right:0}
+/* v37: kai rodoma sužeistojo juosta (.hbar), prilipusios juostos (9-Line, GKS rezultatas) – virš jos */
+html.gl .nlbar,html.gl .gres{bottom:calc(82px + env(safe-area-inset-bottom))}
+body.hasbar .nlbar,body.hasbar .gres{bottom:calc(126px + env(safe-area-inset-bottom))}html.gl body.hasbar .nlbar,html.gl body.hasbar .gres{bottom:calc(148px + env(safe-area-inset-bottom))}
+.nl .mqhint{display:block;margin:4px 0 8px}
 section.nl,section.outp{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:12px;margin:0 0 10px;box-shadow:var(--sh)}
 section.nl.req{border-left:4px solid var(--amb)}
 section.nl.ok{border-left:4px solid var(--ok)}
@@ -439,7 +451,8 @@ html.fbopen,html.fbopen body{overflow:hidden}
 @media(max-height:420px) and (orientation:landscape){header{position:static}#nav a{flex-direction:row;justify-content:center;gap:6px;padding:4px 0}main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 /* ── naktinis raudonas režimas: tamsi paletė + raudonas filtras (lieka tik raudonas kanalas) ── */
-body.night::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background:#c80000;mix-blend-mode:multiply}
+/* v37: #f00 (buvo #c80000) – multiply palieka tik raudoną kanalą; su #c80000 net balta ant juodos tebūtų 3,5:1, su #f00 – 5,25:1 (WCAG 4,5:1 pasiekiama) */
+body.night::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background:#f00;mix-blend-mode:multiply}
 body.night{background:#000}
 #night[aria-pressed="true"]{background:var(--tx);color:var(--bg)}
 header .seg{min-width:0}header .seg button{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px;padding-right:2px}
@@ -480,6 +493,7 @@ header .seg{min-width:0}header .seg button{min-width:0;white-space:nowrap;overfl
 html.gl body{font-size:19px}
 html.gl .btn{min-height:56px;padding:14px 16px;font-size:18px}
 html.gl .btn.sm{min-height:50px;padding:10px 14px;font-size:16px}
+html.gl .btn.ibx{padding:8px 2px;font-size:14px;min-height:68px} /* v37: 4 stulpelių veiksmų mygtukai (Perduoti) netelpa 320 px su 16 px paraštėmis */
 html.gl .row{min-height:64px;padding:14px 16px;margin-bottom:10px}
 html.gl .ck{padding:16px 6px;gap:14px}
 html.gl .chips{gap:8px}html.gl .chips button{min-height:54px}
@@ -529,7 +543,7 @@ html.gl main{padding-bottom:calc(160px + env(safe-area-inset-bottom))}
 .vlm{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;background:#D92D20;color:#fff;font-weight:800;font-size:14px}
 .vlk{flex:none;color:#D92D20;font-weight:800;margin-left:auto;padding-left:4px}
 .vlb{display:flex;gap:4px}
-.vlb button{width:42px;height:42px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;font-weight:700}
+.vlb button{width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;font-weight:700}
 .vlb button.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
 .vlr.aT .vlb button[data-v=T].on{background:#1D9E75;border-color:#1D9E75;color:#fff}
 .vlr.aN .vlb button[data-v=N].on{background:#D92D20;border-color:#D92D20;color:#fff}
@@ -851,7 +865,7 @@ body.gdon{overflow:hidden}
 .lvb.cmc.on{border-color:#D08A0E;background:color-mix(in srgb,#D08A0E 18%,var(--card))}
 .lvb.on b::before{content:'✓ '}
 .lvh{font-size:14px;color:var(--tx2);margin:0 0 12px;line-height:1.45}
-.lvs{margin:0 0 12px;padding:10px 12px 8px;border-radius:12px;border:2px solid #2E8B57;background:var(--card)}
+.lvs{margin:12px 0 12px;padding:10px 12px 8px;border-radius:12px;border:2px solid #2E8B57;background:var(--card)}
 .lvst{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
 .lvst b{font-size:16px}
 .lvst small{font-size:13px;color:var(--tx2)}
@@ -875,14 +889,16 @@ body.field .lvbar b{color:#6FD39A}
 .lvseg #lvC.on{background:#2E8B57;color:#fff}
 .lvseg #lvM.on{background:#D08A0E;color:#1B1505}
 #nav a{max-width:120px;font-size:10.5px;letter-spacing:-.1px}
-.dstrip{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:4px 0 6px;border-radius:14px;background:#3A2A0A;border:1px solid #7A5A1A;color:#FCE6B5;text-decoration:none}
+.dstrip{display:flex;align-items:center;gap:10px;padding:7px 12px;margin:2px 0 4px;border-radius:14px;background:#3A2A0A;border:1px solid #7A5A1A;color:#FCE6B5;text-decoration:none}
 .dstrip svg{flex:none;width:24px;height:24px;color:#F9CF7E}
-.dstrip span{flex:1;font-size:13.5px;line-height:1.3}
+.dstrip span{flex:1;min-width:0;font-size:13.5px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} /* v37: viena eilutė */
 .dstrip em{font-style:normal;font-size:13px;font-weight:700;color:#F9CF7E;white-space:nowrap}
 body.learn .dstrip{background:#FFF4DC;border-color:#E5C27A;color:#5A3A00}body.learn .dstrip svg,body.learn .dstrip em{color:#8A5A00}
 .hguide{display:flex;align-items:center;gap:6px;flex:none;height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--tx);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .hguide svg{width:18px;height:18px}
 .brand .hguide{margin-left:auto}
+@media(max-width:400px){.brand .ghelp span{display:none}.brand .ghelp{padding:7px 9px}.dstrip .dsk{display:none}} /* v37: siaurame ekrane – tik „?“ piktograma, „↗“ */
+@media(max-width:340px){.dstrip span{white-space:normal}}
 .phase .pi{width:34px;height:34px;margin-bottom:auto}
 .phase.big{min-height:150px}.phase.big b{margin-top:6px}
 .phase.big span{font-weight:500;opacity:.92}
@@ -925,6 +941,46 @@ body.learn .dstrip{background:#FFF4DC;border-color:#E5C27A;color:#5A3A00}body.le
 .tabs.ph button{min-height:44px;min-width:44px}
 .mqstrip{-webkit-mask-image:linear-gradient(to right,transparent,#000 22px,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to right,transparent,#000 22px,#000 calc(100% - 22px),transparent)}
 @media(max-width:360px){nav#nav{padding-left:2px;padding-right:2px}#nav a{font-size:9.5px;letter-spacing:-.35px;padding-left:1px;padding-right:1px;overflow:hidden;white-space:nowrap}}
+/* v37: naktinis filtras (multiply) palieka tik raudoną kanalą – spalvų skirtumai dingsta, žalias / gintarinis fonas su tamsiu tekstu tampa ~2:1 (kaip ETC v56).
+   Naktį – tik juoda / balta su matomais rėmeliais: paletė perrašoma, spalvoti fonai – juodi su baltu 1 px rėmeliu, „įjungta“ – balta su juodu tekstu. */
+body.night{--bg:#000;--card:#141414;--line:#8f8f8f;--tx:#fff;--tx2:#F5F5F5;--acc:#fff;--accbg:#000;--red:#fff;--redbg:#000;--amb:#fff;--ambbg:#000;--grn:#fff;--grnbg:#000;--hl:#444;--ok:#fff;--abn:#fff;--mkr:#fff;--bfill:#000;--bline:#fff;--sh:none}
+body.night .dose,body.night .dose.tc,body.night .warn,body.night .tag,body.night .hbtm,body.night .tool,body.night .nn,body.night .tz,body.night .tp1,body.night .tp2,body.night .tp3,body.night .gres,body.night .mcl .lt,body.night .bdg,body.night .mqt,body.night .mcs .btn.pri,body.night .sco .scl,body.night .scm,body.night .vlm,body.night .sk,body.night .rq,body.night .scres,body.night .cki,body.night .ltpa,body.night .mpl,body.night .mps,body.night .hbrem,body.night .rem-r,body.night .rem-a,body.night .tmc,body.night .ptabs .add,body.night .ptbar .add,body.night .nbdg,body.night .hbar,body.night .mqwarn,body.night .mqsug,body.night .lvk,body.night .lvb,body.night .lvbar,body.night .lvs,body.night .dstrip,body.night .phase,body.night .phead,body.night .trf a,body.night .trt .tra,body.night .gdic,body.night .gdcourse,body.night .ptc,body.night .row.nxt,body.night .ckx,body.night .mqlv,body.night .tmini,body.night .fq,body.night .exbar,body.night .mqo,body.night .mqprof,body.night .hbvit,body.night section.nl,body.night section.outp,body.night .outp pre,body.night .fcard,body.night .tcard,body.night .scr,body.night .tfc,body.night .tq,body.night .gopt,body.night .sco,body.night .lvsw,body.night .mqc,body.night .hbqa,body.night .opts button,body.night .tabs button,body.night .ptabs button,body.night .ptbar button,body.night .ptbar a,body.night .skrow>button,body.night .vlb button,body.night .lgs button,body.night .mqpos button,body.night .mqavpu button,body.night .mqvf button,body.night .mqpain button,body.night .dictb,body.night .chips button,body.night .mqkp button,body.night .tlr button,body.night .tmc.warn,body.night .tmc.bad,body.night .tmc.ok,body.night .ck.lv-cmc,body.night .ck.lv-cpp,body.night .btn{background:#000!important;color:#fff!important;border:1px solid #fff!important}
+body.night .tool .ti,body.night .mch,body.night .trnext,body.night #toast,body.night .exbar .btn{background:#fff!important;color:#000!important;border-color:#fff!important}
+body.night .tool.wr b,body.night .tool b,body.night .tool small,body.night .phase b,body.night .phase span,body.night .phase small,body.night .trf a b,body.night .trf a small,body.night .trt b,body.night .trt small,body.night .dstrip span,body.night .dstrip em,body.night .dstrip svg,body.night .lvbar b,body.night .lvb small,body.night .lvb b,body.night .lvk,body.night .tcard small,body.night .fcard .fq,body.night .fcard .fn,body.night .fcard .fk,body.night .fcard .fa small,body.night .gopt small,body.night .hbn small,body.night .hbtm small,body.night .tmc small,body.night .tmc .muted,body.night .tmc.dim b,body.night .mqlv,body.night .mqlv.r,body.night .mqtl,body.night .mqtl.r,body.night .mqvf span,body.night .mqvf button.ab b,body.night .mqc.warn small,body.night .ptabs button small,body.night .ptbar .ptf,body.night .lvh,body.night .lvpl,body.night .muted,body.night .mqo,body.night label,body.night .opts button small,body.night .mcs .mqc.on .mqlv,body.night .gdcourse b,body.night .gdcourse small,body.night .rdl small,body.night .hbsh b,body.night .hbsech small,body.night .ckx,body.night .ltd,body.night .fn,body.night .fq small,body.night .scmeta,body.night .mqk,body.night .mqlab,body.night .mqf,body.night .tqn,body.night .qrn,body.night .lgs button{color:#fff!important;opacity:1}
+body.night .btn.pri,body.night .btn.pri0,body.night .gdgo,body.night .trnext,body.night .mqsave,body.night .btn.ibread,body.night .hbfile,body.night .mcs .btn.pri.mqbig,body.night .mqt,body.night .nlbar .btn{background:#000!important;color:#fff!important;border:2px solid #fff!important}
+body.night .btn.pri:disabled,body.night .mqsave:disabled,body.night .btn:disabled{opacity:.55}
+body.night .hbqa.pri{border-width:2px!important;font-weight:800}
+body.night .x,body.night .ib,body.night .lnk{background:#000;color:#fff;border-color:#fff}
+body.night .mqkp button.nx{background:#fff!important;color:#000!important}
+body.night .seg button.on,body.night .seg2 button.on,body.night .lvseg button.on,body.night .lvseg #lvC.on,body.night .lvseg #lvM.on,body.night .chips button.on,body.night .opts button.on,body.night .opts button.krit.on,body.night .tabs button.on,body.night .ptabs button.on,body.night .ptbar button.on,body.night .skrow>button.on,body.night .vlb button.on,body.night .vlr.aT .vlb button[data-v=T].on,body.night .vlr.aN .vlb button[data-v=N].on,body.night .lgs button.on,body.night .mqseg button.on,body.night .mqpain button.on,body.night .mqsh .mqc.on,body.night .mcs .mqc.on,body.night .mqc.on,body.night .mqc.on.tq,body.night .mcs .opts button.on,body.night .madd.sm button.on,body.night .mqvf button.on,body.night .mqavpu button.on,body.night .mqpos button.on,body.night .gopt.on,body.night .gdopt button.on,body.night .gdd button.on,body.night .trt .trd,body.night .trf a.on,body.night .rdvp,body.night .rdvp.on,body.night .dictb.on,body.night section.nl.ok .nn,body.night .sco.ok .scl,body.night .ck.on .bx,body.night .tnb,body.night .lvb.on,body.night .cki[aria-expanded=true],body.night .yn .yes,body.night .tmq .btn.pri,body.night .mqtools button.on{background:#fff!important;color:#000!important;border-color:#fff!important;box-shadow:none}
+body.night .lvseg button.on,body.night .lvb.on,body.night .trf a.on,body.night .mqvf button.on,body.night .vlb button.on{border:2px solid #fff!important}
+body.night .mqvf button.on span,body.night .mqvf button.on b,body.night .gopt.on small,body.night .ptabs button.on small,body.night .lvb.on b,body.night .lvb.on small,body.night .trf a.on b,body.night .trf a.on small,body.night .trt .trd b,body.night .trt .trd small,body.night .opts button.on small,body.night .mcs .mqc.on .mqlv,body.night .mqc.on .mqlv,body.night .mqc.on small,body.night .seg button.on,body.night .seg2 button.on,body.night .gopt.on .gs,body.night .tabs button.on::before{color:#000!important}
+body.night .gopt.on .gs{background:#000!important;color:#fff!important;border-color:#fff!important}
+body.night .trt .bdg{background:#000!important;color:#fff!important;border:1px solid #fff!important}
+body.night .lvseg{background:#000;border:1px solid #fff}body.night .lvseg button{color:#fff}
+body.night #nav a{color:#F5F5F5}body.night #nav a.on{background:#000;color:#fff;box-shadow:inset 0 0 0 1px #fff}
+body.night .ck.on .t{color:#F5F5F5}body.night .ck.on .bx{color:#000!important}
+body.night .prog i,body.night .scprog i.d,body.night .qrprog i.d,body.night .scprog i.c{background:#fff}body.night .prog,body.night .scprog i,body.night .qrprog i,body.night .scr i{background:#555}
+body.night .scr i.fCUF,body.night .scr i.fTFC,body.night .scr i.fTAC,body.night .scr i.tRUS{background:#fff}
+body.night .esme{border-left-color:#fff}body.night section.nl.req,body.night section.nl.ok{border-left-color:#fff}
+body.night .rdl.on{background:#141414;box-shadow:0 0 0 6px #141414,-10px 0 0 #fff}
+body.night .mqev .evu,body.night .mqev .evp,body.night .mqev .evr{background:#000;color:#fff;border:1px solid #fff}
+body.night .mcs,body.night .mcl,body.night .msT1,body.night .msT2,body.night .msT3,body.night .msT4,body.night .msX{--c:#fff;--f:#fff;--b:#000;--sMb:#000;--sMf:#fff;--sIb:#000;--sIf:#fff;--sSb:#000;--sSf:#fff;--sTb:#000;--sTf:#fff;--sEb:#000;--sEf:#fff;--sMc:#fff;--sIc:#fff;--sSc:#fff;--sTc:#fff;--sEc:#fff}
+body.night .mcl{border-top:1px solid #fff;border-bottom:1px solid #fff}body.night .mcl b,body.night .mcl small{color:#fff;opacity:1}
+body.night .madd button{background:#000;color:#fff;border-color:#fff}body.night .madd:not(.sm) button,body.night .madd.sm button.on{background:#fff;color:#000}
+body.night input,body.night select,body.night textarea,body.night .inp{background:#000;color:#fff;border-color:#fff}
+body.night .fCUF,body.night .fTFC,body.night .fTAC,body.night .tag.phCUF,body.night .tag.phTFC,body.night .tag.phTACEVAC,body.night .trf a.tRUS,body.night .gres.sev1,body.night .gres.sev2,body.night .gres.sev3,body.night .sco.bad .scl,body.night .scm.bad,body.night .lvk.cls,body.night .lvk.cmc,body.night .lvk.cpp{background:#000!important;color:#fff!important;border-color:#fff!important}
+body.night .lvb.on,body.night .lvb.cls.on,body.night .lvb.cmc.on{background:#fff!important;color:#000!important}body.night .lvb.on b,body.night .lvb.on small{color:#000!important}
+body.night .vthumb .play{background:#000;border:1px solid #fff}
+body.night .sco.ok,body.night .sco.bad{border:2px solid #fff!important}
+body.night .mqc.sel{box-shadow:0 0 0 3px #fff}body.night .mqo.op{box-shadow:0 0 0 2px #fff}
+body.night .ptdue{background:#fff;box-shadow:0 0 0 2px #000}
+body.night .hbar{border:2px solid #fff!important}body.night .hbs{background:#000;border-top:1px solid #fff}body.night .hbsh{background:#000}
+body.night .mqedh,body.night .mqscope{background:#000}
+body.night #night[aria-pressed="true"]{background:#fff;color:#000}
+body.night mark{background:#fff;color:#000}
+body.night .tool.wr,body.night .tool.big,body.night .tool.wide{border:1px solid #fff!important}
+body.night .nlbar{background:#000;color:#fff;border:1px solid #fff;box-shadow:none}
 </style>
 </head>
 <body class="field">

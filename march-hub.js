@@ -8,7 +8,7 @@ const MPAWS = (() => {
   const R = [['M', 'Masyvus kraujavimas', 'tfc-m'], ['A', 'Kvėpavimo takai', 'tfc-a'], ['R', 'Kvėpavimas', 'tfc-r'], ['C', 'Kraujotaka', 'tfc-c'], ['H', 'Hipotermija, galva, akys', 'tfc-h'],
     ['P', 'Skausmas', 'tfc-paws', 'P'], ['A', 'Antibiotikai', 'tfc-paws', 'A'], ['W', 'Žaizdos', 'tfc-paws', 'W'], ['S', 'Įtvėrimas', 'tfc-paws', 'S']];
   const TXN = { tq: 'turniketas', tqj: 'jungties turniketas', dh: 'hemostatinis tvarstis', dp: 'spaudžiamasis tvarstis', dk: 'tvarstis', npa: 'NPA', igel: 'I-gel', cric: 'krikotiroidotomija', ak: 'kvėpavimo takai – kita',
-    occl: 'okliuzinis tvarstis', dec: 'adatinė dekompresija', o2: 'O₂', ctube: 'krūtinės drenas', hypo: 'hipotermijos prevencija', eyeR: 'akies gaubtelis D', eyeL: 'akies gaubtelis K', dress: 'tvarstymas', spl: 'imobilizavimas' };
+    occl: 'krūtinės lipdukas (okliuzinis tvarstis)', dec: 'adatinė dekompresija', o2: 'O₂', ctube: 'krūtinės drenas', hypo: 'hipotermijos prevencija', eyeR: 'akies skydelis D', eyeL: 'akies skydelis K', dress: 'tvarstymas', spl: 'įtvėrimas (imobilizavimas)' }; // v37: CLS terminai
   // pažymėtų punktų skaičius sąraše (tfc-paws – tik vienos raidės dalyje), atsižvelgiant į „tik CLS“
   function ck(id, sec) {
     const L = (E.sarasai || {})[id]; if (!L) return 0;

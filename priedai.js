@@ -242,7 +242,7 @@ const OP = (() => {
       '<button class="btn dng" data-act="op-wipe" style="width:100%">Ištrinti visų sužeistųjų duomenis</button>' +
       '<p class="muted">Automatiškai ištrinti, jei programėlė nenaudojama:</p><div class="seg2" role="group" aria-label="Automatinis ištrynimas">' +
       [[0, 'Išjungta'], [12, '12 val.'], [24, '24 val.'], [72, '3 d.']].map(([k, t]) => `<button class="${h === k ? 'on' : ''}" data-act="op-auto" data-k="${k}" aria-pressed="${h === k}">${t}</button>`).join('') + '</div>' +
-      '<details class="alt"><summary>Kas ištrinama</summary><p class="muted">Nukentėjusiųjų kortelės, paciento duomenys, laikai, sąrašų žymėjimai, 9-Line, GKS, 10s triažas' + (typeof MS !== 'undefined' ? ', Mascal' : '') + (typeof VZ !== 'undefined' ? ', vaistų žymėjimas, nudegimai, šviežias kraujas' : '') + (typeof SR !== 'undefined' ? ', SITREP' : '') + (typeof CR !== 'undefined' ? ', CONTREP' : '') + (typeof SU !== 'undefined' ? ', SALUTE' : '') + '. Lieka: nustatymai, įsivertinimai, vertinimai ir dozių kortelės.</p></details>';
+      '<details class="alt"><summary>Kas ištrinama</summary><p class="muted">Nukentėjusiųjų kortelės, paciento duomenys, laikai, sąrašų žymėjimai, 9-Line, GKS, 10s triažas' + (typeof MS !== 'undefined' ? ', Mascal' : '') + (typeof VZ !== 'undefined' ? ', vaistų žymėjimas, nudegimai, šviežias kraujas' : '') + (typeof SR !== 'undefined' ? ', SITREP' : '') + (typeof CR !== 'undefined' ? ', CONTREP' : '') + (typeof SU !== 'undefined' ? ', SALUTE' : '') + (typeof VL !== 'undefined' ? ', vertinimo lapai (su vardais)' : '') + (typeof FB !== 'undefined' ? ', neišsiųsti atsiliepimai su ekrano nuotraukomis' : '') + '. Lieka: nustatymai, įsivertinimai ir dozių kortelės.</p></details>';
   }
   function act(el) {
     const d = el.dataset;
@@ -315,7 +315,7 @@ const VL = (() => {
         `<p class="muted mt0"><b>Vertinimas:</b> ${esc(sh.rule)}</p><button class="btn pri" data-act="vl-start" data-k="${esc(sh.id)}">Pradėti vertinimą</button></div>`;
       const H = s.hist.filter(x => x.id === sh.id);
       if (H.length) h += '<h2>Ankstesni vertinimai</h2>' + histRows(H.slice(0, 20));
-      h += `<p class="muted">Šaltinis: ${esc(sh.src)}.</p>`;
+      h += `<p class="muted">Šaltinis: ${esc(sh.src)}.</p>` + (sh.note ? `<p class="muted">${esc(sh.note)}</p>` : ''); // v37: pastaba po lapu
       return h;
     }
     const X = result(c);

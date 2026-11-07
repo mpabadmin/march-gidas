@@ -121,6 +121,7 @@ const HUB = (() => {
     queueMicrotask(a11y);
     if (HCFG().noBar.indexOf(r) >= 0) { sheet = false; return ''; }
     const x = cur(); if (!x) return '';
+    if (!x.has && x.tot <= 1) { sheet = false; return ''; } // v37: tuščia kortelė (vienintelis sužeistasis be duomenų) – juosta nerodoma; atsiranda įrašius duomenis arba iš skilties „Pacientas“
     return `<button class="hbar" data-act="hb-open" aria-haspopup="dialog" aria-expanded="${sheet}" aria-label="${esc(barLabel(x))}">${barInner(x)}</button>` + (sheet ? sheetHtml(x) : '');
   }
 
@@ -171,7 +172,7 @@ const HUB = (() => {
       '<div class="hbsh"><b>Sužeistasis</b><button class="x" data-act="hb-close" aria-label="Uždaryti">×</button></div>' +
       ptTabs() + head(x, false) + tmCards(x) + its.map(remRow).join('') +
       (last ? `<div class="hbvit"><small>Paskutiniai požymiai${last.ts ? ' · ' + esc(last.ts) : ''}</small><div>${vitLine(last)}</div></div>` : '') +
-      quick(true) + '<a class="btn pri hbfile" href="#/pacientas">Atidaryti paciento failą ›</a></section>';
+      quick(true) + '<a class="btn pri hbfile" href="#/pacientas">Atidaryti sužeistojo ekraną „Pacientas“ ›</a></section>';
   }
 
   // ── paciento ekrano skiltys ──

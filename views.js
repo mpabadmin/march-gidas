@@ -35,7 +35,7 @@ function tocHtml(html) {
   return '<div class="toc">' + hs.map(([id, t]) => `<button data-act="toc" data-t="${id}">${esc(t)}</button>`).join('') + '</div>' + out;
 }
 const videos = a => (a || []).length ? '<h2>Vaizdo įrašai</h2>' + a.map(videoHtml).join('') : '';
-const brand = () => '<div class="brand"><img class="lg-d" src="img/badge-balt.png" alt="LŠS Vilniaus 1040 medicinos šaulių kuopa"><img class="lg-l" src="img/badge-juod.png" alt="LŠS Vilniaus 1040 medicinos šaulių kuopa"><span><b>March gidas</b><br>TCCC 2026 · CLS / CMC · MEDEVAC</span><button class="ghelp" data-g="open" aria-label="Kaip naudotis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18Z"/><path d="M9.5 9.3a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.3-2.5 3.8"/><path d="M12 17h.01"/></svg><span>Kaip naudotis</span></button></div>';
+const brand = () => '<div class="brand"><img class="lg-d" src="img/badge-balt.png" alt="LŠS Vilniaus 1040 medicinos šaulių kuopa"><img class="lg-l" src="img/badge-juod.png" alt="LŠS Vilniaus 1040 medicinos šaulių kuopa"><span><b>March gidas</b> · TCCC 2026</span><button class="ghelp" data-g="open" aria-label="Kaip naudotis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18Z"/><path d="M9.5 9.3a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.3-2.5 3.8"/><path d="M12 17h.01"/></svg><span>Kaip naudotis</span></button></div>';
 const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 // Plytelių piktogramos ir plytelė: paantraštė rodoma tik kai yra būsena (užpildyta, skaičiai) – be pasikartojančių aprašymų
 const ic = d => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
@@ -84,9 +84,10 @@ const lvTag = s => s.lygis && s.lygis !== 'CLS' ? tag(s.lygis) : '<span class="t
 const V = {
   // v31: viena pradžia – tik piktogramos (fazės, MEDEVAC). Sąrašai, vaistai, nustatymai – apatinėje juostoje ir antraštėje.
   home() {
-    return brand() + disclaimer() + lvStrip() + REM.banners() +
+    // v37: lygio pasirinkimas – po MEDEVAC plytelėmis (9-Line / SITREP matomi be slinkimo; numatytas lygis CLS ir taip galioja)
+    return brand() + disclaimer() + REM.banners() +
       '<h2>Fazė</h2>' + V.phaseTiles() +
-      '<h2>MEDEVAC</h2>' + V.toolTiles();
+      '<h2>MEDEVAC</h2>' + V.toolTiles() + lvStrip();
   },
 
   phaseTiles() {
@@ -210,6 +211,7 @@ const V = {
     const doseHtml = d => `<div class="dose"><div class="lb">${esc(d.k)}${d.c ? ' · ' + esc(d.d) : ''}</div><div class="big">${esc(d.c ? calc(d.c, w) : d.d)}</div>${d.p ? '<div class="lb">' + br(d.p) + '</div>' : ''}</div>`;
     let h = `<h1>${esc(v.name)}</h1><p class="muted">${esc(v.klase || '')}</p>`;
     h += (v.ne26 ? '<span class="tag amb">Ne TCCC 2026</span>' : '<span class="tag grn">TCCC 2026</span>') + (v.lygis === 'CLS' ? '<span class="tag grn">CLS</span>' : tag(v.lygis));
+    if (!ok(v.lygis)) h += `<div class="warn">${esc(v.lygis)} lygio vaistas – pasirinktas lygis CLS, todėl jo nėra sąrašuose. <button class="btn sm" data-act="lvl" data-k="CMC">Perjungti į CMC</button></div>`; // v37: kaip įgūdžiuose
     if (v.ind) h += `<p class="ind">${esc(v.ind)}</p>`;
     if ((v.dozes || []).some(d => d.c)) h += '<h2>Paciento svoris, kg</h2>' + wChips(wNow());
     if ((v.dozes || []).length) h += '<h2>Dozė</h2>' + v.dozes.map(doseHtml).join('');
@@ -282,7 +284,8 @@ const V = {
   page(id) {
     const p = (E.puslapiai || {})[id];
     if (!p) return notFound();
-    return `<h1>${esc(p.title)}</h1>` + (p.sub ? '<p class="muted">' + esc(p.sub) + '</p>' : '') + tocHtml(p.html || '') + videos(p.video) +
+    const lv = p.lygis && !ok(p.lygis) ? `<div class="warn">Puslapyje yra ${esc(p.lygis)} lygio turinio (lentelėje – stulpelis „Lygis“) – pasirinktas lygis CLS. <button class="btn sm" data-act="lvl" data-k="CMC">Perjungti į CMC</button></div>` : ''; // v37
+    return `<h1>${esc(p.title)}</h1>` + (p.sub ? '<p class="muted">' + esc(p.sub) + '</p>' : '') + lv + tocHtml(p.html || '') + videos(p.video) +
       (p.saltinis ? '<p class="muted" style="margin-top:12px">Šaltiniai: ' + esc(p.saltinis) + '</p>' : '');
   },
 

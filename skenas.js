@@ -212,8 +212,8 @@ const SK = (() => {
   const EVAC = [['u', 'Neatidėliotina', 'Urgent'], ['p', 'Skubi', 'Priority'], ['r', 'Įprastinė', 'Routine']]; // kaip LK kortelėje
   // DD 1380 gydymo langeliai → LK kortelės T dalis: [langelis, užrašas (LK kortelės žodžiai), MIST raktas, pastaba]
   const TXB = [['tq_ext', 'Turniketas – galūnės', 'tq'], ['tq_jun', 'Turniketas – jungties', 'tqj'], ['tq_tru', 'Liemens turniketas', '', 'liemens turniketas'], ['dr_hem', 'Tvarstis – hemostatinis', 'dh'], ['dr_pre', 'Tvarstis – spaudžiamasis', 'dp'], ['dr_oth', 'Tvarstis – kita', 'dk'],
-    ['a_npa', 'Nazofar. vamzdelis', 'npa'], ['a_cric', 'Kriko.', 'cric'], ['a_ett', 'Intubacija (A – kita)', 'ak', 'intubacija'], ['a_sga', 'I-gel (supraglotinė priemonė)', 'igel'], ['b_o2', 'O₂', 'o2'], ['b_nd', 'Ad. dekompresija', 'dec'], ['b_ct', 'Krūtinės drenas', 'ctube'], ['b_cs', 'Okliuzinis tvarstis', 'occl'],
-    ['o_cpp', 'CWMP (tabletės)', '', ''], ['o_eye', 'Akies gaubtelis', ''], ['o_spl', 'Imobilizavimas', 'spl'], ['o_hypo', 'Hipotermijos prevencija', 'hypo']];
+    ['a_npa', 'Nazofar. vamzdelis', 'npa'], ['a_cric', 'Kriko.', 'cric'], ['a_ett', 'Intubacija (A – kita)', 'ak', 'intubacija'], ['a_sga', 'I-gel (supraglotinė priemonė)', 'igel'], ['b_o2', 'O₂', 'o2'], ['b_nd', 'Ad. dekompresija', 'dec'], ['b_ct', 'Krūtinės drenas', 'ctube'], ['b_cs', 'Krūtinės lipdukas (okliuzinis)', 'occl'],
+    ['o_cpp', 'CWMP (tabletės)', '', ''], ['o_eye', 'Akies skydelis', ''], ['o_spl', 'Įtvėrimas (imobilizavimas)', 'spl'], ['o_hypo', 'Hipotermijos prevencija', 'hypo']];
   const ROWS = [['fl', 'Skysčiai', 2], ['bl', 'Kraujo produktai', 2], ['an', 'Analgetikai', 3], ['ab', 'Antibiotikai', 2], ['ot', 'Kita (pvz., traneksamo rūgštis)', 2]];
   const has = (R, k, t) => (R.tx[k] || 0) > (t || 0.012);
   function buildForm() {
@@ -244,7 +244,7 @@ const SK = (() => {
   function toCard() {
     const F = S.form, mk = [], tx = [], note = [], rows = [], tq = {};
     TXB.forEach(([k, , t, x]) => { if (!F.tb[k]) return; if (t && tx.indexOf(t) < 0) tx.push(t); if (x) note.push(x); });
-    if (F.tb.o_eye) { if (F.eye.indexOf('D') >= 0) tx.push('eyeR'); if (F.eye.indexOf('K') >= 0) tx.push('eyeL'); if (!F.eye) note.push('akies gaubtelis'); }
+    if (F.tb.o_eye) { if (F.eye.indexOf('D') >= 0) tx.push('eyeR'); if (F.eye.indexOf('K') >= 0) tx.push('eyeL'); if (!F.eye) note.push('akies skydelis'); }
     if (F.tb.o_cpp) rows.push({ g: 'an', name: 'CWMP (tabletės)', dose: '', route: 'PO', time: '', src: '' });
     TQL.forEach(([k]) => { const q = F.tq[k]; if (q && q.on) tq[k] = { on: true, tm: HM_RE.test(q.tm || '') ? q.tm : '' }; });
     const used = {};
@@ -287,7 +287,7 @@ const SK = (() => {
     if (B) {
       const s = t.sides.b.tx;
       h += '<section class="card skr"><b>Teikta pagalba</b><div class="opts">' + TXB.map(([k, lb]) => chip2('sk-tb', k, F.tb[k], esc(lb), B.cb[k] && B.cb[k].unsure)).join('') + '</div>' +
-        (F.tb.o_eye ? '<div class="lbl">Akies gaubtelis</div><div class="chips">' + chip2('sk-eye', 'D', F.eye.indexOf('D') >= 0, 'Dešinė') + chip2('sk-eye', 'K', F.eye.indexOf('K') >= 0, 'Kairė') + '</div>' : '') +
+        (F.tb.o_eye ? '<div class="lbl">Akies skydelis</div><div class="chips">' + chip2('sk-eye', 'D', F.eye.indexOf('D') >= 0, 'Dešinė') + chip2('sk-eye', 'K', F.eye.indexOf('K') >= 0, 'Kairė') + '</div>' : '') +
         ['t_tq', 't_dr', 't_a', 't_b'].filter(k => has(B, k)).map(k => img(crop(s[k], 'b'))).join('') + '</section>';
       h += '<section class="card skr"><b>C – skysčiai, kraujo produktai, vaistai</b>' + (F.rows.length ? F.rows.map((r, i) => `<div class="skv"><small class="muted">${esc((ROWS.find(x => x[0] === r.g) || ['', ''])[1])}</small>${img(crop(s[r.k], 'b', 0.1))}<div class="skvg">` +
         [['name', 'Pavadinimas'], ['dose', 'Dozė / kiekis'], ['route', 'Būdas'], ['time', 'Laikas']].map(([k, lb]) => `<label>${lb}${inp('r.' + i + '.' + k, r[k], '')}</label>`).join('') + '</div></div>').join('') : '<p class="muted mt0">Įrašų nerasta.</p>') + '</section>';

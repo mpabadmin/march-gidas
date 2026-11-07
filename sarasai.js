@@ -11,7 +11,7 @@ const E = window.ETC;
 const fig = (src, cap) => `<figure class="fig"><a href="img/tccc/${src}.webp" target="_blank" rel="noopener"><img loading="lazy" src="img/tccc/${src}.webp" alt="${cap}"></a><figcaption>${cap}<small>Iliustracija: Joint Trauma System (Deployed Medicine) · tccc.org.ua</small></figcaption></figure>`;
 const sk = (n, t) => `<a href="#/igudis/${n}">${t || 'Įgūdis #' + n}</a>`;
 
-E.versija = '2026-11-06 v36 (morfinas – viena schema pagal JTS PFC)';
+E.versija = '2026-11-07 v37 (peržiūros pataisos pagal TCCC 2026: esketaminas kas 30 min, NPA / i-gel A sąraše, m19, naktinis kontrastas, OPSEC, UX)';
 E.programa = 'March gidas';
 // Pranešimų priėmimas – ta pati Google lentelė kaip ETC gido (pranešimai žymimi „March gidas“)
 E.atsiliepimai = { url: 'https://script.google.com/macros/s/AKfycbyUpzDmAClJ40FMltkHi21Ozc4PpItRr3u6yy4rU0DKNGe7JkRBnOr0y42wLwpJcBau/exec' };
@@ -41,7 +41,7 @@ E.sarasai = {
         i: 'Sau – ' + sk(4) + ', draugui – ' + sk(5) + '. Naudokite sužeistojo turniketą, ne savo.' },
       { t: 'Nejudantį sužeistąjį perkelkite į priedangą – vilkimas ar nešimas', sk: 2, i: sk(2, 'Vieno žmogaus') + ' ir ' + sk(3, 'dviejų žmonių') + ' vilkimas ir nešimas.' },
       { t: 'Kvėpavimo takų valdymą atidėkite iki TFC' },
-      { t: 'Kai saugu – pažymėkite turniketo laiką', tm: 'turn', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių uždėta; pakeisti galima paciento faile (kortelė „Turniketas“). Keičiant turniketą laiko nekeiskite – 2 ir 6 val. skaičiuojamos nuo pirmojo uždėjimo.' }
+      { t: 'Kai saugu – pažymėkite turniketo laiką', tm: 'turn', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių uždėta; pakeisti galima sužeistojo ekrane „Pacientas“ (kortelė „Turniketas“). Keičiant turniketą laiko nekeiskite – 2 ir 6 val. skaičiuojamos nuo pirmojo uždėjimo.' }
     ]
   },
 
@@ -53,7 +53,7 @@ E.sarasai = {
       { t: 'Perimetro sauga pagal SOP, situacinis budrumas', k: true },
       { t: 'Keli sužeistieji – rūšiavimas', sk: 36, r: '#/tst', s: ['Pirmiausia: masyvus kraujavimas, penetruojanti liemens trauma, kvėpavimo takų sutrikimas, kvėpavimo distresas, sutrikusi sąmonė'] },
       { t: 'Sutrikusios sąmonės sužeistąjį nuginkluokite (ginklas, granatos) ir apsaugokite ryšio priemones', k: true },
-      { t: 'Pažymėkite sužeidimo laiką', tm: 'trauma', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių sužeista; vėliau pataisyti galima paciento faile (kortelė „Trauma“). Nuo jo skaičiuojamas TXA terminas (3 val.).' },
+      { t: 'Pažymėkite sužeidimo laiką', tm: 'trauma', i: 'Mygtukas ⏱ – pasirinkite „Dabar“ arba prieš kiek minučių sužeista; vėliau pataisyti galima sužeistojo ekrane „Pacientas“ (kortelė „Trauma“). Nuo jo skaičiuojamas TXA terminas (3 val.).' },
       { t: 'Pasakykite sužeistajam, kas vyksta, nuraminkite' }
     ]
   },
@@ -75,9 +75,10 @@ E.sarasai = {
     items: [
       { t: 'Įvertinkite: ar kvėpavimo takai laisvi (kalba, kvėpavimo garsai)' },
       { t: 'Sąmoningas – leiskite pasirinkti padėtį, geriausiai saugančią kvėpavimo takus (sėdėti, palinkti į priekį)', k: true },
-      { t: 'Be sąmonės – atverkite kvėpavimo takus: galvos atlošimas ir smakro pakėlimas arba apatinio žandikaulio stūmimas', sk: 9 },
-      { t: 'Tada – stabili šoninė padėtis: galva atlošta, smakras atitrauktas nuo krūtinės', k: true, sk: 10 },
+      { t: 'Be sąmonės, be obstrukcijos – stabili šoninė padėtis: galva atlošta, smakras atitrauktas nuo krūtinės', k: true, sk: 10 }, // v37: TCCC 2026 – pirmiausia šoninė padėtis
+      { t: 'Smakro pakėlimas / žandikaulio pastūmimas; NPA, jei kvėpavimo takai neišlieka praeinami (be sąmonės, be obstrukcijos)', sk: 9, i: sk(9, 'Kvėpavimo takų atvėrimas') + ', ' + sk(11, 'NPA') + '. TCCC 2026 NPA mini kvėpavimo (R) dalyje – kai ventiliacija sutrikusi ir hipoksija neištaisoma, kartu su ambu maišu; CLS vertinimo lapo 5b–5c punktai atitinka šį žingsnį.' }, // v37
       { t: 'Atsiurbimas, jei yra priemonių', g: 'CMC' },
+      { t: 'Ekstraglotinė priemonė (i-gel) – tik pagal vieneto SOP', g: 'CMC', i: 'TCCC 2026 TFC ekstraglotinės priemonės nebenumato (buvo TCCC 2024); JTS Airway CPG 2026 – išmokytam personalui. Nepadeda – krikotiroidotomija.' }, // v37: Kiti šaltiniai
       { t: 'Obstrukcija išlieka (veido trauma, kraujas, deformacija, nudegimai) – chirurginė krikotiroidotomija', g: 'CMC', sk: 13, i: 'TCCC 2026: atvira technika su bougie arba standartinė atvira; vietą patvirtinti kapnografija (EtCO₂).' },
       { t: 'Kaklo stabilizacija nereikalinga, jei trauma tik penetruojanti' },
       { t: 'Kvėpavimo takus dažnai vertinkite iš naujo' }
@@ -100,6 +101,7 @@ E.sarasai = {
     title: 'C – kraujotaka', short: 'C',
     items: [
       { t: 'Šoko požymiai: sutrikusi sąmonė (be galvos traumos) ir / ar silpnas ar nečiuopiamas radialinis pulsas', k: true, sk: 17 },
+      { t: 'Šoko požymiai / negali tęsti kovos – kviesti mediką, skubinti evakuaciją', k: true, r: '#/9line' }, // v37: CLS veiksmas (CMC veiksmai CLS lygiu paslėpti)
       { t: 'Dubens diržas: sunki buka ar sprogimo trauma IR bent vienas požymis', sk: 18, s: ['Dubens skausmas ar dubens lūžio požymiai', 'Didelė kojos amputacija ar beveik amputacija', 'Be sąmonės ar šokas'], i: 'Deda CMC arba CLS, jei apmokytas ir turi diržą; kitaip CLS praneša medikui.' },
       { t: 'Turniketų peržiūra: atidenkite žaizdą – ar turniketo reikia?', k: true, sk: 8, s: ['Reikia – naujas 5–7,5 cm virš žaizdos ant odos, tada senąjį atlaisvinkite', 'Kraujavimas sustojęs ir (jei ne amputacija) distalinio pulso nėra; jei ne – priveržkite ar antras greta', 'Nereikia – nuimkite (CLS po 2 val. – tik mediko nurodymu), laiką įrašykite į kortelę'] },
       { t: 'Konversija – kuo anksčiau (siekti < 2 val.), jei: nėra šoko, žaizdą galima stebėti, ne amputacija', k: true, sk: 8, s: ['CLS po 2 val. – tik CMC ar aukštesnio lygio mediko nurodymu', 'Uždėto > 6 val. nenuimkite (tik esant stebėsenai ir laboratorijai)'] },
@@ -117,7 +119,7 @@ E.sarasai = {
     items: [
       { t: 'Hipotermijos prevencija – kuo anksčiau', k: true, sk: 21, s: ['Izoliacija nuo žemės, šlapius drabužius keiskite sausais', 'Aktyvus šildymas ant krūtinės ir pažasčių – ne tiesiai ant odos', 'Apvyniokite nepralaidžiu apvalkalu visą kūną ir galvą, veido neuždenkite'] },
       { t: 'Kraują ir IV / IO skysčius leiskite per šildytuvą', g: 'CMC', sk: 21 },
-      { t: 'Galvos smegenų trauma: nevykdo paprastų komandų ilgiau nei 10 min po sužalojimo', k: true, sk: 22, s: ['Neaišku, ar sąmonė sutrikusi dėl galvos traumos, ar dėl šoko – gydykite šoką', 'SpO₂ ≥ 92 %; sAKS > 100 mm Hg (TCCC 2026; arba normalus radialinis pulsas). Role 1 ir PCC (JTS) – ≥ 110 mm Hg.', 'Jei nėra šoko – galva ir liemuo pakelti > 30°', 'Neurologinė patikra kas 5–10 min', 'Evakuoti kuo skubiau – operacija geriausia per 5 val.'] },
+      { t: 'Galvos smegenų trauma: nevykdo paprastų komandų ilgiau nei 10 min po sužalojimo', k: true, sk: 22, s: ['Neaišku, ar sąmonė sutrikusi dėl galvos traumos, ar dėl šoko – gydykite šoką', 'SpO₂ ≥ 92 %; sAKS > 100 mm Hg (TCCC 2026; arba normalus radialinis pulsas). Role 1 ir PCC (JTS) – ≥ 110 mm Hg.', 'Jei nėra šoko – galva ir liemuo pakelti > 30°', 'Neurologinė patikra kas 5–10 min', 'Evakuoti kuo skubiau – operacija geriausia per 5 val. nuo sužalojimo (TCCC 2026)'] },
       { t: 'Išvaržos požymiai (asimetriški arba fiksuoti ir išsiplėtę vyzdžiai, patologinė laikysena) – hipertoninis NaCl', g: 'CMC', sk: 22, r: '#/vaistas/nacl-hipert' },
       { t: 'Penetruojanti akies trauma: greitas regėjimo testas, standus skydelis (ne spaudžiamasis tvarstis), antibiotikas', k: true, sk: 23 },
       { t: 'Elektroninis stebėjimas (SpO₂, EtCO₂, AKS), jei yra', g: 'CMC', sk: 30 }
@@ -129,6 +131,7 @@ E.sarasai = {
       { h: 'P – skausmas' },
       { t: 'Gali kovoti – kovinių žaizdų vaistų paketas (CWMP)', k: true, sk: 24, s: ['Paracetamolis 1000–1300 mg kas 8 val.', 'Meloksikamas 15 mg kartą per parą', 'Suzetriginas 100 mg, po to 50 mg kas 12 val.'] },
       { t: 'Negali kovoti – CWMP (jei dar negavo) ir ketaminas (ar esketaminas)', g: 'CMC', sk: 25, r: '#/vaistas/ketaminas', s: ['Prieš ketaminą – nuginkluoti, AVPU įrašyti į kortelę'] },
+      { t: 'Šoko požymiai / negali tęsti kovos – kviesti mediką, skubinti evakuaciją', k: true, r: '#/9line' }, // v37: CLS veiksmas (CMC veiksmai CLS lygiu paslėpti)
       { t: 'Pykinimas ar vėmimas – ondansetronas 4 mg', g: 'CMC', r: '#/vaistas/ondansetronas' },
       { h: 'A – antibiotikai' },
       { t: 'Atvira kovinė žaizda – antibiotikas', k: true, sk: 26, s: ['Gali nuryti – cefadroksilis 1 g per burną (alt. cefaleksinas 500 mg kas 6 val.)', 'Negali nuryti – ceftriaksonas 2 g IV / IO / IM (CMC)'] },
@@ -178,7 +181,7 @@ E.sarasai = {
       { t: 'Deguonis: žemas SpO₂, oksigenaciją bloginantys sužalojimai, be sąmonės, galvos trauma (SpO₂ ≥ 92 %), šokas, aukštis, dūmų įkvėpimas', g: 'CMC' },
       { t: 'C: radialinis pulsas ir sąmonė; šokas – kraujas pagal TFC (CMC)', k: true, sk: 17 },
       { t: 'H: hipotermijos apvalkalas sandarus ir sausas; saugokite nuo vėjo ir kritulių', k: true, sk: 21 },
-      { t: 'Galvos trauma: SpO₂ ≥ 92 %, sAKS > 100 mm Hg (Role 1 ir PCC (JTS) – ≥ 110); operacija – per 5 val.', sk: 22 },
+      { t: 'Galvos trauma: SpO₂ ≥ 92 %, sAKS > 100 mm Hg (Role 1 ir PCC (JTS) – ≥ 110); operacija – per 5 val. (TCCC 2026)', sk: 22 },
       { t: 'P · A · W · S: skausmas, antibiotikai, žaizdos, įtvarai – kaip TFC' }
     ]
   },
@@ -318,7 +321,7 @@ E.puslapiai = {
     saltinis: 'TCCC gairės 2026-05-01 (TFC 20); JTS CLS kursas (20 modulis); M. Grinevičiaus TCCC kursas („Neštuvai“)'
   },
   vaistai26: {
-    title: 'TCCC 2026 vaistai', sub: 'Kas ir kada – trumpai',
+    title: 'TCCC 2026 vaistai', sub: 'Kas ir kada – trumpai', lygis: 'CMC', // v37: CLS lygiu rodomas įspėjimas (puslapyje yra CMC vaistų)
     html:
       '<p>TCCC 2026 gairėse vaistų sąrašas sutrumpėjo: nebeliko fentanilio ir morfino, kovinių žaizdų vaistų pakete (CWMP) nebėra antibiotiko – atsirado suzetriginas, o geriamasis antibiotikas – cefadroksilis. Dozės – skiltyje <a href="#/vaistai">Vaistai</a>.</p>' +
       '<div class="tw"><table><tr><th>Kada</th><th>Vaistas</th><th>Lygis</th></tr>' +
@@ -352,6 +355,7 @@ window.ETC.vertinimai = [{
   id: 'cls', title: 'CLS vertinimo lapas', sub: 'Combat Lifesaver (CLS) Tactical Combat Casualty Care',
   rule: 'Siekiant gauti teigiamą įvertinimą privaloma atlikti visus „K“ raide pažymėtus punktus.',
   src: 'TCCC CLS Skills Checklist – Tactical Trauma Assessment (TCCC-CLS-02-12, 30 JUN 20), lietuviškas vertinimo lapas',
+  note: 'Lape – pažodinis tekstas; gide (TCCC 2026): akies skydelis, turniketas 5–7,5 cm virš žaizdos; 5c – be sąmonės ir be obstrukcijos pirmiausia šoninė padėtis, NPA – jei kvėpavimo takai neišlieka praeinami.', // v37
   items: [
     { n: '1', t: 'Atliko pagalbą apšaudymo metu (CUF)', k: true, s: [
       { n: 'a', t: 'Atsišaudė ir užėmė priedangą' },
