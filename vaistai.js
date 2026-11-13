@@ -92,9 +92,9 @@ E.vaistai = [
     ind: 'Tik jei opioidą numato vieneto SOP – TCCC 2026 fentanilio nebėra. TCCC 2024: skausmas, kai sužeistasis nėra šoko ar kvėpavimo sutrikimo būklės ir rizika jiems išsivystyti nedidelė; kitaip – ketaminas.',
     kontra: 'PCS: alergija opioidams, kvėpavimo slopinimas, obstrukcinė kvėpavimo takų liga, MAO inhibitoriai (per 2 sav.). TCCC 2024: šokas, kvėpavimo sutrikimas ar didelė rizika jiems išsivystyti – ketaminas, ne fentanilis.',
     dozes: [
-      { k: 'IV / IO (TCCC 2024)', d: '50 mcg (0,5–1 mcg/kg)', p: '50 mcg/ml – 1 ml. Lėtai (PCS).' },
-      { k: 'Į nosį (IN) (TCCC 2024)', d: '100 mcg', p: '50 mcg/ml – 2 ml.' },
-      { k: 'Kartoti', d: 'kas 30 min pagal poreikį', p: 'IV / IO ir IN (TCCC 2024).' }
+      { k: 'IV / IO (ankstesnės TCCC, 2024)', d: '50 mcg (0,5–1 mcg/kg) lėtai', p: '50 mcg/ml – 1 ml. Leisti lėtai (PCS); stebėkite kvėpavimą.' },
+      { k: 'Į nosį (IN) (ankstesnės TCCC, 2024)', d: '100 mcg', p: 'Dalyti per abi šnerves, ≤ 1 ml į šnervę (50 mcg/ml: 100 mcg = 2 ml – po 1 ml į kiekvieną).' },
+      { k: 'Kartoti', d: 'kas 30 min pagal poreikį', p: 'IV / IO ir IN (ankstesnės TCCC, 2024).' }
     ],
     ispejimai: [
       'Prieš skiriant – AVPU įrašyti į kortelę; naloksonas turi būti po ranka (TCCC 2024).',
