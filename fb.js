@@ -24,7 +24,7 @@ const FB = (() => {
     const os = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'iOS' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'macOS' : 'Kita';
     const br = /SamsungBrowser/.test(ua) ? 'Samsung' : /Edg\//.test(ua) ? 'Edge' : /CriOS|Chrome\//.test(ua) ? 'Chrome' : /FxiOS|Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'Kita';
     const dark = getComputedStyle(document.body).getPropertyValue('--bg').trim().toUpperCase() === '#161912';
-    return `${os} · ${br} · ${installed() ? 'įdiegta' : 'naršyklėje'} · ${innerWidth}×${innerHeight} · ${dark ? 'tamsi' : 'šviesi'} tema`;
+    return `${os} · ${br} · ${installed() ? 'įdiegta' : 'naršyklėje'} · ${innerWidth}×${innerHeight} · ${document.body.classList.contains('night') ? 'naktinis režimas' : dark ? 'tamsi tema' : 'šviesi tema'}`;
   }
 
   function context() {
@@ -195,17 +195,19 @@ ${c.pazymeta ? `<div class="card fbsel"><small class="muted">Pažymėtas tekstas
     }, st.ctx);
     busy = true;
     const btn = box.querySelector('[data-f=send]'); btn.disabled = true; btn.textContent = 'Siunčiama…';
+    const my = st; // langas, iš kurio siunčiama: jei siuntimo metu jis uždaromas (ar atidaromas naujas) – rezultatas rodomas trumpu pranešimu, ne lange
     let r = null;
     try { r = await send(p); } catch (e) { r = null; }
     busy = false;
-    if (r && r.ok) return done('Ačiū! Pranešimas ' + (r.nr && r.nr !== '-' ? '<b>' + esc(r.nr) + '</b> ' : '') + 'gautas.', 'Jis bus peržiūrėtas ir, jei reikia, programėlė bus pataisyta.');
+    const same = () => box && !box.hidden && st === my && !!box.querySelector('.fbp');
+    if (r && r.ok) { if (same()) done('Ačiū! Pranešimas ' + (r.nr && r.nr !== '-' ? '<b>' + esc(r.nr) + '</b> ' : '') + 'gautas.', 'Jis bus peržiūrėtas ir, jei reikia, programėlė bus pataisyta.'); else toast('Pranešimas išsiųstas' + (r.nr && r.nr !== '-' ? ' (' + r.nr + ')' : '')); return; }
     const a = outbox(); a.push(p); saveOut(a);
-    done('Pranešimas išsaugotas telefone.', url() ? 'Nepavyko išsiųsti dabar – bus išsiųsta automatiškai, kai atsiras interneto ryšys.' : 'Pranešimų priėmimas dar neįjungtas – pranešimas bus išsiųstas automatiškai, kai tik jis veiks.');
+    if (same()) done('Pranešimas išsaugotas telefone.', url() ? 'Nepavyko išsiųsti dabar – bus išsiųsta automatiškai, kai atsiras interneto ryšys.' : 'Pranešimų priėmimas dar neįjungtas – pranešimas bus išsiųstas automatiškai, kai tik jis veiks.'); else toast('Pranešimas išsaugotas telefone – bus išsiųstas, kai atsiras ryšys');
   }
 
   function done(title, sub) {
-    if (!box) return;
-    box.querySelector('.fbp').innerHTML = `<div class="fbok"><div class="fbic">✓</div><h1>${title}</h1><p class="muted">${esc(sub)}</p><button type="button" class="btn pri" data-f="again">Grįžti į programėlę</button></div>`;
+    const f = box && box.querySelector('.fbp'); if (!f) return;
+    f.innerHTML = `<div class="fbok"><div class="fbic">✓</div><h1>${title}</h1><p class="muted">${esc(sub)}</p><button type="button" class="btn pri" data-f="again">Grįžti į programėlę</button></div>`;
   }
 
   async function send(p) {

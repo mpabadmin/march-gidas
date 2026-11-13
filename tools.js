@@ -18,7 +18,7 @@ const TCFG = {
     ceftriaksonas: [['IV', '2', 'g'], ['IM', '2', 'g']], txa: [['IV', '2', 'g']], kalcis: [['IV', '30', 'ml']], ondansetronas: [['ODT', '4', 'mg'], ['IV', '4', 'mg']], 'nacl-hipert': [['IV', '250', 'ml']],
     fentanilis: [['IV', '50', 'mcg'], ['IN', '100', 'mcg']], morfinas: [['IV', '5', 'mg'], ['IV', '2,5', 'mg', 'šoke'], ['IM', '5', 'mg'], ['IM', '10', 'mg']], naloksonas: [['IV', '40', 'mcg', 'titruoti'], ['IM', '0,4', 'mg'], ['IN', '1,8', 'mg']] },
   opKeys: ['contrep', 'salute', 'fb-out', 'vl', 'vl-ins'], // ištrinami kartu su sužeistųjų duomenimis (MGRS, priešo duomenys; v37: neišsiųsti atsiliepimai su ekrano nuotraukomis, vertinimo lapai su vardais)
-  pt: ['laikai', 'ck', 'svoris'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele); svoris – kiekvienam pacientui savas
+  pt: ['laikai', 'ck', 'ck-sig', 'svoris'], // paciento failas: šie raktai priklauso dabartiniam pacientui (perjungiami kartu su MIST kortele); svoris – kiekvienam pacientui savas
   migrate: o => migrateOldMist(o), // senos MIST formos duomenys (žr. žemiau)
   // paciento ekranas, juosta ir dažniausi sąrašai (pacientas.js – bendras kodas); MARCH PAWS apžvalga ir vaistų skiltis – march-hub.js (MPAWS)
   hub: {
@@ -2199,6 +2199,8 @@ const PT = (() => {
     if (ch) LS.set(MK, st);
     const s = store(), pid = st.pts[st.cur].pid, alive = st.pts.map(p => p.pid);
     let sch = false;
+    // sąrašų žymėjimų parašas keliauja kartu su sužeistojo žymėjimais; anksčiau išsaugotiems (be parašo) – dabartinių sąrašų parašas
+    { const CK = TCFG.pre + 'ck', SG = TCFG.pre + 'ck-sig'; Object.keys(s.data).forEach(k => { const d = s.data[k]; if (d && d[CK] && typeof d[CK] === 'object' && d[SG] == null && typeof ckSig === 'function') { const g = {}; Object.keys(d[CK]).forEach(id => { g[id] = ckSig(id); }); d[SG] = g; sch = true; } }); }
     if (s.cur !== pid) {
       if (s.cur) {
         if (alive.indexOf(s.cur) >= 0) { const d = {}; keys().forEach(k => { d[k] = LS.get(k, null); }); s.data[s.cur] = d; }
@@ -2253,12 +2255,12 @@ const PT = (() => {
     const la = get(pid, 'laikai') || {};
     put(+la.trauma || MC.trTs(c) || hmTs(c.t0), 'Trauma' + ((c.mech || []).length ? ' – ' + c.mech.join(', ').toLowerCase() : ''));
     const tqs = c.tq && typeof c.tq === 'object' ? Object.keys(c.tq).filter(k => c.tq[k] && c.tq[k].on && hmTs(c.tq[k].tm)) : [];
-    if (tqs.length) tqs.forEach(k => put(hmTs(c.tq[k].tm), 'Turniketas – ' + MC.tqName(k))); else put(+la.turn || hmTs(c.tqT), 'Turniketas');
+    if (tqs.length) tqs.forEach(k => put(+c.tq[k].t || hmTs(c.tq[k].tm), 'Turniketas – ' + MC.tqName(k))); else put(+la.turn || hmTs(c.tqT), 'Turniketas');
     const z = get(pid, 'vz'), ze = z && Array.isArray(z.e) ? z.e : [];
-    const rw = (c.rows || []).filter(r => r && !/^(vz:|kr)/.test(String(r.src || '')) && hmTs(r.time));
-    rw.forEach(r => put(hmTs(r.time), [r.name, r.dose, r.route].map(x => String(x || '').trim()).filter(Boolean).join(' ')));
+    const rw = (c.rows || []).filter(r => r && !/^(vz:|kr)/.test(String(r.src || '')) && (+r.t || hmTs(r.time)));
+    rw.forEach(r => put(+r.t || hmTs(r.time), [r.name, r.dose, r.route].map(x => String(x || '').trim()).filter(Boolean).join(' ')));
     if (c.txaT && !ze.some(e => e && e.v === 'txa') && !rw.some(r => /\btxa\b|tranek/i.test(r.name))) put(hmTs(c.txaT), 'TXA');
-    (c.vit || []).forEach(v => put(hmTs(v.ts), MC.vitLine(v).replace(/^[^–]*–\s*/, '')));
+    (c.vit || []).forEach(v => put(+v.t || hmTs(v.ts), MC.vitLine(v).replace(/^[^–]*–\s*/, '')));
     if (typeof VZ !== 'undefined') ze.forEach(e => { if (e && +e.t && e.v) put(+e.t, VZ.desc(Object.assign({ a: '', u: '', r: '', n: '' }, e))); });
     const w = get(pid, 'wbb');
     if (w && typeof w === 'object') { put(+w.t1, 'Kraujo transfuzija – paėmimas'); put(+w.t2, 'Kraujo transfuzija – perpylimas' + (w.don || w.donG ? ' (donoras ' + [w.don, w.donG].filter(Boolean).join(' ') + ')' : '')); }
@@ -2386,7 +2388,7 @@ const QR = (() => {
   };
   function payload() {
     PT.sync(); const st = MC.state(), c = Object.assign({}, st.pts[st.cur]); delete c.pid;
-    delete c.name; delete c.dob; delete c.resp; // asmens duomenys į kodą nepatenka (lieka tik ID / šaukinys ir padalinys)
+    delete c.name; delete c.dob; delete c.resp; delete c.respP; // asmens duomenys į kodą nepatenka (lieka tik ID / šaukinys ir padalinys)
     const L = PT.list(), me = L.pts[L.cur], o = { v: 1, a: APP, t: Date.now() };
     if (sel.m) { o.m = c; const la = LS.get(TCFG.laikai, null); if (la && (la.trauma || la.turn)) o.lk = { trauma: +la.trauma || 0, turn: +la.turn || 0 }; if (me && me.cat) o.c = me.cat; const kg = +LS.get(TCFG.pre + 'svoris', 0); if (kg > 0) o.kg = kg; }
     if (sel.z && typeof VZ !== 'undefined') o.z = VZ.get().e.map(e => ({ id: e.id, t: e.t, v: e.v, a: e.a, u: e.u, r: e.r, n: e.n }));
